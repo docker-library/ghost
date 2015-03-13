@@ -17,7 +17,7 @@ RUN curl -o /usr/local/bin/gosu -SL "https://github.com/tianon/gosu/releases/dow
 ENV GHOST_SOURCE /usr/src/ghost
 WORKDIR $GHOST_SOURCE
 
-ENV GHOST_VERSION 0.5.9
+ENV GHOST_VERSION 0.5.10
 
 RUN buildDeps=' \
 		gcc \

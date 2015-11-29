@@ -1,4 +1,4 @@
-FROM node:0.10-slim
+FROM node:4.2-slim
 
 RUN groupadd user && useradd --create-home --home-dir /home/user -g user user
 
@@ -11,8 +11,8 @@ RUN set -x \
 RUN gpg --keyserver pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4
 RUN arch="$(dpkg --print-architecture)" \
 	&& set -x \
-	&& curl -o /usr/local/bin/gosu -fSL "https://github.com/tianon/gosu/releases/download/1.2/gosu-$arch" \
-	&& curl -o /usr/local/bin/gosu.asc -fSL "https://github.com/tianon/gosu/releases/download/1.2/gosu-$arch.asc" \
+	&& curl -o /usr/local/bin/gosu -fSL "https://github.com/tianon/gosu/releases/download/1.7/gosu-$arch" \
+	&& curl -o /usr/local/bin/gosu.asc -fSL "https://github.com/tianon/gosu/releases/download/1.7/gosu-$arch.asc" \
 	&& gpg --verify /usr/local/bin/gosu.asc \
 	&& rm /usr/local/bin/gosu.asc \
 	&& chmod +x /usr/local/bin/gosu
@@ -20,7 +20,7 @@ RUN arch="$(dpkg --print-architecture)" \
 ENV GHOST_SOURCE /usr/src/ghost
 WORKDIR $GHOST_SOURCE
 
-ENV GHOST_VERSION 0.7.1
+ENV GHOST_VERSION 0.7.2
 
 RUN buildDeps=' \
 		gcc \

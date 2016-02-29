@@ -2,8 +2,9 @@
 set -e
 
 if [[ "$*" == npm*start* ]]; then
-	for dir in "$GHOST_SOURCE/content"/*/; do
-		targetDir="$GHOST_CONTENT/$(basename "$dir")"
+	baseDir="$GHOST_SOURCE/content"
+	for dir in "$baseDir"/*/ "$baseDir"/themes/*/; do
+		targetDir="$GHOST_CONTENT/${dir#$baseDir/}"
 		mkdir -p "$targetDir"
 		if [ -z "$(ls -A "$targetDir")" ]; then
 			tar -c --one-file-system -C "$dir" . | tar xC "$targetDir"

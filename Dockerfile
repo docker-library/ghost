@@ -1,4 +1,5 @@
-# http://support.ghost.org/supported-node-versions/
+# http://support.ghost.org/supported-node-versions/ 
+# node version is v4.4.7
 # https://github.com/nodejs/LTS
 FROM node:4-slim
 

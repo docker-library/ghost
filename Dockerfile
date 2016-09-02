@@ -4,11 +4,6 @@ FROM node:4-slim
 
 RUN groupadd user && useradd --create-home --home-dir /home/user -g user user
 
-RUN apt-get update && apt-get install -y \
-		ca-certificates \
-		wget \
-	--no-install-recommends && rm -rf /var/lib/apt/lists/*
-
 # grab gosu for easy step-down from root
 ENV GOSU_VERSION 1.7
 RUN set -x \

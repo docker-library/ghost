@@ -19,7 +19,7 @@ RUN set -x \
 ENV GHOST_SOURCE /usr/src/ghost
 WORKDIR $GHOST_SOURCE
 
-ENV GHOST_VERSION 0.10.1
+ENV GHOST_VERSION 0.11.0
 
 RUN buildDeps=' \
 		gcc \

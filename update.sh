@@ -6,7 +6,7 @@ current="$(
 		| cut -d$'\t' -f2 \
 		| grep -E '^refs/tags/[0-9]+\.[0-9]+' \
 		| cut -d/ -f3 \
-		| grep -vE 'beta' \
+		| grep -vE 'alpha|beta' \
 		| sort -rV \
 		| head -1
 )"

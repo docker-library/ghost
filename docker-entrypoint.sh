@@ -20,7 +20,12 @@ if [[ "$*" == npm*start* ]]; then
 
 	ln -sf "$GHOST_CONTENT/config.js" "$GHOST_SOURCE/config.js"
 
-	chown -R user "$GHOST_CONTENT"
+        PUID=${PUID:-1001}
+        PGID=${PGID:-1001}
+        groupadd -o -g "$PGID" user
+        useradd --create-home --home-dir /home/user -g user -o -u "$PUID" user
+
+	chown -R user:user "$GHOST_CONTENT"
 
 	set -- gosu user "$@"
 fi

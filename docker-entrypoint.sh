@@ -22,7 +22,8 @@ if [[ "$*" == npm*start* ]]; then
 
         PUID=${PUID:-1001}
         PGID=${PGID:-1001}
-        groupadd -o -g "$PGID" user && useradd --create-home --home-dir /home/user -g user -o -u "$PUID" user
+        groupadd -o -g "$PGID" user
+        useradd --create-home --home-dir /home/user -g user -o -u "$PUID" user
 
 	chown -R user:user "$GHOST_CONTENT"
 

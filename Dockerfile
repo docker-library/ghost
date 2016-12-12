@@ -2,6 +2,8 @@
 # https://github.com/nodejs/LTS
 FROM node:4-slim
 
+RUN groupadd user && useradd --create-home --home-dir /home/user -g user user
+
 # grab gosu for easy step-down from root
 ENV GOSU_VERSION 1.7
 RUN set -x \
@@ -36,7 +38,12 @@ RUN buildDeps=' \
 	&& rm -rf /tmp/npm*
 
 ENV GHOST_CONTENT /var/lib/ghost
-RUN mkdir -p "$GHOST_CONTENT"
+RUN mkdir -p "$GHOST_CONTENT" \
+	&& chown -R user:user "$GHOST_CONTENT" \
+# Ghost expects "config.js" to be in $GHOST_SOURCE, but it's more useful for
+# image users to manage that as part of their $GHOST_CONTENT volume, so we
+# symlink.
+	&& ln -s "$GHOST_CONTENT/config.js" "$GHOST_SOURCE/config.js"
 VOLUME $GHOST_CONTENT
 
 COPY docker-entrypoint.sh /entrypoint.sh

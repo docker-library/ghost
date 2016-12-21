@@ -21,21 +21,28 @@ WORKDIR $GHOST_SOURCE
 
 ENV GHOST_VERSION 0.11.7
 
-RUN buildDeps=' \
+RUN set -ex; \
+	\
+	buildDeps=' \
 		gcc \
 		make \
 		python \
 		unzip \
-	' \
-	&& set -x \
-	&& apt-get update && apt-get install -y $buildDeps --no-install-recommends && rm -rf /var/lib/apt/lists/* \
-	&& wget -O ghost.zip "https://github.com/TryGhost/Ghost/releases/download/${GHOST_VERSION}/Ghost-${GHOST_VERSION}.zip" \
-	&& unzip ghost.zip \
-	&& npm install --production \
-	&& apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false -o APT::AutoRemove::SuggestsImportant=false $buildDeps \
-	&& rm ghost.zip \
-	&& npm cache clean \
-	&& rm -rf /tmp/npm*
+	'; \
+	apt-get update; \
+	apt-get install -y $buildDeps --no-install-recommends; \
+	rm -rf /var/lib/apt/lists/*; \
+	\
+	wget -O ghost.zip "https://github.com/TryGhost/Ghost/releases/download/${GHOST_VERSION}/Ghost-${GHOST_VERSION}.zip"; \
+	unzip ghost.zip; \
+	\
+	npm install --production; \
+	\
+	apt-get purge -y --auto-remove $buildDeps; \
+	\
+	rm ghost.zip; \
+	npm cache clean; \
+	rm -rf /tmp/npm*
 
 ENV GHOST_CONTENT /var/lib/ghost
 RUN mkdir -p "$GHOST_CONTENT" \
@@ -46,8 +53,9 @@ RUN mkdir -p "$GHOST_CONTENT" \
 	&& ln -s "$GHOST_CONTENT/config.js" "$GHOST_SOURCE/config.js"
 VOLUME $GHOST_CONTENT
 
-COPY docker-entrypoint.sh /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh"]
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN ln -s usr/local/bin/docker-entrypoint.sh /entrypoint.sh # backwards compat
+ENTRYPOINT ["docker-entrypoint.sh"]
 
 EXPOSE 2368
 CMD ["npm", "start"]

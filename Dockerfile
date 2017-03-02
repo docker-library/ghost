@@ -2,6 +2,10 @@
 # https://github.com/nodejs/LTS
 FROM node:4-slim
 
+RUN wget https://github.com/Yelp/dumb-init/releases/download/v1.0.2/dumb-init_1.0.2_amd64.deb \
+	&& dpkg -i dumb-init_*.deb \
+	&& rm dumb-init_*.deb
+
 RUN groupadd user && useradd --create-home --home-dir /home/user -g user user
 
 # grab gosu for easy step-down from root
@@ -47,7 +51,7 @@ RUN mkdir -p "$GHOST_CONTENT" \
 VOLUME $GHOST_CONTENT
 
 COPY docker-entrypoint.sh /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/usr/bin/dumb-init", "/entrypoint.sh"]
 
 EXPOSE 2368
 CMD ["npm", "start"]

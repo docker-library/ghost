@@ -12,4 +12,4 @@ current="$(
 )"
 
 set -x
-sed -ri 's/^(ENV GHOST_VERSION) .*/\1 '"$current"'/' Dockerfile
+sed -ri 's/^(ENV GHOST_VERSION) .*/\1 '"$current"'/' */Dockerfile

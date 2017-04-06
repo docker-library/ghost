@@ -41,19 +41,32 @@ join() {
 	echo "${out#$sep}"
 }
 
-commit="$(dirCommit .)"
+for variant in debian alpine; do
+	commit="$(dirCommit "$variant")"
 
-fullVersion="$(git show "$commit":Dockerfile | awk '$1 == "ENV" && $2 == "GHOST_VERSION" { print $3; exit }')"
+	fullVersion="$(git show "$commit":"$variant/Dockerfile" | awk '$1 == "ENV" && $2 == "GHOST_VERSION" { print $3; exit }')"
 
-versionAliases=()
-while [ "${fullVersion%.*}" != "$fullVersion" ]; do
-	versionAliases+=( $fullVersion )
-	fullVersion="${fullVersion%.*}"
+	versionAliases=()
+	while [ "${fullVersion%.*}" != "$fullVersion" ]; do
+		versionAliases+=( $fullVersion )
+		fullVersion="${fullVersion%.*}"
+	done
+	versionAliases+=(
+		$fullVersion
+		latest
+	)
+
+	variantAliases=( "${versionAliases[@]/%/-$variant}" )
+	variantAliases=( "${variantAliases[@]//latest-/}" )
+
+	if [ "$variant" = 'debian' ]; then
+		variantAliases=( "${versionAliases[@]}" )
+	fi
+
+	echo
+	cat <<-EOE
+		Tags: $(join ', ' "${variantAliases[@]}")
+		GitCommit: $commit
+		Directory: $variant
+	EOE
 done
-versionAliases+=( $fullVersion latest )
-
-echo
-cat <<-EOE
-	Tags: $(join ', ' "${versionAliases[@]}")
-	GitCommit: $commit
-EOE

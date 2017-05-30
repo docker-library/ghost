@@ -1,8 +1,19 @@
 #!/bin/bash
 set -eu
 
+declare -A aliases=(
+	[0.11]='0 latest'
+)
+defaultVariant='debian'
+
 self="$(basename "$BASH_SOURCE")"
 cd "$(dirname "$(readlink -f "$BASH_SOURCE")")"
+
+versions=( */ )
+versions=( "${versions[@]%/}" )
+
+# sort version numbers with highest first
+IFS=$'\n'; versions=( $(echo "${versions[*]}" | sort -rV) ); unset IFS
 
 # get the most recent commit which modified any of "$@"
 fileCommit() {
@@ -41,32 +52,34 @@ join() {
 	echo "${out#$sep}"
 }
 
-for variant in debian alpine; do
-	commit="$(dirCommit "$variant")"
+for version in "${versions[@]}"; do
+	for variant in debian alpine; do
+		commit="$(dirCommit "$version/$variant")"
 
-	fullVersion="$(git show "$commit":"$variant/Dockerfile" | awk '$1 == "ENV" && $2 == "GHOST_VERSION" { print $3; exit }')"
+		fullVersion="$(git show "$commit":"$version/$variant/Dockerfile" | awk '$1 == "ENV" && $2 == "GHOST_VERSION" { print $3; exit }')"
 
-	versionAliases=()
-	while [ "${fullVersion%.*}" != "$fullVersion" ]; do
-		versionAliases+=( $fullVersion )
-		fullVersion="${fullVersion%.*}"
+		versionAliases=()
+		while [ "$fullVersion" != "$version" -a "${fullVersion%[.-]*}" != "$fullVersion" ]; do
+			versionAliases+=( $fullVersion )
+			fullVersion="${fullVersion%[.-]*}"
+		done
+		versionAliases+=(
+			$version
+			${aliases[$version]:-}
+		)
+
+		if [ "$variant" = "$defaultVariant" ]; then
+			variantAliases=( "${versionAliases[@]}" )
+		else
+			variantAliases=( "${versionAliases[@]/%/-$variant}" )
+			variantAliases=( "${variantAliases[@]//latest-/}" )
+		fi
+
+		echo
+		cat <<-EOE
+			Tags: $(join ', ' "${variantAliases[@]}")
+			GitCommit: $commit
+			Directory: $version/$variant
+		EOE
 	done
-	versionAliases+=(
-		$fullVersion
-		latest
-	)
-
-	variantAliases=( "${versionAliases[@]/%/-$variant}" )
-	variantAliases=( "${variantAliases[@]//latest-/}" )
-
-	if [ "$variant" = 'debian' ]; then
-		variantAliases=( "${versionAliases[@]}" )
-	fi
-
-	echo
-	cat <<-EOE
-		Tags: $(join ', ' "${variantAliases[@]}")
-		GitCommit: $commit
-		Directory: $variant
-	EOE
 done

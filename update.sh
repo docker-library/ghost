@@ -19,10 +19,18 @@ allVersions="$(
 
 travisEnv=
 for version in "${versions[@]}"; do
+	rcVersion="${version%-rc}"
+	rcGrepV='-v'
+	if [ "$rcVersion" != "$version" ]; then
+		rcGrepV=
+	fi
+	rcGrepV+=' -E'
+	rcGrepExpr='alpha|beta|rc'
+
 	fullVersion="$(
 		echo "$allVersions" \
-			| grep -E "^${version}([.-]|$)" \
-			| grep -vE 'alpha|beta' \
+			| grep -E "^${rcVersion}([.-]|$)" \
+			| grep $rcGrepV -- "$rcGrepExpr" \
 			| head -1
 	)"
 	if [ -z "$fullVersion" ]; then

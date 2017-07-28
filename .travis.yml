@@ -4,6 +4,8 @@ services: docker
 env:
   - VERSION=0.11 VARIANT=debian
   - VERSION=0.11 VARIANT=alpine
+  - VERSION=1.0 VARIANT=debian
+  - VERSION=1.0 VARIANT=alpine
 
 install:
   - git clone https://github.com/docker-library/official-images.git ~/official-images

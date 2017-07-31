@@ -2,8 +2,6 @@
 # https://github.com/nodejs/LTS
 FROM node:6-slim
 
-RUN groupadd user && useradd --create-home --home-dir /home/user -g user user
-
 # grab gosu for easy step-down from root
 ENV GOSU_VERSION 1.7
 RUN set -x \
@@ -21,16 +19,26 @@ ENV NODE_ENV production
 ENV GHOST_CLI_VERSION 1.0.0
 ENV GHOST_VERSION 1.0.2
 
-RUN npm i -g "ghost-cli@$GHOST_CLI_VERSION" knex-migrator@latest
+RUN npm install -g "ghost-cli@$GHOST_CLI_VERSION" knex-migrator@latest
 
 ENV GHOST_INSTALL /var/lib/ghost
 ENV GHOST_CONTENT /var/lib/ghost/content
 
-RUN ghost install "$GHOST_VERSION" --db sqlite3 --no-prompt --no-stack --no-setup --dir "$GHOST_INSTALL" \
-        # Tell Ghost to listen on all ips and not prompt for additional configuration
-        && cd "$GHOST_INSTALL" \
-        && ghost config --ip 0.0.0.0 --port 2368 --no-prompt --db sqlite3 --url http://localhost:2368 \ 
-        && chown -R user:user "$GHOST_INSTALL"
+RUN set -ex; \
+	mkdir -p "$GHOST_INSTALL"; \
+	chown node:node "$GHOST_INSTALL"; \
+	\
+	su-exec node ghost install "$GHOST_VERSION" --db sqlite3 --no-prompt --no-stack --no-setup --dir "$GHOST_INSTALL"; \
+	\
+# Tell Ghost to listen on all ips and not prompt for additional configuration
+	cd "$GHOST_INSTALL"; \
+	su-exec node ghost config --ip 0.0.0.0 --port 2368 --no-prompt --db sqlite3 --url http://localhost:2368 --dbpath "$GHOST_CONTENT/data/ghost.db"; \
+	su-exec node ghost config paths.contentPath "$GHOST_CONTENT"; \
+	\
+# need to save initial content for pre-seeding empty volumes
+	mv "$GHOST_CONTENT" "$GHOST_INSTALL/content.orig"; \
+	mkdir -p "$GHOST_CONTENT"; \
+	chown node:node "$GHOST_CONTENT"
 
 WORKDIR $GHOST_INSTALL
 VOLUME $GHOST_CONTENT

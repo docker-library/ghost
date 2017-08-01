@@ -17,6 +17,15 @@ allVersions="$(
 		| sort -rV
 )"
 
+cliVersion="$(
+	git ls-remote --tags https://github.com/TryGhost/Ghost-CLI.git \
+		| cut -d$'\t' -f2 \
+		| grep -E '^refs/tags/[0-9]+\.[0-9]+' \
+		| cut -d/ -f3 \
+		| sort -rV \
+		| head -n1
+)"
+
 travisEnv=
 for version in "${versions[@]}"; do
 	rcVersion="${version%-rc}"
@@ -41,6 +50,7 @@ for version in "${versions[@]}"; do
 		set -x
 		sed -ri \
 			-e 's/^(ENV GHOST_VERSION) .*/\1 '"$fullVersion"'/' \
+			-e 's/^(ENV GHOST_CLI_VERSION) .*/\1 '"$cliVersion"'/' \
 			"$version"/*/Dockerfile
 	)
 

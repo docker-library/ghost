@@ -28,12 +28,12 @@ RUN set -ex; \
 	mkdir -p "$GHOST_INSTALL"; \
 	chown node:node "$GHOST_INSTALL"; \
 	\
-	su-exec node ghost install "$GHOST_VERSION" --db sqlite3 --no-prompt --no-stack --no-setup --dir "$GHOST_INSTALL"; \
+	gosu node ghost install "$GHOST_VERSION" --db sqlite3 --no-prompt --no-stack --no-setup --dir "$GHOST_INSTALL"; \
 	\
 # Tell Ghost to listen on all ips and not prompt for additional configuration
 	cd "$GHOST_INSTALL"; \
-	su-exec node ghost config --ip 0.0.0.0 --port 2368 --no-prompt --db sqlite3 --url http://localhost:2368 --dbpath "$GHOST_CONTENT/data/ghost.db"; \
-	su-exec node ghost config paths.contentPath "$GHOST_CONTENT"; \
+	gosu node ghost config --ip 0.0.0.0 --port 2368 --no-prompt --db sqlite3 --url http://localhost:2368 --dbpath "$GHOST_CONTENT/data/ghost.db"; \
+	gosu node ghost config paths.contentPath "$GHOST_CONTENT"; \
 	\
 # need to save initial content for pre-seeding empty volumes
 	mv "$GHOST_CONTENT" "$GHOST_INSTALL/content.orig"; \

@@ -2,6 +2,8 @@ language: bash
 services: docker
 
 env:
+  - VERSION=1.5 VARIANT=debian
+  - VERSION=1.5 VARIANT=alpine
   - VERSION=1.4 VARIANT=debian
   - VERSION=1.4 VARIANT=alpine
   - VERSION=1.3 VARIANT=debian

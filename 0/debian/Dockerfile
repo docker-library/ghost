@@ -24,7 +24,9 @@ ENV GHOST_VERSION 0.11.11
 RUN set -ex; \
 	\
 	buildDeps=' \
+		g++ \
 		gcc \
+		libc6-dev \
 		make \
 		python \
 		unzip \

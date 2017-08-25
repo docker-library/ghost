@@ -23,6 +23,7 @@ RUN npm install -g "ghost-cli@$GHOST_CLI_VERSION" knex-migrator@latest
 
 ENV GHOST_INSTALL /var/lib/ghost
 ENV GHOST_CONTENT /var/lib/ghost/content
+ENV GHOST_URL http://localhost:2368
 
 RUN set -ex; \
 	mkdir -p "$GHOST_INSTALL"; \
@@ -32,7 +33,7 @@ RUN set -ex; \
 	\
 # Tell Ghost to listen on all ips and not prompt for additional configuration
 	cd "$GHOST_INSTALL"; \
-	gosu node ghost config --ip 0.0.0.0 --port 2368 --no-prompt --db sqlite3 --url http://localhost:2368 --dbpath "$GHOST_CONTENT/data/ghost.db"; \
+	gosu node ghost config --ip 0.0.0.0 --port 2368 --no-prompt --db sqlite3 --url "${GHOST_URL}" --dbpath "$GHOST_CONTENT/data/ghost.db"; \
 	gosu node ghost config paths.contentPath "$GHOST_CONTENT"; \
 	\
 # need to save initial content for pre-seeding empty volumes

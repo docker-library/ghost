@@ -3,7 +3,7 @@
 FROM node:6-slim
 
 # grab gosu for easy step-down from root
-ENV GOSU_VERSION 1.7
+ENV GOSU_VERSION 1.10
 RUN set -x \
 	&& wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture)" \
 	&& wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture).asc" \

@@ -17,7 +17,7 @@ RUN set -x \
 ENV NPM_CONFIG_LOGLEVEL warn
 ENV NODE_ENV production
 ENV GHOST_CLI_VERSION 1.1.3
-ENV GHOST_VERSION 1.13.0
+ENV GHOST_VERSION 1.14.0
 
 RUN npm install -g "ghost-cli@$GHOST_CLI_VERSION" knex-migrator@latest
 

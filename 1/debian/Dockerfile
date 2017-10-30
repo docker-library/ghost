@@ -35,6 +35,10 @@ RUN set -ex; \
 	gosu node ghost config --ip 0.0.0.0 --port 2368 --no-prompt --db sqlite3 --url http://localhost:2368 --dbpath "$GHOST_CONTENT/data/ghost.db"; \
 	gosu node ghost config paths.contentPath "$GHOST_CONTENT"; \
 	\
+# make a config.json symlink for NODE_ENV=development (and sanity check that it's correct)
+	gosu node ln -s config.production.json "$GHOST_INSTALL/config.development.json"; \
+	readlink -f "$GHOST_INSTALL/config.development.json"; \
+	\
 # need to save initial content for pre-seeding empty volumes
 	mv "$GHOST_CONTENT" "$GHOST_INSTALL/content.orig"; \
 	mkdir -p "$GHOST_CONTENT"; \

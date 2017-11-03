@@ -9,15 +9,15 @@ RUN apk add --no-cache \
 # add "bash" for "[["
 		bash
 
-ENV NPM_CONFIG_LOGLEVEL warn
 ENV NODE_ENV production
-ENV GHOST_CLI_VERSION 1.2.0
-ENV GHOST_VERSION 1.16.2
 
-RUN npm install -g "ghost-cli@$GHOST_CLI_VERSION" knex-migrator@latest
+ENV GHOST_CLI_VERSION 1.2.0
+RUN npm install -g "ghost-cli@$GHOST_CLI_VERSION"
 
 ENV GHOST_INSTALL /var/lib/ghost
 ENV GHOST_CONTENT /var/lib/ghost/content
+
+ENV GHOST_VERSION 1.16.2
 
 RUN set -ex; \
 	mkdir -p "$GHOST_INSTALL"; \
@@ -37,7 +37,16 @@ RUN set -ex; \
 # need to save initial content for pre-seeding empty volumes
 	mv "$GHOST_CONTENT" "$GHOST_INSTALL/content.orig"; \
 	mkdir -p "$GHOST_CONTENT"; \
-	chown node:node "$GHOST_CONTENT"
+	chown node:node "$GHOST_CONTENT"; \
+	\
+# symlink knex-migrator bins into PATH
+# we want these from the context of Ghost's "node_modules" directory (instead of doing "npm install -g knex-migrator") so they can share the DB driver modules
+	for f in "$GHOST_INSTALL/current/node_modules/.bin/knex-migrator"*; do \
+		[ -x "$f" ]; \
+		ln -svf "$f" /usr/local/bin/; \
+	done
+
+# TODO multiarch sqlite3 (once either "node:6-alpine" has multiarch or we switch to a base that does)
 
 WORKDIR $GHOST_INSTALL
 VOLUME $GHOST_CONTENT

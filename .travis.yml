@@ -18,8 +18,18 @@ before_script:
 script:
   - travis_retry docker build -t "$image" "$VARIANT"
   - ~/official-images/test/run.sh "$image"
+  - docker run -d --name blogtest -p 2368:2368 -e NODE_ENV=production "$image"
+  - until nc -z $(docker inspect --format='{{.NetworkSettings.IPAddress}}' blogtest) 2368; do
+      echo "waiting for ghostblog container...";
+      sleep 2;
+    done
+  - echo "GhostTest available..."
+  - curl http://localhost:2368 | grep "The professional publishing platform"
 
 after_script:
   - docker images
+  - docker logs blogtest
+  - docker stop blogtest
+  - docker rm blogtest
 
 # vim:set et ts=2 sw=2:

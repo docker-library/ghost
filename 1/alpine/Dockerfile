@@ -39,12 +39,12 @@ RUN set -ex; \
 	mkdir -p "$GHOST_CONTENT"; \
 	chown node:node "$GHOST_CONTENT"; \
 	\
-# symlink knex-migrator bins into PATH
+# sanity check to ensure knex-migrator was installed
+	"$GHOST_INSTALL/current/node_modules/knex-migrator/bin/knex-migrator" --version
+
+# add knex-migrator bins into PATH
 # we want these from the context of Ghost's "node_modules" directory (instead of doing "npm install -g knex-migrator") so they can share the DB driver modules
-	for f in "$GHOST_INSTALL/current/node_modules/.bin/knex-migrator"*; do \
-		[ -x "$f" ]; \
-		ln -svf "$f" /usr/local/bin/; \
-	done
+ENV PATH $PATH:$GHOST_INSTALL/current/node_modules/knex-migrator/bin
 
 # TODO multiarch sqlite3 (once either "node:6-alpine" has multiarch or we switch to a base that does)
 

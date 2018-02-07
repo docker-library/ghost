@@ -16,13 +16,13 @@ RUN set -x \
 
 ENV NODE_ENV production
 
-ENV GHOST_CLI_VERSION 1.4.2
+ENV GHOST_CLI_VERSION 1.5.1
 RUN npm install -g "ghost-cli@$GHOST_CLI_VERSION"
 
 ENV GHOST_INSTALL /var/lib/ghost
 ENV GHOST_CONTENT /var/lib/ghost/content
 
-ENV GHOST_VERSION 1.20.3
+ENV GHOST_VERSION 1.21.1
 
 RUN set -ex; \
 	mkdir -p "$GHOST_INSTALL"; \

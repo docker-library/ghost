@@ -8,7 +8,6 @@ services:
 env:
   global:
     - GHOST_VERSION="1.22.4B"
-    - CONTAINER_NAME="ghostuat"
 
 before_install:
   - docker --version
@@ -24,30 +23,35 @@ addons:
 install:
     - git clone https://github.com/docker-library/official-images.git ~/official-images
 
-before_script:  
-  - THIS_IMAGE="$DOCKER_USERNAME"/"$DOCKER_REPO_NAME":"$GHOST_VERSION"
+before_script:
+  - CONTAINER_NAME="ghostuat"
+  - THIS_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"`
+  - THIS_SHA=`git rev-parse --short HEAD`
+  - IMAGE_VERSION="$DOCKER_USERNAME"/"$DOCKER_REPO_NAME":"$GHOST_VERSION"
+  - IMAGE_DATE="$DOCKER_USERNAME"/"$DOCKER_REPO_NAME":"$THIS_DATE"
+  - IMAGE_SHA="$DOCKER_USERNAME"/"$DOCKER_REPO_NAME":"$THIS_SHA"
   - if [ -n "$TRAVIS_TAG" ]; then
     image="$image:$TRAVIS_TAG";
     fi
 
 script:
-    # Create swarm for explicit testing
     # Make sure that there is a useable ip address as "advertise address" because else the swarm creation fails maybe
     # docker swarm init --advertise-addr `ip addr s | grep global | grep -oE '((1?[0-9][0-9]?|2[0-4][0-9]|25[0-5])\.){3}(1?[0-9][0-9]?|2[0-4][0-9]|25[0-5])' | head -n1`
-  - docker build -t "$THIS_IMAGE" .
-  - docker run -d --name "$CONTAINER_NAME" -p 2368:2368 -e url=http://localhost:2368 -e NODE_ENV=production "$THIS_IMAGE"
-  - echo "Wait for $CONTAINER_NAME to start..."
+  # Building with 3 TAGS
+  - docker build -t "$IMAGE_VERSION" "$IMAGE_DATE" "$IMAGE_SHA" .
+  - docker run -d --name "$CONTAINER_NAME" -p 2368:2368 -e url=http://localhost:2368 -e NODE_ENV=production "$IMAGE_VERSION"
+  - echo "Ensure $CONTAINER_NAME is starting..."
   - until $(curl --output /dev/null --silent --head --fail http://localhost:2368); do
       echo "Waiting for $CONTAINER_NAME container to run...";
       sleep 3;
     done
   - curl http://localhost:2368 | grep "The professional publishing platform"
   - echo "Time to run official docker test on the container..."
-  - ~/official-images/test/run.sh "$THIS_IMAGE"
+  - ~/official-images/test/run.sh "$IMAGE_VERSION"
   - uname -a;
 
 after_script:
-  - docker inspect "$THIS_IMAGE";
+  - docker inspect "$IMAGE_VERSION";
   - docker images;
   - docker logs "$CONTAINER_NAME";
   - docker rm -f "$CONTAINER_NAME";
@@ -61,5 +65,5 @@ after_success:
   # DOCKER_REPO_NAME=[secure]  
   - if [ "$TRAVIS_PULL_REQUEST" = "false" ] && [ "$TRAVIS_BRANCH" == "master" ] && [ "$DOCKER_REPO_PREFIX" != "" ] && [ "$DOCKER_REPO_NAME" != "" ] && [ "$DOCKER_USERNAME" != "" ] && [ "$DOCKER_PASSWORD" != "" ]; then
       echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin;
-      docker push "$THIS_IMAGE";
+      docker push "$IMAGE_VERSION";
     fi

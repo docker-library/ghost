@@ -21,7 +21,7 @@ addons:
       - docker-ce
 
 install:
-    - git clone https://github.com/docker-library/official-images.git official-images
+    - git clone https://github.com/docker-library/official-images.git ~/official-images
 
 before_script:  
   - image="$DOCKER_USERNAME"/"$DOCKER_REPO_NAME":"$GHOST_VERSION"
@@ -41,21 +41,18 @@ script:
         sleep 3;
     done
   - echo "ghostuat available..."
-  - official-images/test/run.sh "$image"
+  - ~/official-images/test/run.sh "$image"
   - curl http://localhost:2368 | grep "The professional publishing platform"
 
+after_script:
+    - docker inspect "$image"    
+    - docker images
+    - docker logs blogtest
+    - docker stop blogtest
+    - docker rm blogtest
+
 after_success:
-  # Push successful builds of the master branch to Docker Hub
-  # You need to define $DOCKER_REPO_PREFIX, $DOCKER_REPO_NAME, $DOCKER_USERNAME and $DOCKER_PASSWORD in your Travis settings.
-  # $DOCKER_REPO_PREFIX - Organisation of username who owns the repo on Docker Hub
-  # $DOCKER_REPO_NAME   - Repository name on Docker Hub
-  # $DOCKER_USERNAME    - Docker Hub username used to push the image
-  # $DOCKER_PASSWORD    - Password of the Docker Hub user used to push the image
-  # See https://docs.travis-ci.com/user/environment-variables/#Defining-Variables-in-Repository-Settings
-  - if [ "$TRAVIS_PULL_REQUEST" = "false" ] && [ "$TRAVIS_BRANCH" == "master" ] && [ "$DOCKER_REPO_PREFIX" != "" ] && [ "$DOCKER_REPO_NAME" != "" ] && [ "$DOCKER_USERNAME" != "" ] && [ "$DOCKER_PASSWORD" != "" ]; then
-    tools/tagging.sh "${DOCKER_REPO_PREFIX}/${DOCKER_REPO_NAME}" "${INSP_VERSION:-latest}" "";
-    docker images "${DOCKER_REPO_PREFIX}/${DOCKER_REPO_NAME}";
-    echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin;
-    docker images --format "{{.Repository}}:{{.Tag}}" "${DOCKER_REPO_PREFIX}/${DOCKER_REPO_NAME}" | xargs -L 1 docker push ;
-    docker run --rm -v "$(pwd)/:/data/:ro" -e "DOCKERHUB_USERNAME=$DOCKER_USERNAME" -e "DOCKERHUB_PASSWORD=$DOCKER_PASSWORD" -e "DOCKERHUB_REPO_PREFIX=$DOCKER_REPO_PREFIX" -e "DOCKERHUB_REPO_NAME=$DOCKER_REPO_NAME" sheogorath/readme-to-dockerhub;
+  - if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" -o -n "$TRAVIS_TAG" ]; then 
+    docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+    docker push "$image";
     fi

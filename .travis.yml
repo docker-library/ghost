@@ -47,8 +47,8 @@ script:
         sleep 3;
     done
   - echo "$CONTAINER_NAME is available..."
-  - ~/official-images/test/run.sh "$THIS_IMAGE"
   - curl http://localhost:2368 | grep "The professional publishing platform"
+  # ~/official-images/test/run.sh "$THIS_IMAGE"
 
 after_script:
     - echo "--- TEST 01 ---";
@@ -59,6 +59,7 @@ after_script:
     - docker rm -f "$CONTAINER_NAME";
 
 after_success:
+# See https://docs.travis-ci.com/user/environment-variables/#Defining-Variables-in-Repository-Settings
   - if [ "$TRAVIS_PULL_REQUEST" = "false" ] && [ "$TRAVIS_BRANCH" == "master" ] && [ "$DOCKER_REPO_PREFIX" != "" ] && [ "$DOCKER_REPO_NAME" != "" ] && [ "$DOCKER_USERNAME" != "" ] && [ "$DOCKER_PASSWORD" != "" ]; then
     echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin;
     docker push "$THIS_IMAGE";

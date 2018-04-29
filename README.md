@@ -1,4 +1,9 @@
-[![Build Status](https://travis-ci.org/firepress-org/ghostfire.svg)](https://travis-ci.org/firepress-org/ghostfire)[![](https://images.microbadger.com/badges/image/firepress-org/ghostfire.svg)](https://microbadger.com/images/firepress-org/ghostfire "Get your own image badge on microbadger.com")[![](https://images.microbadger.com/badges/version/firepress-org/ghostfire.svg)](https://microbadger.com/images/firepress-org/ghostfire "Get your own version badge on microbadger.com")
+## Status
+
+- [![Build Status](https://travis-ci.org/firepress-org/ghostfire.svg)](https://travis-ci.org/firepress-org/ghostfire)
+- [![](https://images.microbadger.com/badges/image/firepress-org/ghostfire.svg)](https://microbadger.com/images/firepress-org/ghostfire "Get your own image badge on microbadger.com")
+- [![](https://images.microbadger.com/badges/version/firepress-org/ghostfire.svg)](https://microbadger.com/images/firepress-org/ghostfire "Get your own version badge on microbadger.com")
+- **Travis** build details: https://travis-ci.org/firepress-org/ghostfire
 
 
 ## Base Docker Image
@@ -6,15 +11,10 @@
 - [node:8.11.1-alpine](https://registry.hub.docker.com/_/node/)
 
 
-## Travis build
-
-https://travis-ci.org/firepress-org/ghostfire
-
-
 ## Developper setup
 
-I will share soon the local setup I use on my mac.
-It will be on a dedicated git repo.
+- I will share soon the setup I use on my mac to develop Ghost and/or Ghost Themes.
+- It will be on a dedicated git repo.
 
 
 ## Contributing
@@ -35,10 +35,10 @@ Copyright (c) 2013-2017 Ghost Foundation - Released under the [MIT license](LICE
 
 ## Sources & Fork
 
-- **standard-build** This Git repo is available [here](https://github.com/firepress-org/xyz). It’s based on:
+- **linear-build** This Git repo is available [here](https://github.com/firepress-org/ghostfire). It’s based on:
 https://github.com/docker-library/ghost/tree/7eb6348d2a5493546577508d2cbae0a9922e1390/1/alpine
 
-- **multi-build** — I’m also working on the **multi-build version** as well. See https://github.com/mmornati/docker-ghostblog
+- **multi-build** — You might be interessed by the  multi-build version as well. See https://github.com/mmornati/docker-ghostblog.
 
 
 ## Author

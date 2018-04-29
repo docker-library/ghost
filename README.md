@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/mmornati/docker-ghostblog.svg)](https://travis-ci.org/firepress-org/ghostfire)[![](https://images.microbadger.com/badges/image/mmornati/docker-ghostblog.svg)](https://microbadger.com/images/firepress-org/ghostfire "Get your own image badge on microbadger.com")[![](https://images.microbadger.com/badges/version/mmornati/docker-ghostblog.svg)](https://microbadger.com/images/firepress-org/ghostfire "Get your own version badge on microbadger.com")
+[![Build Status](https://travis-ci.org/firepress-org/ghostfire.svg)](https://travis-ci.org/firepress-org/ghostfire)[![](https://images.microbadger.com/badges/image/firepress-org/ghostfire.svg)](https://microbadger.com/images/firepress-org/ghostfire "Get your own image badge on microbadger.com")[![](https://images.microbadger.com/badges/version/firepress-org/ghostfire.svg)](https://microbadger.com/images/firepress-org/ghostfire "Get your own version badge on microbadger.com")
 
 
 ## Base Docker Image

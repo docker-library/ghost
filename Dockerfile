@@ -14,10 +14,7 @@ ENV GHOST_VERSION="1.22.4"					\
 
 RUN set -ex 													&& \
     apk add --update --no-cache 								\
-	'su-exec>=0.2' bash tini tzdata 							&& \
-    cp /usr/share/zoneinfo/America/New_York /etc/localtime  	&& \
-    echo "America/New_York" > /etc/timezone                 	&& \
-    apk del tzdata                                          	&& \
+	'su-exec>=0.2' bash tini 									&& \
     rm -rf /var/cache/apk/*										;
 
 RUN set -ex 													&& \

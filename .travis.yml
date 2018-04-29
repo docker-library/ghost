@@ -1,25 +1,61 @@
+sudo: required
 language: bash
-services: docker
 
+services:
+  - docker
+
+# TODO - Hook the VAR from ./build-config.sh
 env:
-  - VERSION=1 VARIANT=debian
-  - VERSION=1 VARIANT=alpine
-  - VERSION=0 VARIANT=debian
-  - VERSION=0 VARIANT=alpine
+  global:
+    - GHOST_VERSION="1.22.4"
+
+before_install:
+  - docker --version
+  - sudo apt-get -qq update
+  - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
+  - sudo apt-get install -y openssl parallel
+
+addons:
+  apt:
+    packages:
+      - docker-ce
 
 install:
-  - git clone https://github.com/docker-library/official-images.git ~/official-images
+    - git clone https://github.com/docker-library/official-images.git official-images
 
-before_script:
-  - env | sort
-  - cd "$VERSION"
-  - image="ghost:$VERSION-$VARIANT"
+before_script:  
+  - image="$DOCKER_USERNAME"/"$DOCKER_REPO_NAME":"$GHOST_VERSION"
+  - if [ -n "$TRAVIS_TAG" ]; then
+    image="$image:$TRAVIS_TAG";
+    fi
+
 
 script:
-  - travis_retry docker build -t "$image" "$VARIANT"
-  - ~/official-images/test/run.sh "$image"
+  # Create swarm for explicit testing
+  # Make sure that there is a useable ip address as "advertise address" because else the swarm creation fails maybe
+  - docker swarm init --advertise-addr `ip addr s | grep global | grep -oE '((1?[0-9][0-9]?|2[0-4][0-9]|25[0-5])\.){3}(1?[0-9][0-9]?|2[0-4][0-9]|25[0-5])' | head -n1`
+  - docker build -t "$image" . 
+  - docker run -d --name ghostuat -p 2368:2368 -e url=http://localhost:2368 -e NODE_ENV=production "$image"
+  - until $(curl --output /dev/null --silent --head --fail http://localhost:2368); do
+        echo "waiting for ghostblog container...";
+        sleep 3;
+    done
+  - echo "ghostuat available..."
+  - official-images/test/run.sh "$image"
+  - curl http://localhost:2368 | grep "The professional publishing platform"
 
-after_script:
-  - docker images
-
-# vim:set et ts=2 sw=2:
+after_success:
+  # Push successful builds of the master branch to Docker Hub
+  # You need to define $DOCKER_REPO_PREFIX, $DOCKER_REPO_NAME, $DOCKER_USERNAME and $DOCKER_PASSWORD in your Travis settings.
+  # $DOCKER_REPO_PREFIX - Organisation of username who owns the repo on Docker Hub
+  # $DOCKER_REPO_NAME   - Repository name on Docker Hub
+  # $DOCKER_USERNAME    - Docker Hub username used to push the image
+  # $DOCKER_PASSWORD    - Password of the Docker Hub user used to push the image
+  # See https://docs.travis-ci.com/user/environment-variables/#Defining-Variables-in-Repository-Settings
+  - if [ "$TRAVIS_PULL_REQUEST" = "false" ] && [ "$TRAVIS_BRANCH" == "master" ] && [ "$DOCKER_REPO_PREFIX" != "" ] && [ "$DOCKER_REPO_NAME" != "" ] && [ "$DOCKER_USERNAME" != "" ] && [ "$DOCKER_PASSWORD" != "" ]; then
+    tools/tagging.sh "${DOCKER_REPO_PREFIX}/${DOCKER_REPO_NAME}" "${INSP_VERSION:-latest}" "";
+    docker images "${DOCKER_REPO_PREFIX}/${DOCKER_REPO_NAME}";
+    echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin;
+    docker images --format "{{.Repository}}:{{.Tag}}" "${DOCKER_REPO_PREFIX}/${DOCKER_REPO_NAME}" | xargs -L 1 docker push ;
+    docker run --rm -v "$(pwd)/:/data/:ro" -e "DOCKERHUB_USERNAME=$DOCKER_USERNAME" -e "DOCKERHUB_PASSWORD=$DOCKER_PASSWORD" -e "DOCKERHUB_REPO_PREFIX=$DOCKER_REPO_PREFIX" -e "DOCKERHUB_REPO_NAME=$DOCKER_REPO_NAME" sheogorath/readme-to-dockerhub;
+    fi

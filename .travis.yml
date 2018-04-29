@@ -43,22 +43,25 @@ script:
   - docker build -t "$THIS_IMAGE" .
   - docker run -d --name "$CONTAINER_NAME" -p 2368:2368 -e url=http://localhost:2368 -e NODE_ENV=production "$THIS_IMAGE"
   - until $(curl --output /dev/null --silent --head --fail http://localhost:2368); do
-        echo "waiting for $CONTAINER_NAME container...";
+        echo "Waiting for $CONTAINER_NAME container to run...";
         sleep 3;
     done
-  - echo "$CONTAINER_NAME  available..."
+  - echo "$CONTAINER_NAME is available..."
   - ~/official-images/test/run.sh "$THIS_IMAGE"
   - curl http://localhost:2368 | grep "The professional publishing platform"
 
 after_script:
-    - docker inspect "$THIS_IMAGE"    
+    - echo; echo "--- TEST 01 | uname -a ---" \
+      uname -a
+    - docker inspect "$THIS_IMAGE"
     - docker images
     - docker logs "$CONTAINER_NAME"
     - docker stop "$CONTAINER_NAME"
     - docker rm "$CONTAINER_NAME"
 
+
 after_success:
   - if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" -o -n "$TRAVIS_TAG" ]; then 
-    docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+    echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
     docker push "$THIS_IMAGE";
     fi

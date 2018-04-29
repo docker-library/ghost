@@ -1,8 +1,8 @@
 ## Status
 
 - [![Build Status](https://travis-ci.org/firepress-org/ghostfire.svg)](https://travis-ci.org/firepress-org/ghostfire)
-- [![](https://images.microbadger.com/badges/image/firepress-org/ghostfire.svg)](https://microbadger.com/images/firepress-org/ghostfire "Get your own image badge on microbadger.com")
-- [![](https://images.microbadger.com/badges/version/firepress-org/ghostfire.svg)](https://microbadger.com/images/firepress-org/ghostfire "Get your own version badge on microbadger.com")
+- [![](https://images.microbadger.com/badges/image/devmtl/ghostfire.svg)](https://microbadger.com/images/devmtl/ghostfire "Get your own image badge on microbadger.com")
+- [![](https://images.microbadger.com/badges/version/devmtl/ghostfire.svg)](https://microbadger.com/images/devmtl/ghostfire "Get your own version badge on microbadger.com")
 - **Travis** build details: https://travis-ci.org/firepress-org/ghostfire
 
 
@@ -13,7 +13,7 @@
 
 ## Developper setup
 
-- I will share soon the setup I use on my mac to develop Ghost and/or Ghost Themes.
+- Soon, I will share the setup I use on my mac to develop Ghost and/or Ghost Themes.
 - It will be on a dedicated git repo.
 
 

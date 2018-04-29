@@ -51,17 +51,17 @@ script:
   - curl http://localhost:2368 | grep "The professional publishing platform"
 
 after_script:
-    - echo; echo "--- TEST 01 | uname -a ---" \
-      uname -a
-    - docker inspect "$THIS_IMAGE"
-    - docker images
-    - docker logs "$CONTAINER_NAME"
-    - docker stop "$CONTAINER_NAME"
-    - docker rm "$CONTAINER_NAME"
+    - echo; echo "--- TEST 01 ---" && \
+        uname -a;
+    - docker inspect "$THIS_IMAGE";
+    - docker images;
+    - docker logs "$CONTAINER_NAME";
+    - docker stop "$CONTAINER_NAME";
+    - docker rm "$CONTAINER_NAME";
 
 
 after_success:
   - if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" -o -n "$TRAVIS_TAG" ]; then 
-    echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
+    echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin;
     docker push "$THIS_IMAGE";
     fi

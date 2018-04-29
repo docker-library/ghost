@@ -2,12 +2,18 @@
 # 	Configs for this build
 ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### #
 ENV_IMG_NAME="ghostfire"
-ENV_SOFT_VER="1.22.4A"
+ENV_SOFT_VER="1.22.4B"
 ENV_FROM="null"
 
 ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### #
 #	LAST_VERSION 	  | TAGS 					   | DATE
 ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### #
+
+#1.22.4B
+ENV_IMG_VERSION=devmtl/ghostfire:1.22.4B
+
+# FINAL CONFIG FOR <EDGE>
+ENV_GHOST_IMG_EDGE="devmtl/ghostfire:1.22.4B"
 
 #1.22.4A
 ENV_IMG_BUILD_EDGE_DATE=devmtl/ghostfire:edge_2018-04-24_08H07
@@ -22,10 +28,6 @@ ENV_IMG_VERSION=devmtl/ghostfire:1.22.4A
 #ENV_IMG_STABLE=devmtl/ghostfire:stable
 #ENV_IMG_VERSION=devmtl/ghostfire:1.22.4A
 
-# FINAL CONFIG FOR <EDGE>
-ENV_GHOST_IMG_EDGE="$ENV_IMG_BUILD_EDGE_DATE"
-
-
 #1.22.3-B
 #ENV_IMG_BUILD_EDGE_DATE=devmtl/ghostfire:edge_2018-04-20_11H31
 #ENV_IMG_BUILD_EDGE=devmtl/ghostfire:edge
@@ -37,7 +39,7 @@ ENV_IMG_VERSION=devmtl/ghostfire:1.22.3-B
 #ENV_IMG_VERSION=devmtl/ghostfire:1.22.3-B
 
 # FINAL CONFIG FOR <STABLE VERSION>
-ENV_GHOST_IMG_VERSION="$ENV_IMG_VERSION"
+ENV_GHOST_IMG_VERSION="devmtl/ghostfire:1.22.3-B"
 
 
 

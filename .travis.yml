@@ -4,16 +4,10 @@ language: bash
 services:
   - docker
 
-# VAR managed by Travis:
-  # DOCKER_USERNAME=[secure]
-  # DOCKER_PASSWORD=[secure]
-  # DOCKER_REPO_PREFIX=[secure]
-  # DOCKER_REPO_NAME=[secure]
-
 # TODO - Hook the VAR from ./build-config.sh
 env:
   global:
-    - GHOST_VERSION="1.22.4"
+    - GHOST_VERSION="1.22.4B"
     - CONTAINER_NAME="ghostuat"
 
 before_install:
@@ -48,19 +42,25 @@ script:
     done
   - echo "$CONTAINER_NAME is available..."
   - curl http://localhost:2368 | grep "The professional publishing platform"
-  # ~/official-images/test/run.sh "$THIS_IMAGE"
+  - echo "Time to run official docker test on the container..."
+  - ~/official-images/test/run.sh "$THIS_IMAGE"
+  - echo "--- TEST 01 ---";
+  - uname -a;
 
 after_script:
-    - echo "--- TEST 01 ---";
-    - uname -a;
-    - docker inspect "$THIS_IMAGE";
-    - docker images;
-    - docker logs "$CONTAINER_NAME";
-    - docker rm -f "$CONTAINER_NAME";
+  - docker inspect "$THIS_IMAGE";
+  - docker images;
+  - docker logs "$CONTAINER_NAME";
+  - docker rm -f "$CONTAINER_NAME";
 
 after_success:
 # See https://docs.travis-ci.com/user/environment-variables/#Defining-Variables-in-Repository-Settings
+# VAR managed by Travis:
+  # DOCKER_USERNAME=[secure]
+  # DOCKER_PASSWORD=[secure]
+  # DOCKER_REPO_PREFIX=[secure]
+  # DOCKER_REPO_NAME=[secure]  
   - if [ "$TRAVIS_PULL_REQUEST" = "false" ] && [ "$TRAVIS_BRANCH" == "master" ] && [ "$DOCKER_REPO_PREFIX" != "" ] && [ "$DOCKER_REPO_NAME" != "" ] && [ "$DOCKER_USERNAME" != "" ] && [ "$DOCKER_PASSWORD" != "" ]; then
-    echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin;
-    docker push "$THIS_IMAGE";
-    fi
+      echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin;
+      docker push "$THIS_IMAGE";
+      fi

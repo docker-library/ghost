@@ -25,8 +25,8 @@ install:
 
 before_script:
   - CONTAINER_NAME="ghostuat"
-  - THIS_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-  - THIS_SHA=$(git rev-parse --short HEAD)
+  - THIS_DATE=$(date -u +"%Y-%m-%d_%H-%M-%S")
+  - THIS_SHA=$(git log -1 | head -1 | awk '{print $2}')
   - IMAGE_VERSION="$DOCKER_USERNAME"/"$DOCKER_REPO_NAME":"$GHOST_VERSION"
   - IMAGE_DATE="$DOCKER_USERNAME"/"$DOCKER_REPO_NAME":"$THIS_DATE"
   - IMAGE_SHA="$DOCKER_USERNAME"/"$DOCKER_REPO_NAME":"$THIS_SHA"
@@ -41,7 +41,9 @@ script:
   - echo "$IMAGE_VERSION"
   - echo "$IMAGE_DATE"
   - echo "$IMAGE_SHA"
-  - docker build -t "$IMAGE_VERSION" -t "$IMAGE_DATE" -t "$IMAGE_SHA" .
+  - docker build -t "$IMAGE_VERSION" .
+  - docker build -t "$IMAGE_DATE" .
+  - docker build -t "$IMAGE_SHA" .
   - docker run -d --name "$CONTAINER_NAME" -p 2368:2368 -e url=http://localhost:2368 -e NODE_ENV=production "$IMAGE_VERSION"
   - echo "Ensure $CONTAINER_NAME is starting..."
   - until $(curl --output /dev/null --silent --head --fail http://localhost:2368); do
@@ -60,13 +62,15 @@ after_script:
   - docker rm -f "$CONTAINER_NAME";
 
 after_success:
-# See https://docs.travis-ci.com/user/environment-variables/#Defining-Variables-in-Repository-Settings
-# VAR managed by Travis:
-  # DOCKER_USERNAME=[secure]
-  # DOCKER_PASSWORD=[secure]
-  # DOCKER_REPO_PREFIX=[secure]
-  # DOCKER_REPO_NAME=[secure]  
   - if [ "$TRAVIS_PULL_REQUEST" = "false" ] && [ "$TRAVIS_BRANCH" == "master" ] && [ "$DOCKER_REPO_PREFIX" != "" ] && [ "$DOCKER_REPO_NAME" != "" ] && [ "$DOCKER_USERNAME" != "" ] && [ "$DOCKER_PASSWORD" != "" ]; then
       echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin;
       docker push "$IMAGE_VERSION";
     fi
+
+  # See https://docs.travis-ci.com/user/environment-variables/#Defining-Variables-in-Repository-Settings
+
+  # VAR managed by Travis:
+    # DOCKER_USERNAME=[secure]
+    # DOCKER_PASSWORD=[secure]
+    # DOCKER_REPO_PREFIX=[secure]
+    # DOCKER_REPO_NAME=[secure]

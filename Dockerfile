@@ -1,28 +1,32 @@
 # https://docs.ghost.org/supported-node-versions/
 # https://github.com/nodejs/LTS
-FROM node:6-alpine
+# Update Ghost version on line: 8
+# Update Ghost-cli on line: 9
+# Based on https://github.com/docker-library/ghost/blob/2f6ac6c7770e428a4a50d23d46ec470d5e727456/1/alpine/Dockerfile
 
-# grab su-exec for easy step-down from root
-RUN apk add --no-cache 'su-exec>=0.2'
+FROM node:8.11.1-alpine
 
-RUN apk add --no-cache \
-# add "bash" for "[["
-		bash
+ENV GHOST_VERSION="1.22.4"					\
+	GHOST_CLI_VERSION="1.7.1"				\
+	GHOST_INSTALL="/var/lib/ghost"			\
+	GHOST_CONTENT="/var/lib/ghost/content" 	\
+	NODE_ENV="production"
 
-ENV NODE_ENV production
+RUN set -ex 													&& \
+    apk add --update --no-cache 								\
+	'su-exec>=0.2' bash tini tzdata 							&& \
+    cp /usr/share/zoneinfo/America/New_York /etc/localtime  	&& \
+    echo "America/New_York" > /etc/timezone                 	&& \
+    apk del tzdata                                          	&& \
+    rm -rf /var/cache/apk/*										;
 
-ENV GHOST_CLI_VERSION 1.7.1
-RUN npm install -g "ghost-cli@$GHOST_CLI_VERSION"
-
-ENV GHOST_INSTALL /var/lib/ghost
-ENV GHOST_CONTENT /var/lib/ghost/content
-
-ENV GHOST_VERSION 1.22.4
-
-RUN set -ex; \
-	mkdir -p "$GHOST_INSTALL"; \
-	chown node:node "$GHOST_INSTALL"; \
+RUN set -ex 													&& \
+	npm install --production -g "ghost-cli@$GHOST_CLI_VERSION" 	&& \
 	\
+	mkdir -p "$GHOST_INSTALL"; 									\
+	chown node:node "$GHOST_INSTALL"; 							\
+	\
+# Install Ghost
 	su-exec node ghost install "$GHOST_VERSION" --db sqlite3 --no-prompt --no-stack --no-setup --dir "$GHOST_INSTALL"; \
 	\
 # Tell Ghost to listen on all ips and not prompt for additional configuration
@@ -40,7 +44,9 @@ RUN set -ex; \
 	chown node:node "$GHOST_CONTENT"; \
 	\
 # sanity check to ensure knex-migrator was installed
-	"$GHOST_INSTALL/current/node_modules/knex-migrator/bin/knex-migrator" --version
+	"$GHOST_INSTALL/current/node_modules/knex-migrator/bin/knex-migrator" --version \
+# uninstall ghost-cli
+	su-exec node npm uninstall -S -D -O -g "ghost-cli@$GHOST_CLI_VERSION";
 
 # add knex-migrator bins into PATH
 # we want these from the context of Ghost's "node_modules" directory (instead of doing "npm install -g knex-migrator") so they can share the DB driver modules
@@ -52,7 +58,7 @@ WORKDIR $GHOST_INSTALL
 VOLUME $GHOST_CONTENT
 
 COPY docker-entrypoint.sh /usr/local/bin
-ENTRYPOINT ["docker-entrypoint.sh"]
+ENTRYPOINT [ "/sbin/tini", "--", "docker-entrypoint.sh" ]
 
 EXPOSE 2368
 CMD ["node", "current/index.js"]

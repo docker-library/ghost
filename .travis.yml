@@ -4,10 +4,17 @@ language: bash
 services:
   - docker
 
+# VAR managed by Travis:
+  # DOCKER_USERNAME=[secure]
+  # DOCKER_PASSWORD=[secure]
+  # DOCKER_REPO_PREFIX=[secure]
+  # DOCKER_REPO_NAME=[secure]
+
 # TODO - Hook the VAR from ./build-config.sh
 env:
   global:
     - GHOST_VERSION="1.22.4"
+    - CONTAINER_NAME="ghostuat"
 
 before_install:
   - docker --version
@@ -24,35 +31,34 @@ install:
     - git clone https://github.com/docker-library/official-images.git ~/official-images
 
 before_script:  
-  - image="$DOCKER_USERNAME"/"$DOCKER_REPO_NAME":"$GHOST_VERSION"
+  - THIS_IMAGE="$DOCKER_USERNAME"/"$DOCKER_REPO_NAME":"$GHOST_VERSION"
   - if [ -n "$TRAVIS_TAG" ]; then
     image="$image:$TRAVIS_TAG";
     fi
-
 
 script:
   # Create swarm for explicit testing
   # Make sure that there is a useable ip address as "advertise address" because else the swarm creation fails maybe
   - docker swarm init --advertise-addr `ip addr s | grep global | grep -oE '((1?[0-9][0-9]?|2[0-4][0-9]|25[0-5])\.){3}(1?[0-9][0-9]?|2[0-4][0-9]|25[0-5])' | head -n1`
-  - docker build -t "$image" . 
-  - docker run -d --name ghostuat -p 2368:2368 -e url=http://localhost:2368 -e NODE_ENV=production "$image"
+  - docker build -t "$THIS_IMAGE" .
+  - docker run -d --name "$CONTAINER_NAME" -p 2368:2368 -e url=http://localhost:2368 -e NODE_ENV=production "$THIS_IMAGE"
   - until $(curl --output /dev/null --silent --head --fail http://localhost:2368); do
-        echo "waiting for ghostblog container...";
+        echo "waiting for $CONTAINER_NAME container...";
         sleep 3;
     done
-  - echo "ghostuat available..."
-  - ~/official-images/test/run.sh "$image"
+  - echo "$CONTAINER_NAME  available..."
+  - ~/official-images/test/run.sh "$THIS_IMAGE"
   - curl http://localhost:2368 | grep "The professional publishing platform"
 
 after_script:
-    - docker inspect "$image"    
+    - docker inspect "$THIS_IMAGE"    
     - docker images
-    - docker logs blogtest
-    - docker stop blogtest
-    - docker rm blogtest
+    - docker logs "$CONTAINER_NAME"
+    - docker stop "$CONTAINER_NAME"
+    - docker rm "$CONTAINER_NAME"
 
 after_success:
   - if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" -o -n "$TRAVIS_TAG" ]; then 
     docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
-    docker push "$image";
+    docker push "$THIS_IMAGE";
     fi

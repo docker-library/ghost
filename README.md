@@ -1,18 +1,19 @@
-## WARNING
-
-WIP 2018-04-29_10h39
-
-**Flags wip**
-
-[![Build Status](https://travis-ci.org/mmornati/docker-ghostblog.svg)](https://travis-ci.org/mmornati/docker-ghostblog)[![](https://images.microbadger.com/badges/image/mmornati/docker-ghostblog.svg)](https://microbadger.com/images/mmornati/docker-ghostblog "Get your own image badge on microbadger.com")[![](https://images.microbadger.com/badges/version/mmornati/docker-ghostblog.svg)](https://microbadger.com/images/mmornati/docker-ghostblog "Get your own version badge on microbadger.com")
+[![Build Status](https://travis-ci.org/mmornati/docker-ghostblog.svg)](https://travis-ci.org/firepress-org/ghostfire)[![](https://images.microbadger.com/badges/image/mmornati/docker-ghostblog.svg)](https://microbadger.com/images/firepress-org/ghostfire"Get your own image badge on microbadger.com")[![](https://images.microbadger.com/badges/version/mmornati/docker-ghostblog.svg)](https://microbadger.com/images/firepress-org/ghostfire"Get your own version badge on microbadger.com")
 
 ## Base Docker Image
 
 - [node:8.11.1-alpine](https://registry.hub.docker.com/_/node/)
 
-## Usage
 
-I will share my local setup soon as an indenpendant git repo.
+## Travis build
+
+https://travis-ci.org/firepress-org/ghostfire
+
+
+## Developper setup
+
+I will share soon the local setup I use on my mac.
+It will be on a dedicated git repo.
 
 
 ## Contributing

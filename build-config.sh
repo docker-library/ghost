@@ -9,11 +9,14 @@ ENV_FROM="null"
 #	LAST_VERSION 	  | TAGS 					   | DATE
 ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### #
 
-#1.22.4B
-ENV_IMG_VERSION=devmtl/ghostfire:1.22.4B
+#1.22.4C
+#IMAGE_SHA_SHORT=[secure]/[secure]:1.22.4C-6d976cf
+#IMAGE_VERSION=[secure]/[secure]:1.22.4C
+IMAGE_SHA_LONG=[secure]/[secure]:6d976cf0eae0f399d08bc9bbdc4d53b1881fb820
+#IMAGE_DATE=[secure]/[secure]:2018-04-30_01-48-09
 
 # FINAL CONFIG FOR <EDGE>
-ENV_GHOST_IMG_EDGE="devmtl/ghostfire:1.22.4B"
+ENV_GHOST_IMG_EDGE="$IMAGE_SHA_LONG"
 
 #1.22.4A
 ENV_IMG_BUILD_EDGE_DATE=devmtl/ghostfire:edge_2018-04-24_08H07

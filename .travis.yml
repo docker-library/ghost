@@ -39,7 +39,7 @@ script:
     # docker swarm init --advertise-addr `ip addr s | grep global | grep -oE '((1?[0-9][0-9]?|2[0-4][0-9]|25[0-5])\.){3}(1?[0-9][0-9]?|2[0-4][0-9]|25[0-5])' | head -n1`
   # Building with 3 TAGS
   - docker build -t "$IMAGE_SHA" .
-  - docker run -d --name "$CONTAINER_NAME" -p 2368:2368 -e url=http://localhost:2368 -e NODE_ENV=production "$IMAGE_VERSION"
+  - docker run -d --name "$CONTAINER_NAME" -p 2368:2368 -e url=http://localhost:2368 -e NODE_ENV=production "$IMAGE_SHA"
   - echo "Ensure $CONTAINER_NAME is starting..."
   - until $(curl --output /dev/null --silent --head --fail http://localhost:2368); do
       echo "Waiting for $CONTAINER_NAME container to run...";
@@ -47,13 +47,19 @@ script:
     done
   - curl http://localhost:2368 | grep "The professional publishing platform"
   - echo "Time to run official docker test on the container..."
-  - ~/official-images/test/run.sh "$IMAGE_VERSION"
+  - ~/official-images/test/run.sh "$IMAGE_SHA"
   - uname -a;
 
 after_script:
-  - docker inspect "$IMAGE_VERSION";
+  - docker inspect "$CONTAINER_NAME";
   - docker images;
   - docker logs "$CONTAINER_NAME";
+  - echo "Starting unit tests "
+  - docker exec -it $CONTAINER_NAME uname -a;
+  - docker exec -it $CONTAINER_NAME node --version;
+  - docker exec -it $CONTAINER_NAME cat /var/lib/ghost/current/content/themes/casper/package.json | grep version;
+  - docker exec -it $CONTAINER_NAME cat /var/lib/ghost/current/package.json | grep version;
+  - docker exec -it $CONTAINER_NAME curl -Is --head "http://localhost:2368" | grep -F -o "HTTP/1.1 200 OK" || echo "Error --> http://localhost:2368"
   - docker rm -f "$CONTAINER_NAME";
 
 after_success:

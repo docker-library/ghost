@@ -64,21 +64,23 @@ after_script:
   - docker exec -it "$CONTAINER_NAME" cat /var/lib/ghost/current/package.json | grep version;
   - docker exec -it "$CONTAINER_NAME" curl -Is --head "http://localhost:2368" | grep -F -o "HTTP/1.1 200 OK" || echo "Error --> http://localhost:2368"
   - docker rm -f "$CONTAINER_NAME";
+  - echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin;
+  - docker push "IMAGE_SHA_LONG";
+  - docker build -t "$IMAGE_VERSION" .;
+  - docker push "$IMAGE_VERSION";
+  - docker build -t "$IMAGE_DATE" .;
+  - docker push "$IMAGE_DATE";
+  - docker build -t "$IMAGE_SHA_SHORT" .;
+  - docker push "$IMAGE_SHA_SHORT";
+  - docker build -t "$IMAGE_EDGE" .;
+  - docker push "$IMAGE_EDGE";
   - echo && echo "IMAGE_EDGE=$IMAGE_EDGE" && echo "IMAGE_SHA_SHORT=$IMAGE_SHA_SHORT" && echo "IMAGE_VERSION=$IMAGE_VERSION" && echo "IMAGE_SHA_LONG=$IMAGE_SHA_LONG" && echo "IMAGE_DATE=$IMAGE_DATE" && echo "#IMAGE_EDGE=$IMAGE_EDGE" && echo "#IMAGE_SHA_SHORT=$IMAGE_SHA_SHORT" && echo "#IMAGE_VERSION=$IMAGE_VERSION" && echo "#IMAGE_SHA_LONG=$IMAGE_SHA_LONG" && echo "#IMAGE_DATE=$IMAGE_DATE"
 
 after_success:
       #docker build -t "$IMAGE_SHA_LONG" (already built)
   - if [ "$TRAVIS_PULL_REQUEST" = "false" ] && [ "$TRAVIS_BRANCH" == "master" ] && [ "$DOCKER_REPO_PREFIX" != "" ] && [ "$DOCKER_REPO_NAME" != "" ] && [ "$DOCKER_USERNAME" != "" ] && [ "$DOCKER_PASSWORD" != "" ]; then
       echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin;
-      docker push "IMAGE_SHA_LONG";
-      docker build -t "$IMAGE_VERSION" .;
-      docker push "$IMAGE_VERSION";
-      docker build -t "$IMAGE_DATE" .;
-      docker push "$IMAGE_DATE";
-      docker build -t "$IMAGE_SHA_SHORT" .;
-      docker push "$IMAGE_SHA_SHORT";
-      docker build -t "$IMAGE_EDGE" .;
-      docker push "$IMAGE_EDGE";
+      echo "All done!"
     fi
 
   # See https://docs.travis-ci.com/user/environment-variables/#Defining-Variables-in-Repository-Settings

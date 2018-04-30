@@ -10,10 +10,16 @@ ENV_FROM="null"
 ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### #
 
 #1.22.4C
-#IMAGE_SHA_SHORT=[secure]/[secure]:1.22.4C-6d976cf
-#IMAGE_VERSION=[secure]/[secure]:1.22.4C
-IMAGE_SHA_LONG=[secure]/[secure]:6d976cf0eae0f399d08bc9bbdc4d53b1881fb820
-#IMAGE_DATE=[secure]/[secure]:2018-04-30_01-48-09
+IMAGE_EDGE=devmtl/ghostfire:edge
+IMAGE_SHA_SHORT=devmtl/ghostfire:1.22.4C-81b4f1d
+IMAGE_VERSION=devmtl/ghostfire:1.22.4C
+IMAGE_SHA_LONG=devmtl/ghostfire:81b4f1d2d69765e5609ab74f001ee41006a311cf
+IMAGE_DATE=devmtl/ghostfire:2018-04-30_02-11-20
+#IMAGE_EDGE=devmtl/ghostfire:edge
+#IMAGE_SHA_SHORT=devmtl/ghostfire:1.22.4C-81b4f1d
+#IMAGE_VERSION=devmtl/ghostfire:1.22.4C
+#IMAGE_SHA_LONG=devmtl/ghostfire:81b4f1d2d69765e5609ab74f001ee41006a311cf
+#IMAGE_DATE=devmtl/ghostfire:2018-04-30_02-11-20
 
 # FINAL CONFIG FOR <EDGE>
 ENV_GHOST_IMG_EDGE="$IMAGE_SHA_LONG"

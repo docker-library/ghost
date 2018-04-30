@@ -2,7 +2,7 @@
 # 	Configs for this build
 ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### #
 ENV_IMG_NAME="ghostfire"
-ENV_SOFT_VER="1.22.4B"
+ENV_SOFT_VER="1.22.4C"
 ENV_FROM="null"
 
 ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### #

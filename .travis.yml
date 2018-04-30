@@ -38,11 +38,6 @@ script:
     # Make sure that there is a useable ip address as "advertise address" because else the swarm creation fails maybe
     # docker swarm init --advertise-addr `ip addr s | grep global | grep -oE '((1?[0-9][0-9]?|2[0-4][0-9]|25[0-5])\.){3}(1?[0-9][0-9]?|2[0-4][0-9]|25[0-5])' | head -n1`
   # Building with 3 TAGS
-  - echo "$IMAGE_VERSION"
-  - echo "$IMAGE_DATE"
-  - echo "$IMAGE_SHA"
-  - docker build -t "$IMAGE_VERSION" .
-  - docker build -t "$IMAGE_DATE" .
   - docker build -t "$IMAGE_SHA" .
   - docker run -d --name "$CONTAINER_NAME" -p 2368:2368 -e url=http://localhost:2368 -e NODE_ENV=production "$IMAGE_VERSION"
   - echo "Ensure $CONTAINER_NAME is starting..."
@@ -64,7 +59,11 @@ after_script:
 after_success:
   - if [ "$TRAVIS_PULL_REQUEST" = "false" ] && [ "$TRAVIS_BRANCH" == "master" ] && [ "$DOCKER_REPO_PREFIX" != "" ] && [ "$DOCKER_REPO_NAME" != "" ] && [ "$DOCKER_USERNAME" != "" ] && [ "$DOCKER_PASSWORD" != "" ]; then
       echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin;
+      docker push "$IMAGE_SHA";
+      docker build -t "$IMAGE_VERSION" .;
       docker push "$IMAGE_VERSION";
+      docker build -t "$IMAGE_DATE" .;
+      docker push "$IMAGE_DATE";
     fi
 
   # See https://docs.travis-ci.com/user/environment-variables/#Defining-Variables-in-Repository-Settings

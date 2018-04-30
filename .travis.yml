@@ -3,31 +3,23 @@ language: bash
 services:
   - docker
 
-# branches to build
 branches:
   except:
-    - gh-pages
     - tmp
     - tmp1
     - tmp2
     - tmp3
 
-skip_tags: true
-
-skip_commits:
-  files:
-    - build-config.sh
-
 # TODO - Hook the VAR from ./build-config.sh
 env:
   global:
-    - GHOST_VERSION="1.22.4C"
+    - GHOST_VERSION="1.22.4D"
 
 before_install:
-  - docker --version
   - sudo apt-get -qq update
   - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
-  - sudo apt-get install -y openssl parallel
+  - sudo apt-get install -qqy openssl parallel
+  - docker --version
 
 addons:
   apt:
@@ -96,6 +88,9 @@ after_success:
       docker push "$IMAGE_EDGE";
     fi
 
-  # See https://docs.travis-ci.com/user/environment-variables/#Defining-Variables-in-Repository-Settings
-  # Secret VARS managed by Travis:
-    # - DOCKER_PASSWORD=[secure]
+# See https://docs.travis-ci.com/user/environment-variables/#Defining-Variables-in-Repository-Settings
+  
+# Secret VARS managed by Travis:
+  # - DOCKER_PASSWORD=[secure]
+
+# In a commit, by using 'ci skip' it will skip Travis build.

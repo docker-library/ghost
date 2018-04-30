@@ -3,6 +3,21 @@ language: bash
 services:
   - docker
 
+# branches to build
+branches:
+  except:
+    - gh-pages
+    - tmp
+    - tmp1
+    - tmp2
+    - tmp3
+
+skip_tags: true
+
+skip_commits:
+  files:
+    - build-config.sh
+
 # TODO - Hook the VAR from ./build-config.sh
 env:
   global:
@@ -65,7 +80,7 @@ after_script:
   - docker exec -it "$CONTAINER_NAME" curl -Is --head "http://localhost:2368" | grep -F -o "HTTP/1.1 200 OK" || echo "Error --> http://localhost:2368"
   - docker rm -f "$CONTAINER_NAME";
   - echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin;
-  - docker push "IMAGE_SHA_LONG";
+  - docker push "$IMAGE_SHA_LONG";
   - docker build -t "$IMAGE_VERSION" .;
   - docker push "$IMAGE_VERSION";
   - docker build -t "$IMAGE_DATE" .;

@@ -28,7 +28,7 @@ docker run -d \
 —name ghostblog \
 -p 2368:2368 \
 -e url=http://localhost:2368 -e NODE_ENV=production \
-devmtl/ghostfire:1.22.4D-9ebb479
+devmtl/ghostfire:1.22.4-5d8db43
 ```
 
 Make sure to find the most recent docker image build. For the **statefull version**, see the section *Developper setup*.
@@ -44,16 +44,14 @@ My builds produce many tags:
 ```
 # THIS IS AN EXAMPLE
   
-devmtl/ghostfire:1.22.4D-9ebb479
-devmtl/ghostfire:1.22.4D
+devmtl/ghostfire:1.22.4-5d8db43
+devmtl/ghostfire:20180501_13H07_54
+devmtl/ghostfire:1.22.4
 devmtl/ghostfire:edge
-devmtl/ghostfire:9ebb4798cd6f18ae8b6eb90313ad00a002a9a8e9
-devmtl/ghostfire:2018-04-30_03-13-05
 ```
 
 I recommand to use the first format, where:
 - `1.22.4` is the Ghost Version
-- `D` is the sub version
 - `9ebb479` is the git commit used to do the build
 
 The logic is that I can test a **specific** image in UAT and push it in PROD as needed. In this example, using `devmtl/ghostfire:1.22.4D` could turn out to be a broekn docker image.  

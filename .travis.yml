@@ -84,7 +84,7 @@ after_script:
 # docker build -t "$IMAGE_SHA_SHORT" (already built)
 after_success:  
   - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" = "false" ] && [ "$DOCKER_REPO_PREFIX" != "" ] && [ "$DOCKER_REPO_NAME" != "" ] && [ "$DOCKER_USERNAME" != "" ] && [ "$DOCKER_PASSWORD" != "" ]; then
-      echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin;
+      echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
 
       docker push "$IMAGE_SHA_SHORT";
 
@@ -96,6 +96,4 @@ after_success:
 
       docker build -t "$IMAGE_EDGE" .;
       docker push "$IMAGE_EDGE";
-    else
-      exit 1
     fi

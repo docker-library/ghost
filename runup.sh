@@ -10,6 +10,8 @@ set -o nounset
 CTN_NAME="ghostUAT"
 
 # Is defined during the in fct_builder (around line 3344)
+# TODO
+
 source /Users/p_andy/deploy-setup/_dockerfile/ghostfire/build-config.sh .
 IMG_TO_TEST="$ENV_GHOST_IMG_VERSION"
 

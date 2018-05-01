@@ -10,10 +10,17 @@ branches:
     - tmp2
     - tmp3
 
-# TODO - Hook the VAR from ./build-config.sh
+# In the master branch, the GHOST_VERSION comes from the Dockerfile
+# WIP in the followrelease branch, GHOST_VERSION comes from: https://github.com/TryGhost/Ghost/releases
 env:
   global:
-    - GHOST_VERSION="1.22.4D"
+    - GHOST_VERSION_DOCKERFILE="$(cat Dockerfile | grep GHOST_VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g')"
+    - SUB_VERSION="$(cat Dockerfile | grep SUB_VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g')"
+    - GHOST_LATEST_RELEASE="$(git ls-remote --tags https://github.com/TryGhost/Ghost.git | cut -d$'\t' -f2 | grep -E '^refs/tags/[0-9]+\.[0-9]+' | cut -d/ -f3 | sort -rV | head -n1)"
+    - GHOST_CLI_LATEST_RELEASE="$(git ls-remote --tags https://github.com/TryGhost/Ghost-CLI.git | cut -d$'\t' -f2 | grep -E '^refs/tags/[0-9]+\.[0-9]+' | cut -d/ -f3 | sort -rV | head -n1)"
+    - GHOST_VERSION="$GHOST_VERSION_DOCKERFILE$SUB_VERSION"
+
+# Secret DOCKER_PASSWORD managed by Travis:
 
 before_install:
   - sudo apt-get -qq update
@@ -30,7 +37,6 @@ install:
     - git clone https://github.com/docker-library/official-images.git ~/official-images
 
 before_script:
-  - GHOST_VERSION_FROM_DOCKERFILE="$(cat Dockerfile | grep GHOST_VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g')"
   - CONTAINER_NAME="ghostuat"
   - DOCKER_USERNAME="devmtl"
   - DOCKER_REPO_NAME="ghostfire"
@@ -72,8 +78,13 @@ after_script:
   - docker exec -it "$CONTAINER_NAME" cat /var/lib/ghost/current/package.json | grep version;
   - docker exec -it "$CONTAINER_NAME" curl -Is --head "http://localhost:2368" | grep -F -o "HTTP/1.1 200 OK" || echo "Error --> http://localhost:2368"
   - docker rm -f "$CONTAINER_NAME";
-  - echo && echo "IMAGE_EDGE=$IMAGE_EDGE" && echo "IMAGE_SHA_SHORT=$IMAGE_SHA_SHORT" && echo "IMAGE_VERSION=$IMAGE_VERSION" && echo "IMAGE_SHA_LONG=$IMAGE_SHA_LONG" && echo "IMAGE_DATE=$IMAGE_DATE" && echo "#IMAGE_EDGE=$IMAGE_EDGE" && echo "#IMAGE_SHA_SHORT=$IMAGE_SHA_SHORT" && echo "#IMAGE_VERSION=$IMAGE_VERSION" && echo "#IMAGE_SHA_LONG=$IMAGE_SHA_LONG" && echo "#IMAGE_DATE=$IMAGE_DATE"
-  - echo "$GHOST_VERSION_FROM_DOCKERFILE"
+  - echo "$GHOST_VERSION_DOCKERFILE";
+  - echo "$SUB_VERSION";
+  - echo "$GHOST_LATEST_RELEASE";
+  - echo "$GHOST_CLI_LATEST_RELEASE";
+  - echo "$GHOST_VERSION";
+  - echo && echo "IMAGE_EDGE=$IMAGE_EDGE" && echo "IMAGE_SHA_SHORT=$IMAGE_SHA_SHORT" && echo "IMAGE_VERSION=$IMAGE_VERSION" && echo "IMAGE_SHA_LONG=$IMAGE_SHA_LONG" && echo "IMAGE_DATE=$IMAGE_DATE" && echo "#IMAGE_EDGE=$IMAGE_EDGE" && echo "#IMAGE_SHA_SHORT=$IMAGE_SHA_SHORT" && echo "#IMAGE_VERSION=$IMAGE_VERSION" && echo "#IMAGE_SHA_LONG=$IMAGE_SHA_LONG" && echo "#IMAGE_DATE=$IMAGE_DATE";
+
 
 after_success:
       #docker build -t "$IMAGE_SHA_LONG" (already built)
@@ -91,8 +102,5 @@ after_success:
     fi
 
 # See https://docs.travis-ci.com/user/environment-variables/#Defining-Variables-in-Repository-Settings
-  
-# Secret VARS managed by Travis:
-  # - DOCKER_PASSWORD=[secure]
 
 # In a commit, by using 'ci skip' it will skip Travis build.

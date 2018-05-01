@@ -1,12 +1,17 @@
+# Author: Pascal Andy - https://pascalandy.com/blog/now/
 # https://docs.ghost.org/supported-node-versions/
 # https://github.com/nodejs/LTS
-# Update Ghost version on line: 8
-# Update Ghost-cli on line: 9
+#
+# Update Ghost version on line: 11
+# Update Ghost-CLI on line: 12
 # Based on https://github.com/docker-library/ghost/blob/2f6ac6c7770e428a4a50d23d46ec470d5e727456/1/alpine/Dockerfile
+#
+# $SUB_VERSION is used by Travis
 
 FROM node:8.11.1-alpine
 
 ENV GHOST_VERSION="1.22.4"					\
+	SUB_VERSION="E"							\
 	GHOST_CLI_VERSION="1.7.1"				\
 	GHOST_INSTALL="/var/lib/ghost"			\
 	GHOST_CONTENT="/var/lib/ghost/content" 	\

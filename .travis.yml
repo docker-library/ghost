@@ -6,10 +6,7 @@ services:
 
 branches:
   except:
-    - tmp
-    - tmp1
-    - tmp2
-    - tmp3
+    - tmp11
 
 #env:
 #  global:

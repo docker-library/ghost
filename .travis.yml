@@ -16,7 +16,7 @@ branches:
   
     #  Secret DOCKER_PASSWORD managed by Travis:
 #  See https://docs.travis-ci.com/user/environment-variables/#Defining-Variables-in-Repository-Settings
-#  In a commit, by using 'ci skip' it will skip Travis build.
+#  In a commit, by using [ci skip] it will skip Travis build.
 
 before_install:
   - sudo apt-get -qq update

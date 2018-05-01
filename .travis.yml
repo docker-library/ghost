@@ -10,17 +10,9 @@ branches:
     - tmp2
     - tmp3
 
-# In the master branch, the GHOST_VERSION comes from the Dockerfile
-# WIP in the followrelease branch, GHOST_VERSION comes from: https://github.com/TryGhost/Ghost/releases
-env:
-  global:
-    - GHOST_VERSION_DOCKERFILE="$(cat Dockerfile | grep GHOST_VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g')"
-    - SUB_VERSION="$(cat Dockerfile | grep SUB_VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g')"
-    - GHOST_LATEST_RELEASE="$(git ls-remote --tags https://github.com/TryGhost/Ghost.git | cut -d$'\t' -f2 | grep -E '^refs/tags/[0-9]+\.[0-9]+' | cut -d/ -f3 | sort -rV | head -n1)"
-    - GHOST_CLI_LATEST_RELEASE="$(git ls-remote --tags https://github.com/TryGhost/Ghost-CLI.git | cut -d$'\t' -f2 | grep -E '^refs/tags/[0-9]+\.[0-9]+' | cut -d/ -f3 | sort -rV | head -n1)"
-    - GHOST_VERSION="$GHOST_VERSION_DOCKERFILE$SUB_VERSION"
-
-# Secret DOCKER_PASSWORD managed by Travis:
+#env:
+#  global:
+#  Secret DOCKER_PASSWORD managed by Travis:
 
 before_install:
   - sudo apt-get -qq update
@@ -36,14 +28,25 @@ addons:
 install:
     - git clone https://github.com/docker-library/official-images.git ~/official-images
 
+  # In the master branch, the GHOST_VERSION comes from the Dockerfile
+  # WIP in the followrelease branch, GHOST_VERSION comes from: https://github.com/TryGhost/Ghost/releases
+
 before_script:
+  - GHOST_VERSION_DOCKERFILE="$(cat Dockerfile | grep GHOST_VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g')"
+  - SUB_VERSION="$(cat Dockerfile | grep SUB_VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g')"
+  - GHOST_LATEST_RELEASE="$(git ls-remote --tags https://github.com/TryGhost/Ghost.git | cut -d$'\t' -f2 | grep -E '^refs/tags/[0-9]+\.[0-9]+' | cut -d/ -f3 | sort -rV | head -n1)"
+  - GHOST_CLI_LATEST_RELEASE="$(git ls-remote --tags https://github.com/TryGhost/Ghost-CLI.git | cut -d$'\t' -f2 | grep -E '^refs/tags/[0-9]+\.[0-9]+' | cut -d/ -f3 | sort -rV | head -n1)"
+  - GHOST_VERSION="$GHOST_VERSION_DOCKERFILE""$SUB_VERSION"
+
   - CONTAINER_NAME="ghostuat"
   - DOCKER_USERNAME="devmtl"
   - DOCKER_REPO_NAME="ghostfire"
   - DOCKER_REPO_PREFIX="ghostfire"
-  - THIS_DATE=$(date -u +"%Y-%m-%d_%H-%M-%S")
+
+  - THIS_DATE=$(date -u +"%Y%m%d_%H-%M-%S")
   - THIS_SHA_LONG=$(git log -1 | head -1 | awk '{print $2}')
   - THIS_SHA_SHORT=$(git rev-parse --short HEAD)
+
   - IMAGE_VERSION="$DOCKER_USERNAME"/"$DOCKER_REPO_NAME":"$GHOST_VERSION"
   - IMAGE_DATE="$DOCKER_USERNAME"/"$DOCKER_REPO_NAME":"$THIS_DATE"
   - IMAGE_EDGE="$DOCKER_USERNAME"/"$DOCKER_REPO_NAME":edge
@@ -51,7 +54,7 @@ before_script:
   - IMAGE_SHA_SHORT="$DOCKER_USERNAME"/"$DOCKER_REPO_NAME":"$GHOST_VERSION"-"$THIS_SHA_SHORT"
 
   - if [ -n "$TRAVIS_TAG" ]; then
-    image="$image:$TRAVIS_TAG";
+      image="$image:$TRAVIS_TAG";
     fi
 
 script:
@@ -63,7 +66,7 @@ script:
       sleep 3;
     done
   - curl http://localhost:2368 | grep "The professional publishing platform"
-  - echo "Starting official docker unit test for this image..."
+  - echo "Starting official docker unit test on the image..."
   - ~/official-images/test/run.sh "$IMAGE_SHA_LONG"
   - uname -a;
 
@@ -78,13 +81,8 @@ after_script:
   - docker exec -it "$CONTAINER_NAME" cat /var/lib/ghost/current/package.json | grep version;
   - docker exec -it "$CONTAINER_NAME" curl -Is --head "http://localhost:2368" | grep -F -o "HTTP/1.1 200 OK" || echo "Error --> http://localhost:2368"
   - docker rm -f "$CONTAINER_NAME";
-  - echo "$GHOST_VERSION_DOCKERFILE";
-  - echo "$SUB_VERSION";
-  - echo "$GHOST_LATEST_RELEASE";
-  - echo "$GHOST_CLI_LATEST_RELEASE";
-  - echo "$GHOST_VERSION";
+  - echo "$GHOST_VERSION_DOCKERFILE" && echo "$SUB_VERSION" && echo "$GHOST_LATEST_RELEASE" && echo "$GHOST_CLI_LATEST_RELEASE" && echo "$GHOST_VERSION";
   - echo && echo "IMAGE_EDGE=$IMAGE_EDGE" && echo "IMAGE_SHA_SHORT=$IMAGE_SHA_SHORT" && echo "IMAGE_VERSION=$IMAGE_VERSION" && echo "IMAGE_SHA_LONG=$IMAGE_SHA_LONG" && echo "IMAGE_DATE=$IMAGE_DATE" && echo "#IMAGE_EDGE=$IMAGE_EDGE" && echo "#IMAGE_SHA_SHORT=$IMAGE_SHA_SHORT" && echo "#IMAGE_VERSION=$IMAGE_VERSION" && echo "#IMAGE_SHA_LONG=$IMAGE_SHA_LONG" && echo "#IMAGE_DATE=$IMAGE_DATE";
-
 
 after_success:
       #docker build -t "$IMAGE_SHA_LONG" (already built)

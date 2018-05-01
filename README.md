@@ -55,7 +55,7 @@ The logic is that I can test a **specific** image in UAT and push it in PROD as 
 
 ## Contributing
 
-The power of communities, of pull request and forks, means that `1 + 1 = 3`. Help me make this repo a great one!
+The power of communities, of pull request and forks, means that `1 + 1 = 3`. Help me make this repo a better one!
 
 1. Fork it
 2. Create your feature branch: `git checkout -b my-new-feature`

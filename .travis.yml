@@ -30,6 +30,7 @@ install:
     - git clone https://github.com/docker-library/official-images.git ~/official-images
 
 before_script:
+  - GHOST_VERSION_FROM_DOCKERFILE="$(cat Dockerfile | grep GHOST_VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g')"
   - CONTAINER_NAME="ghostuat"
   - DOCKER_USERNAME="devmtl"
   - DOCKER_REPO_NAME="ghostfire"
@@ -72,6 +73,7 @@ after_script:
   - docker exec -it "$CONTAINER_NAME" curl -Is --head "http://localhost:2368" | grep -F -o "HTTP/1.1 200 OK" || echo "Error --> http://localhost:2368"
   - docker rm -f "$CONTAINER_NAME";
   - echo && echo "IMAGE_EDGE=$IMAGE_EDGE" && echo "IMAGE_SHA_SHORT=$IMAGE_SHA_SHORT" && echo "IMAGE_VERSION=$IMAGE_VERSION" && echo "IMAGE_SHA_LONG=$IMAGE_SHA_LONG" && echo "IMAGE_DATE=$IMAGE_DATE" && echo "#IMAGE_EDGE=$IMAGE_EDGE" && echo "#IMAGE_SHA_SHORT=$IMAGE_SHA_SHORT" && echo "#IMAGE_VERSION=$IMAGE_VERSION" && echo "#IMAGE_SHA_LONG=$IMAGE_SHA_LONG" && echo "#IMAGE_DATE=$IMAGE_DATE"
+  - echo "$GHOST_VERSION_FROM_DOCKERFILE"
 
 after_success:
       #docker build -t "$IMAGE_SHA_LONG" (already built)

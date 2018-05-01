@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# source https://github.com/docker-library/ghost/blob/master/1/alpine/docker-entrypoint.sh
 
 set -o errexit
 trap 'echo "Aborting due to errexit on line $LINENO. Exit code: $?" >&2' ERR

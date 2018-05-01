@@ -7,15 +7,18 @@ set -o nounset
 # Functions
 ###############################################################################
 
+
+# --- CONFIGS
+VERSION="1.22.4F-157a2c1"
+    # FIND THE MOST RECENT VERSION HERE: https://hub.docker.com/r/devmtl/ghostfire/tags/
+DOCKER_REPO="devmtl/ghostfire"
 CTN_NAME="ghostUAT"
+WAIT_TIMER="1"
+IMG_TO_TEST="$DOCKER_REPO":"$VERSION"
 
-# Is defined during the in fct_builder (around line 3344)
-# TODO
-
-source /Users/p_andy/deploy-setup/_dockerfile/ghostfire/build-config.sh .
-IMG_TO_TEST="$ENV_GHOST_IMG_VERSION"
 
 echo; echo "--- Unit Test for image: <$IMG_TO_TEST> - Start ---"; \
+
 
 # Remove Container (in case the image is already running)
 echo; echo "--- Removing Container: $CTN_NAME ---"; \
@@ -61,9 +64,8 @@ curl -Is --head "http://localhost:2368" | grep -F -o "HTTP/1.1 200 OK" || echo "
 echo; echo "--- Unit Test for image: <$IMG_TO_TEST> - END ---";
 
 
-WAIT_FOR=1
-echo; echo "--- Will shutdown in $WAIT_FOR secs ---";
-sleep $WAIT_FOR;
+echo; echo "--- Will shutdown in $WAIT_TIMER secs ---";
+sleep $WAIT_TIMER;
 docker rm -f "$CTN_NAME";
 
 # UAT (User Acceptance Testing)

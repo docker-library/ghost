@@ -5,7 +5,23 @@
 - [![](https://images.microbadger.com/badges/version/devmtl/ghostfire.svg)](https://microbadger.com/images/devmtl/ghostfire "Get your own version badge on microbadger.com")
 
 
+## Why forking the offical Dockerfile ?
+
+The elements I tweaked are:
+
+- I want Ghost container to run under [tini](https://github.com/krallin/tini)
+- Using node:8.11.1-alpine instead of Node:6
+- Cleaner ENV management
+- Uninstall during build `ghost cli` to safe few bytes in the docker image
+- Use of `$SUB_VERSION` var for a better tagging of the docker image artifacts
+
+
 ## Run ghost with docker
+
+**Option #1**:
+- Run the script: `./runup.sh`
+
+**Option #2**:
 
 ```
 docker run -d \
@@ -15,7 +31,7 @@ docker run -d \
 devmtl/ghostfire:1.22.4D-9ebb479
 ```
 
-Make sure to find the most recent docker image build.
+Make sure to find the most recent docker image build. For the **statefull version**, see the section *Developper setup*.
 
 
 ## Finding what is the most recewnt docker image 🐳

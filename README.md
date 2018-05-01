@@ -7,23 +7,26 @@
 
 ## Run ghost with docker
 
-⚠️ Please, make sure to check the lastest docker image build. 
-
 ```
-docker run -d --name ghostblog -p 2368:2368 -e url=http://localhost:2368 -e NODE_ENV=production devmtl/ghostfire:1.22.4D-9ebb479
+docker run -d \
+—name ghostblog \
+-p 2368:2368 \
+-e url=http://localhost:2368 -e NODE_ENV=production \
+devmtl/ghostfire:1.22.4D-9ebb479
 ```
 
+Make sure to find the most recent docker image build.
 
-## Finding the latest docker image
 
-The latest build can be found:
+## Finding what is the most recewnt docker image 🐳
+
 - **Docker hub** — https://hub.docker.com/r/devmtl/ghostfire/tags/
 - **Travis** — https://travis-ci.org/firepress-org/ghostfire
 
 My builds produce many tags:
 
 ```
-# THIS IS AN EXAMPLE  
+# THIS IS AN EXAMPLE
   
 devmtl/ghostfire:1.22.4D-9ebb479
 devmtl/ghostfire:1.22.4D

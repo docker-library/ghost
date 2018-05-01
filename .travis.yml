@@ -13,7 +13,7 @@ branches:
 #
 # In a commit, by using [ci skip] it will skip Travis build
 #
-# THIS_SHA_SHORT=$(git rev-parse --short HEAD)
+# THIS_SHA_LONG=$(git log -1 | head -1 | awk '{print $2}')
 #
 # In the master branch, the GHOST_VERSION is parsed from the Dockerfile https://github.com/firepress-org/ghostfire/blob/master/Dockerfile
 # WIP in the followrelease branch, the GHOST_VERSION is parsed from: https://github.com/TryGhost/Ghost/releases
@@ -44,12 +44,12 @@ before_script:
   - DOCKER_REPO_PREFIX="ghostfire"
 
   - THIS_DATE=$(date -u +"%Y%m%d_%HH%M_%S")
-  - THIS_SHA_LONG=$(git log -1 | head -1 | awk '{print $2}')
+  - THIS_SHA_SHORT=$(git rev-parse --short HEAD)
 
-  - IMAGE_VERSION="$DOCKER_USERNAME"/"$DOCKER_REPO_NAME":"$GHOST_VERSION"
-  - IMAGE_DATE="$DOCKER_USERNAME"/"$DOCKER_REPO_NAME":"$THIS_DATE"
-  - IMAGE_EDGE="$DOCKER_USERNAME"/"$DOCKER_REPO_NAME":edge
   - IMAGE_SHA_SHORT="$DOCKER_USERNAME"/"$DOCKER_REPO_NAME":"$GHOST_VERSION"-"$THIS_SHA_SHORT"
+  - IMAGE_DATE="$DOCKER_USERNAME"/"$DOCKER_REPO_NAME":"$THIS_DATE"
+  - IMAGE_VERSION="$DOCKER_USERNAME"/"$DOCKER_REPO_NAME":"$GHOST_VERSION"
+  - IMAGE_EDGE="$DOCKER_USERNAME"/"$DOCKER_REPO_NAME":edge
 
 script:
   - uname -a;

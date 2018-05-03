@@ -49,7 +49,6 @@ before_script:
   - IMAGE_SHA_SHORT="$DOCKER_USERNAME"/"$DOCKER_REPO_NAME":"$GHOST_VERSION"-"$THIS_SHA_SHORT"
   - IMAGE_DATE="$DOCKER_USERNAME"/"$DOCKER_REPO_NAME":"$THIS_DATE"
   - IMAGE_VERSION="$DOCKER_USERNAME"/"$DOCKER_REPO_NAME":"$GHOST_VERSION"
-  - IMAGE_EDGE="$DOCKER_USERNAME"/"$DOCKER_REPO_NAME":edge
 
 script:
   - uname -a;
@@ -94,6 +93,4 @@ after_success:
       docker build -t "$IMAGE_VERSION" .;
       docker push "$IMAGE_VERSION";
 
-      docker build -t "$IMAGE_EDGE" .;
-      docker push "$IMAGE_EDGE";
     fi

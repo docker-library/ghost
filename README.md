@@ -72,6 +72,8 @@ Because I run many-many websites in production, I prefer to do my tests using an
 
 Once I confirm the test passed, I update the Dockerfile under the `master` branch as well. At this point, I’m really confident the docker image is working perfectly.
 
+![branch-explanation](https://user-images.githubusercontent.com/6694151/39652598-20980092-4fbc-11e8-9471-84f1cbcb1f4b.jpg)
+
 
 ## Base image
 

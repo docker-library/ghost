@@ -59,18 +59,18 @@ The logic is that I can test a **specific** image in UAT and push it in PROD as 
 
 The elements I tweaked are:
 
-- I want Ghost container to run under [tini](https://github.com/krallin/tini)
+- Ghost container is running under [tini](https://github.com/krallin/tini)
 - Using node:8.11.1-alpine instead of Node:6
 - Cleaner ENV management
-- Uninstall during build `ghost cli` to safe few bytes in the docker image
-- Use of `$SUB_VERSION` var for a better tagging of the docker image artifacts
+- Uninstall the `ghost cli` to safe some sapce in the docker image
+- Eventually, I will use multi-stage builds
 
 
 ## edge vs master branch
 
-Because I run many-many websites in production, I prefer to do my tests using an `edge` branch.
+Because I run many-many websites in production, I prefer to do my tests using a dedicated `edge` branch.
 
-Once I confirm the test passed, I update the Dockerfile under the `master` branch as well. At this point, I’m really confident the docker image is working perfectly.
+Once I confirm the edge build PASS, I update the Dockerfile under the `master` branch as well. At this point, I’m really confident the docker image is working perfectly.
 
 ![branch-explanation](https://user-images.githubusercontent.com/6694151/39652598-20980092-4fbc-11e8-9471-84f1cbcb1f4b.jpg)
 

@@ -5,6 +5,56 @@
 - [![](https://images.microbadger.com/badges/version/devmtl/ghostfire.svg)](https://microbadger.com/images/devmtl/ghostfire "Get your own version badge on microbadger.com")
 
 
+## Run ghost with docker
+
+**Option #1**:
+- Locally, run the script: `./runup.sh`
+
+**Option #2**:
+
+```
+docker run -d \
+—name ghostblog \
+-p 2368:2368 \
+-e url=http://localhost:2368 -e NODE_ENV=production \
+devmtl/ghostfire:1.22.5-f5f0952
+```
+
+Make sure to find the most recent docker image build. For the **statefull version**, see the section *Developper setup*.
+
+
+## Finding what is the most recewnt docker image 🐳
+
+- **Docker hub** — https://hub.docker.com/r/devmtl/ghostfire/tags/
+- **Travis** — https://travis-ci.org/firepress-org/ghostfire
+
+My docker image are tagged as following:
+
+```
+# master branch tags examples:
+  
+devmtl/ghostfire:1.22.5-f5f0952
+devmtl/ghostfire:1.22.5
+devmtl/ghostfire:20180504_20H18_37
+
+# edge branch tags examples:
+
+devmtl/ghostfire:1.22.5-edge-112f2a2
+devmtl/ghostfire:edge
+
+```
+
+I recommand to use the first format, where:
+- `1.22.5-f5f0952` is the Ghost Version + the git commit used to do the build
+
+The logic is that I can test a **specific** image in UAT and push it in PROD as needed. In this example, using `devmtl/ghostfire:1.22.4D` could turn out to be a broekn docker image.  
+
+
+## Developper setup
+
+- Soon, I will share the setup I use on my Mac to develop Ghost Themes and test Ghost in general.
+
+
 ## Why forking the offical Dockerfile ?
 
 The elements I tweaked are:
@@ -16,50 +66,11 @@ The elements I tweaked are:
 - Use of `$SUB_VERSION` var for a better tagging of the docker image artifacts
 
 
-## Run ghost with docker
+## edge vs master branch
 
-**Option #1**:
-- Run the script: `./runup.sh`
+Because I run many-many websites in production, I prefer to do my tests using an `edge` branch.
 
-**Option #2**:
-
-```
-docker run -d \
-—name ghostblog \
--p 2368:2368 \
--e url=http://localhost:2368 -e NODE_ENV=production \
-devmtl/ghostfire:1.22.4-5d8db43
-```
-
-Make sure to find the most recent docker image build. For the **statefull version**, see the section *Developper setup*.
-
-
-## Finding what is the most recewnt docker image 🐳
-
-- **Docker hub** — https://hub.docker.com/r/devmtl/ghostfire/tags/
-- **Travis** — https://travis-ci.org/firepress-org/ghostfire
-
-My builds produce many tags:
-
-```
-# THIS IS AN EXAMPLE
-  
-devmtl/ghostfire:1.22.4-5d8db43
-devmtl/ghostfire:20180501_13H07_54
-devmtl/ghostfire:1.22.4
-devmtl/ghostfire:edge
-```
-
-I recommand to use the first format, where:
-- `1.22.4` is the Ghost Version
-- `9ebb479` is the git commit used to do the build
-
-The logic is that I can test a **specific** image in UAT and push it in PROD as needed. In this example, using `devmtl/ghostfire:1.22.4D` could turn out to be a broekn docker image.  
-
-
-## Developper setup
-
-- Soon, I will share the setup I use on my Mac to develop Ghost Themes and test Ghost in general.
+Once I confirm the test passed, I update the Dockerfile under the `master` branch as well. At this point, I’m really confident the docker image is working perfectly.
 
 
 ## Base image
@@ -69,7 +80,7 @@ The logic is that I can test a **specific** image in UAT and push it in PROD as 
 
 ## Contributing
 
-The power of communities, of pull request and forks, means that `1 + 1 = 3`. Help me make this repo a better one!
+The power of communities, pull request and forks means that `1 + 1 = 3`. Help me make this repo a better one!
 
 1. Fork it
 2. Create your feature branch: `git checkout -b my-new-feature`
@@ -93,6 +104,6 @@ https://github.com/docker-library/ghost/tree/7eb6348d2a5493546577508d2cbae0a9922
 
 ## Author
 
-In the world of OSS (open source software) most people refer themselves as maintainers. The thing is I hate this expression. It feels heavy and not fun. I much prefer author.
+In the world of OSS (open source software) most people refer themselves as maintainers. The thing is… I hate this expression. It feels heavy and not fun. I much prefer author.
 
 Shared by [Pascal Andy](https://pascalandy.com/blog/now/). Find me on [Twitter](https://twitter.com/askpascalandy).

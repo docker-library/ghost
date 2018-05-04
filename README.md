@@ -23,12 +23,12 @@ devmtl/ghostfire:1.22.5-f5f0952
 Make sure to find the most recent docker image build. For the **statefull version**, see the section *Developper setup*.
 
 
-## Finding what is the most recewnt docker image 🐳
+## Find the most recent docker image 🐳
 
 - **Docker hub** — https://hub.docker.com/r/devmtl/ghostfire/tags/
 - **Travis** — https://travis-ci.org/firepress-org/ghostfire
 
-My docker image are tagged as following:
+My docker images are tagged as follow:
 
 ```
 # master branch tags examples:
@@ -44,10 +44,10 @@ devmtl/ghostfire:edge
 
 ```
 
-I recommand to use the first format, where:
-- `1.22.5-f5f0952` is the Ghost Version + the git commit used to do the build
+I recommand to use the first tag, where:
+- `1.22.5-f5f0952` means the Ghost Version + the git commit used to create the build
 
-The logic is that I can test a **specific** image in UAT and push it in PROD as needed. In this example, using `devmtl/ghostfire:1.22.4D` could turn out to be a broekn docker image.  
+The logic is that I can use a **specific** test it and push it in PROD as needed. In this example, only using `devmtl/ghostfire:1.22.5` could turn out to be a broken docker image.  
 
 
 ## Developper setup
@@ -60,7 +60,7 @@ The logic is that I can test a **specific** image in UAT and push it in PROD as 
 The elements I tweaked are:
 
 - Ghost container is running under [tini](https://github.com/krallin/tini)
-- Using node:8.11.1-alpine instead of Node:6
+- Using `node:8.11.1-alpine` instead of Node:6
 - Cleaner ENV management
 - Uninstall the `ghost cli` to safe some sapce in the docker image
 - Eventually, I will use multi-stage builds
@@ -73,11 +73,6 @@ Because I run many-many websites in production, I prefer to do my tests using a 
 Once I confirm the edge build PASS, I update the Dockerfile under the `master` branch as well. At this point, I’m really confident the docker image is working perfectly.
 
 ![branch-explanation](https://user-images.githubusercontent.com/6694151/39652598-20980092-4fbc-11e8-9471-84f1cbcb1f4b.jpg)
-
-
-## Base image
-
-- [node:8.11.1-alpine](https://registry.hub.docker.com/_/node/)
 
 
 ## Contributing

@@ -5,7 +5,12 @@
 - [![](https://images.microbadger.com/badges/version/devmtl/ghostfire.svg)](https://microbadger.com/images/devmtl/ghostfire "Get your own version badge on microbadger.com")
 
 
-## Run ghost with docker
+## About Ghost our favorite CMS
+
+Ghost is a free and open source website & blogging platform designed to simplify the process of online publishing for individual bloggers as well as online publications. It’s a CMS (content management system) designed to be better alternative to  WordPress, Drupal, Medium, Tumblr, etc.
+
+
+## How to use this image
 
 **Option #1**:
 - Locally, run the script: `./runup.sh`
@@ -20,7 +25,33 @@ docker run -d \
 devmtl/ghostfire:1.22.5-f5f0952
 ```
 
-Make sure to find the most recent docker image build. For the **statefull version**, see the section *Developper setup*.
+**Stateful**
+
+```
+docker run -d \
+—name ghostblog \
+-p 2368:2368 \
+-e url=http://localhost:2368 -e NODE_ENV=production \
+-v /path/to/ghost/blog:/var/lib/ghost/content \
+devmtl/ghostfire:1.22.5-f5f0952
+```
+
+**Breaking change**
+
+If you want to run Ghost 0.11.xx, be aware of the container's path difference:
+
+Ghost 1.x.x is: /var/lib/ghost/content
+Ghost 0.11.x is: /var/lib/ghost
+
+**SQLite Database**
+
+This Docker image for Ghost uses SQLite. There is nothing special to configure.
+
+**What is the Node.js version?**
+
+```
+docker exec <container-id> node --version
+```
 
 
 ## Find the most recent docker image 🐳
@@ -66,9 +97,9 @@ The elements I tweaked are:
 - Eventually, I will use multi-stage builds
 
 
-## edge vs master branch
+## Branches: edge vs master
 
-Because I run many-many websites in production, I prefer to do my tests using a dedicated `edge` branch.
+Because I run a lot of websites in production using this image, I prefer to do my tests using a dedicated `edge` branch.
 
 Once I confirm the edge build PASS, I update the Dockerfile under the `master` branch as well. At this point, I’m really confident the docker image is working perfectly.
 
@@ -88,7 +119,13 @@ The power of communities, pull request and forks means that `1 + 1 = 3`. Help me
 
 ## Copyright & License
 
-Copyright (c) 2013-2017 Ghost Foundation - Released under the [MIT license](LICENSE).
+View **MIT** license information at https://ghost.org/license/ for the software contained in this image.
+
+As with all Docker images, these likely also contain other software which may be under other licenses (such as Bash, etc from the base distribution, along with any direct or indirect dependencies of the primary software being contained).
+
+Some additional license information which was able to be auto-detected might be found in the repo-info repository's ghost/ directory.
+
+As for any pre-built image usage, it is the image user's responsibility to ensure that any use of this image complies with any relevant licenses for all software contained within.
 
 
 ## Sources & Fork

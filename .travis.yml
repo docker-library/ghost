@@ -7,7 +7,12 @@ services:
 branches:
   except:
     - tmp99
-  
+
+addons:
+  apt:
+    packages:
+      - docker-ce
+
 # Secret DOCKER_PASSWORD managed by Travis:
 # See https://docs.travis-ci.com/user/environment-variables/#Defining-Variables-in-Repository-Settings
 #
@@ -23,11 +28,6 @@ before_install:
   - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
   - sudo apt-get install -qqy openssl parallel
   - docker --version
-
-addons:
-  apt:
-    packages:
-      - docker-ce
 
 install:
 - git clone https://github.com/docker-library/official-images.git ~/official-images

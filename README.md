@@ -80,7 +80,7 @@ devmtl/ghostfire:edge
 I recommand to use the first tag, where:
 - `1.22.5-f5f0952` is the **Ghost Version** PLUS the **SHA of the git commit** used to create the build.
 - The logic is that I can use a **specific** image to test and push it in PROD as needed. In this example, using `devmtl/ghostfire:1.22.5` could turn out to be a broken docker image and is not best practice. 
-- **DO NOT** use the **multistage** tags at this point. It is not stable.
+
 
 ## Developper setup
 
@@ -91,18 +91,17 @@ Soon, I will share the setup I use on my Mac to develop Ghost Themes and test Gh
 - https://github.com/firepress-org/FirePress_Klimax1
 - https://github.com/firepress-org/FirePress_Klimax2
 - https://github.com/firepress-org/FirePress_Stupendous
-- Find everthing I open source around Ghost [here](https://github.com/firepress-org)
+- Find everything I open source around Ghost [here](https://github.com/firepress-org)
 
 
 ## Why forking the offical Dockerfile ?
 
-The elements I tweaked are:
+I tweaked elements like:
 
 - Ghost container is running under [tini](https://github.com/krallin/tini)
 - Using `node:8.11.1-alpine` instead of Node:6
-- Cleaner ENV management
-- Uninstall the `ghost cli` to safe some space in the docker image
-- Eventually, I will use multi-stage builds
+- Better ENV var management
+- Uninstall the `ghost cli` to safe few bytes in the docker image
 
 
 ## Branches: edge vs master
@@ -112,6 +111,8 @@ Because I run a lot of websites in production using this image, I prefer to do m
 Once I confirm the edge build PASS, I update the Dockerfile under the `master` branch as well. At this point, I’m really confident the docker image is working perfectly.
 
 ![branch-explanation](https://user-images.githubusercontent.com/6694151/39652598-20980092-4fbc-11e8-9471-84f1cbcb1f4b.jpg)
+
+`multistage` is not working with Travis at this point. Just ignore it exists. Docs https://docs.travis-ci.com/user/build-stages/
 
 
 ## Contributing

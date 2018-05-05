@@ -76,10 +76,9 @@ devmtl/ghostfire:edge
 ```
 
 I recommand to use the first tag, where:
-- `1.22.5-f5f0952` means the Ghost Version + the git commit used to create the build
-
-The logic is that I can use a **specific** test it and push it in PROD as needed. In this example, only using `devmtl/ghostfire:1.22.5` could turn out to be a broken docker image.  
-
+- `1.22.5-f5f0952` means the **Ghost Version** + the **SHA of the git commit** used to create the build.
+- The logic is that I can use a **specific** test it and push it in PROD as needed. In this example, using `devmtl/ghostfire:1.22.5` could turn out to be a broken docker image.  
+- **DO NOT** use the **multistage** tags at this point. It is not stable.
 
 ## Developper setup
 

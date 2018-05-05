@@ -12,7 +12,7 @@ FROM node:8.11.1-alpine
 
 ENV GHOST_VERSION="1.22.5"                      \
     SUB_VERSION="F"                             \
-    GHOST_CLI_VERSION="1.7.1"                   \
+    GHOST_CLI_VERSION="1.7.2"                   \
     GHOST_INSTALL="/var/lib/ghost"              \
     GHOST_CONTENT="/var/lib/ghost/content"      \
     NODE_ENV="production"

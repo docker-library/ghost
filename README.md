@@ -25,14 +25,14 @@ docker run -d \
 devmtl/ghostfire:1.22.5-f5f0952
 ```
 
-**Stateful**
+**Option #2 (Stateful)**
 
 ```
 docker run -d \
 —name ghostblog \
 -p 2368:2368 \
 -e url=http://localhost:2368 -e NODE_ENV=production \
--v /path/to/ghost/blog:/var/lib/ghost/content \
+-v /myuser/local-dev-path/ghost/content:/var/lib/ghost/content \
 devmtl/ghostfire:1.22.5-f5f0952
 ```
 
@@ -52,6 +52,8 @@ This Docker image for Ghost uses SQLite. There is nothing special to configure.
 ```
 docker exec <container-id> node --version
 ```
+
+You can also see this information in the Dockerfile and in the Travis builts.
 
 
 ## Find the most recent docker image 🐳
@@ -76,13 +78,20 @@ devmtl/ghostfire:edge
 ```
 
 I recommand to use the first tag, where:
-- `1.22.5-f5f0952` means the **Ghost Version** + the **SHA of the git commit** used to create the build.
-- The logic is that I can use a **specific** test it and push it in PROD as needed. In this example, using `devmtl/ghostfire:1.22.5` could turn out to be a broken docker image.  
+- `1.22.5-f5f0952` is the **Ghost Version** PLUS the **SHA of the git commit** used to create the build.
+- The logic is that I can use a **specific** image to test and push it in PROD as needed. In this example, using `devmtl/ghostfire:1.22.5` could turn out to be a broken docker image and is not best practice. 
 - **DO NOT** use the **multistage** tags at this point. It is not stable.
 
 ## Developper setup
 
-- Soon, I will share the setup I use on my Mac to develop Ghost Themes and test Ghost in general.
+Soon, I will share the setup I use on my Mac to develop Ghost Themes and test Ghost in general. It’s how I customise my themes and try new one on the fly.
+
+**Ghost Themes I maintaining**:
+
+- https://github.com/firepress-org/FirePress_Klimax1
+- https://github.com/firepress-org/FirePress_Klimax2
+- https://github.com/firepress-org/FirePress_Stupendous
+- Find everthing I open source around Ghost [here](https://github.com/firepress-org)
 
 
 ## Why forking the offical Dockerfile ?
@@ -92,7 +101,7 @@ The elements I tweaked are:
 - Ghost container is running under [tini](https://github.com/krallin/tini)
 - Using `node:8.11.1-alpine` instead of Node:6
 - Cleaner ENV management
-- Uninstall the `ghost cli` to safe some sapce in the docker image
+- Uninstall the `ghost cli` to safe some space in the docker image
 - Eventually, I will use multi-stage builds
 
 

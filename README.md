@@ -128,7 +128,9 @@ The power of communities, pull request and forks means that `1 + 1 = 3`. Help me
 
 ## Copyright & License
 
-View **MIT** license information at https://ghost.org/license/ for the software contained in this image.
+View **MIT** license information at https://ghost.org/license/ for the software.
+
+The fork is released under the **GNU** [license](https://github.com/pascalandy/GNU-GENERAL-PUBLIC-LICENSE).
 
 As with all Docker images, these likely also contain other software which may be under other licenses (such as Bash, etc from the base distribution, along with any direct or indirect dependencies of the primary software being contained).
 

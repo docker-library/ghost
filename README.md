@@ -84,7 +84,7 @@ I recommand to use the first tag, where:
 
 ## Developper setup
 
-Soon, I will share the setup I use on my Mac to develop Ghost Themes and test Ghost in general.
+[I open sourced](https://github.com/firepress-org/ghost-local-dev-in-docker) the local setup. This is a workflow to run Ghost locally within a docker container. It allows you to easily develop Ghost themes and/or Ghost itself.
 
 
 ## Why forking the offical Dockerfile ?

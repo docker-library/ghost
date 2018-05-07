@@ -7,7 +7,7 @@
 
 ## About Ghost our favorite CMS
 
-Ghost is a free and open source website & blogging platform designed to simplify the process of online publishing for individual bloggers as well as online publications. It’s a CMS (content management system) designed to be better alternative to  WordPress, Drupal, Medium, Tumblr, etc.
+[Ghost](https://ghost.org/) is a free and open source website & blogging platform designed to simplify the process of publishing. It’s individual bloggers as well as online publications. You can see Ghost as a CMS (content management system) designed to be better alternative to systems like: *WordPress, Drupal, Medium, Tumblr*, etc.
 
 
 ## How to use this image
@@ -84,14 +84,7 @@ I recommand to use the first tag, where:
 
 ## Developper setup
 
-Soon, I will share the setup I use on my Mac to develop Ghost Themes and test Ghost in general. It’s how I customise my themes and try new one on the fly.
-
-**Ghost Themes I maintaining**:
-
-- https://github.com/firepress-org/FirePress_Klimax1
-- https://github.com/firepress-org/FirePress_Klimax2
-- https://github.com/firepress-org/FirePress_Stupendous
-- Find everything I open source around Ghost [here](https://github.com/firepress-org)
+Soon, I will share the setup I use on my Mac to develop Ghost Themes and test Ghost in general.
 
 
 ## Why forking the offical Dockerfile ?

@@ -14,7 +14,8 @@ allVersions="$(
 		| cut -d$'\t' -f2 \
 		| grep -E '^refs/tags/[0-9]+\.[0-9]+' \
 		| cut -d/ -f3 \
-		| sort -rV
+		| cut -d^ -f1 \
+		| sort -ruV
 )"
 
 cliVersion="$(
@@ -22,7 +23,8 @@ cliVersion="$(
 		| cut -d$'\t' -f2 \
 		| grep -E '^refs/tags/[0-9]+\.[0-9]+' \
 		| cut -d/ -f3 \
-		| sort -rV \
+		| cut -d^ -f1 \
+		| sort -ruV \
 		| head -n1
 )"
 

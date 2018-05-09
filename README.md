@@ -105,8 +105,6 @@ Once I confirm the edge build PASS, I update the Dockerfile under the `master` b
 
 ![branch-explanation](https://user-images.githubusercontent.com/6694151/39652598-20980092-4fbc-11e8-9471-84f1cbcb1f4b.jpg)
 
-`multistage` is not working with Travis at this point. Just ignore it exists. Docs https://docs.travis-ci.com/user/build-stages/
-
 
 ## Contributing
 

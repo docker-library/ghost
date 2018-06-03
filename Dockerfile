@@ -8,7 +8,7 @@
 
 # $SUB_VERSION is used tag docker images within CI Travis
 
-FROM node:8.11.1-alpine
+FROM node:8.11.2-alpine
 
 ENV GHOST_VERSION="1.22.8"                      \
     GHOST_CLI_VERSION="1.8.0"                   \

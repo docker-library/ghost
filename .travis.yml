@@ -81,7 +81,8 @@ after_script:
   - docker exec -it "$CONTAINER_NAME" curl -Is --head "http://localhost:2368" | grep -F -o "HTTP/1.1 200 OK" || echo "Error --> http://localhost:2368"
   - docker rm -f "$CONTAINER_NAME";
 
-  - echo && echo "GHOST_VERSION_DOCKERFILE=$GHOST_VERSION_DOCKERFILE" && echo "GHOST_LATEST_RELEASE=$GHOST_LATEST_RELEASE" && echo "GHOST_CLI_LATEST_RELEASE=$GHOST_CLI_LATEST_RELEASE" && echo "GHOST_VERSION=$GHOST_VERSION" && echo "IMAGE_FULL=$IMAGE_FULL" && echo && echo "IMAGE_SHA_SHORT=$IMAGE_SHA_SHORT" && echo "IMAGE_DATE=$IMAGE_DATE" && echo "IMAGE_VERSION=$IMAGE_VERSION" && echo && echo "#IMAGE_SHA_SHORT=$IMAGE_SHA_SHORT" && echo "#IMAGE_DATE=$IMAGE_DATE" && echo "#IMAGE_VERSION=$IMAGE_VERSION" && echo "#IMAGE_FULL=$IMAGE_FULL";
+  # Show all available tags (easy copy-paste style)
+  - echo && echo "GHOST_VERSION_DOCKERFILE=$GHOST_VERSION_DOCKERFILE" && echo "GHOST_LATEST_RELEASE=$GHOST_LATEST_RELEASE" && echo "GHOST_CLI_LATEST_RELEASE=$GHOST_CLI_LATEST_RELEASE" && echo "GHOST_VERSION=$GHOST_VERSION" && echo && echo "IMAGE_SHA_SHORT=$IMAGE_SHA_SHORT" && echo "IMAGE_DATE=$IMAGE_DATE" && echo "IMAGE_VERSION=$IMAGE_VERSION" && echo "IMAGE_FULL=$IMAGE_FULL" && echo && echo "#IMAGE_SHA_SHORT=$IMAGE_SHA_SHORT" && echo "#IMAGE_DATE=$IMAGE_DATE" && echo "#IMAGE_VERSION=$IMAGE_VERSION" && echo "#IMAGE_FULL=$IMAGE_FULL";
 
 # docker build -t "$IMAGE_SHA_SHORT" (already built)
 after_success:  

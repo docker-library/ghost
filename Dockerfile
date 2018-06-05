@@ -17,8 +17,9 @@ ENV GHOST_VERSION="1.22.8"                      \
     NODE_ENV="production"
 
 RUN set -ex                                                     && \
-    apk add --update --no-cache                                    \
-    'su-exec>=0.2' bash tini                                    && \
+    apk add --update --no-cache                                 \
+    'su-exec>=0.2' bash curl tini ca-certificates               && \
+    update-ca-certificates                                      && \
     rm -rf /var/cache/apk/*;
 
 RUN set -ex                                                     && \

@@ -43,12 +43,15 @@ before_script:
   - DOCKER_REPO_NAME="ghostfire"
   - DOCKER_REPO_PREFIX="ghostfire"
 
-  - THIS_DATE=$(date -u +"%Y%m%d_%HH%M_%S")
+  - THIS_DATE=$(date -u +"%Y%m%d_%HH%M%S")
   - THIS_SHA_SHORT=$(git rev-parse --short HEAD)
 
   - IMAGE_SHA_SHORT="$DOCKER_USERNAME"/"$DOCKER_REPO_NAME":"$GHOST_VERSION"-"$THIS_SHA_SHORT"
   - IMAGE_DATE="$DOCKER_USERNAME"/"$DOCKER_REPO_NAME":"$THIS_DATE"
   - IMAGE_VERSION="$DOCKER_USERNAME"/"$DOCKER_REPO_NAME":"$GHOST_VERSION"
+
+  # This is the one we use in PROD
+  - IMAGE_FULL="$DOCKER_USERNAME"/"$DOCKER_REPO_NAME":"$GHOST_VERSION"-"$THIS_SHA_SHORT"-"$THIS_DATE"
 
 script:
   - uname -a;
@@ -78,7 +81,7 @@ after_script:
   - docker exec -it "$CONTAINER_NAME" curl -Is --head "http://localhost:2368" | grep -F -o "HTTP/1.1 200 OK" || echo "Error --> http://localhost:2368"
   - docker rm -f "$CONTAINER_NAME";
 
-  - echo && echo "GHOST_VERSION_DOCKERFILE=$GHOST_VERSION_DOCKERFILE" && echo "GHOST_LATEST_RELEASE=$GHOST_LATEST_RELEASE" && echo "GHOST_CLI_LATEST_RELEASE=$GHOST_CLI_LATEST_RELEASE" && echo "GHOST_VERSION=$GHOST_VERSION" && echo && echo "IMAGE_SHA_SHORT=$IMAGE_SHA_SHORT" && echo "IMAGE_DATE=$IMAGE_DATE" && echo "IMAGE_VERSION=$IMAGE_VERSION" && echo && echo "#IMAGE_SHA_SHORT=$IMAGE_SHA_SHORT" && echo "#IMAGE_DATE=$IMAGE_DATE" && echo "#IMAGE_VERSION=$IMAGE_VERSION";
+  - echo && echo "GHOST_VERSION_DOCKERFILE=$GHOST_VERSION_DOCKERFILE" && echo "GHOST_LATEST_RELEASE=$GHOST_LATEST_RELEASE" && echo "GHOST_CLI_LATEST_RELEASE=$GHOST_CLI_LATEST_RELEASE" && echo "GHOST_VERSION=$GHOST_VERSION" && echo "IMAGE_FULL=$IMAGE_FULL" && echo && echo "IMAGE_SHA_SHORT=$IMAGE_SHA_SHORT" && echo "IMAGE_DATE=$IMAGE_DATE" && echo "IMAGE_VERSION=$IMAGE_VERSION" && echo && echo "#IMAGE_SHA_SHORT=$IMAGE_SHA_SHORT" && echo "#IMAGE_DATE=$IMAGE_DATE" && echo "#IMAGE_VERSION=$IMAGE_VERSION" && echo "#IMAGE_FULL=$IMAGE_FULL";
 
 # docker build -t "$IMAGE_SHA_SHORT" (already built)
 after_success:  
@@ -93,4 +96,6 @@ after_success:
       docker build -t "$IMAGE_VERSION" .;
       docker push "$IMAGE_VERSION";
 
+      docker build -t "$IMAGE_FULL" .;
+      docker push "$IMAGE_FULL";
     fi

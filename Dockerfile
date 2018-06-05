@@ -47,6 +47,7 @@ RUN set -ex                                                     && \
     \
 # sanity check to ensure knex-migrator was installed
     "$GHOST_INSTALL/current/node_modules/knex-migrator/bin/knex-migrator" --version \
+    \
 # uninstall ghost-cli
     su-exec node npm uninstall -S -D -O -g "ghost-cli@$GHOST_CLI_VERSION";
 

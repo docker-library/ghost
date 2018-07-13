@@ -9,16 +9,13 @@ set -o nounset
 
 
 # --- CONFIGS
-VERSION="1.22.4-5d8db43"
-    # FIND THE MOST RECENT VERSION HERE: https://hub.docker.com/r/devmtl/ghostfire/tags/
-DOCKER_REPO="devmtl/ghostfire"
+# FIND THE MOST RECENT VERSION HERE: https://hub.docker.com/r/devmtl/ghostfire/tags/
+IMG_TO_TEST="devmtl/ghostfire:1.24.8-583cc3f"
 CTN_NAME="ghostUAT"
-WAIT_TIMER="1"
-IMG_TO_TEST="$DOCKER_REPO":"$VERSION"
+WAIT_TIMER="3600"
 
 
 echo; echo "--- Unit Test for image: <$IMG_TO_TEST> - Start ---"; \
-
 
 # Remove Container (in case the image is already running)
 echo; echo "--- Removing Container: $CTN_NAME ---"; \

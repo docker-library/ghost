@@ -40,34 +40,36 @@ docker run -d \
 "$GHOSTFIRE_IMG"
 ```
 
-## Find the most recent docker image 🐳
+### Find the most recent docker image 🐳
 
 Instead of using edge (*most people use latest but I prefer edge :-p*) use the **stable image**.
 
 - **Docker hub** — https://hub.docker.com/r/devmtl/ghostfire/tags/
 - **Travis** — https://travis-ci.org/firepress-org/ghostfire
 
-My docker images are tagged as follow:
+I recommand to use the **stable tag**, where:
+- `1.24.8-583cc3f-20180713_01H3604` is the **Ghost Version** PLUS the **SHA of the git commit** PLUS the date when the image was create.
+- The logic is that I can use a **specific** image to test and push it in PROD as needed. In this example, using `devmtl/ghostfire:1.22.5` could turn out to be a broken docker image and is not best practice. 
+
+As an example:
+
+### edge branch tags are:
 
 ```
-# edge branch tags examples:
-
 devmtl/ghostfire:1.24.8-edge-79fa76a
 devmtl/ghostfire:edge
+```
 
-# master branch tags examples:
-  
+### master branch (stable) tags are:
+
+```
 devmtl/ghostfire:1.24.8-583cc3f-20180713_01H3604
 devmtl/ghostfire:1.24.8-583cc3f
 devmtl/ghostfire:1.22.8
 devmtl/ghostfire:20180713_01H3604
 ```
 
-I recommand to use the stable tag, where:
-- `1.24.8-583cc3f-20180713_01H3604` is the **Ghost Version** PLUS the **SHA of the git commit** PLUS the date when the image was create.
-- The logic is that I can use a **specific** image to test and push it in PROD as needed. In this example, using `devmtl/ghostfire:1.22.5` could turn out to be a broken docker image and is not best practice. 
-
-## Branches: edge vs master
+### Branches: edge vs master
 
 Because I run a lot of websites in production using this image, I prefer to do my tests using a dedicated `edge` branch.
 
@@ -75,6 +77,8 @@ Once I confirm the edge build PASS, I update the Dockerfile under the `master` b
 
 ![ghostfire-screen-2018-07-12_21h46](https://user-images.githubusercontent.com/6694151/42668147-195cfb74-861d-11e8-9d61-d847da6147f9.jpg)
 
+
+## Various info
 
 **Breaking change**
 
@@ -93,7 +97,7 @@ This Docker image for Ghost uses SQLite. There is nothing special to configure.
 docker exec <container-id> node --version
 ```
 
-You can also see this information in the Dockerfile and in the Travis builts.
+You can also see this information in the Dockerfile and in the Travis builds.
 
 
 ## Developper setup
@@ -106,7 +110,7 @@ You can also see this information in the Dockerfile and in the Travis builts.
 I tweaked elements like:
 
 - Ghost container is running under [tini](https://github.com/krallin/tini)
-- Using `node:8.11.1-alpine` instead of Node:6
+- Using `node:8.11.3-alpine` instead of Node:6
 - Better ENV var management
 - Uninstall the `ghost cli` to safe few bytes in the docker image
 

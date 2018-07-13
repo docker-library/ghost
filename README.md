@@ -18,23 +18,63 @@
 **Option #2**:
 
 ```
+GHOSTFIRE_IMG="devmtl/ghostfire:edge"
+
 docker run -d \
 —name ghostblog \
 -p 2368:2368 \
 -e url=http://localhost:2368 -e NODE_ENV=production \
-devmtl/ghostfire:1.22.5-f5f0952
+"$GHOSTFIRE_IMG"
 ```
 
-**Option #2 (Stateful)**
+**Option #3 (Stateful)**
 
 ```
+GHOSTFIRE_IMG="devmtl/ghostfire:edge"
+
 docker run -d \
 —name ghostblog \
 -p 2368:2368 \
 -e url=http://localhost:2368 -e NODE_ENV=production \
 -v /myuser/local-dev-path/ghost/content:/var/lib/ghost/content \
-devmtl/ghostfire:1.22.5-f5f0952
+"$GHOSTFIRE_IMG"
 ```
+
+## Find the most recent docker image 🐳
+
+Instead of using edge (*most people use latest but I prefer edge :-p*) use the **stable image**.
+
+- **Docker hub** — https://hub.docker.com/r/devmtl/ghostfire/tags/
+- **Travis** — https://travis-ci.org/firepress-org/ghostfire
+
+My docker images are tagged as follow:
+
+```
+# edge branch tags examples:
+
+devmtl/ghostfire:1.24.8-edge-79fa76a
+devmtl/ghostfire:edge
+
+# master branch tags examples:
+  
+devmtl/ghostfire:1.24.8-583cc3f-20180713_01H3604
+devmtl/ghostfire:1.24.8-583cc3f
+devmtl/ghostfire:1.22.8
+devmtl/ghostfire:20180713_01H3604
+```
+
+I recommand to use the stable tag, where:
+- `1.24.8-583cc3f-20180713_01H3604` is the **Ghost Version** PLUS the **SHA of the git commit** PLUS the date when the image was create.
+- The logic is that I can use a **specific** image to test and push it in PROD as needed. In this example, using `devmtl/ghostfire:1.22.5` could turn out to be a broken docker image and is not best practice. 
+
+## Branches: edge vs master
+
+Because I run a lot of websites in production using this image, I prefer to do my tests using a dedicated `edge` branch.
+
+Once I confirm the edge build PASS, I update the Dockerfile under the `master` branch as well. At this point, I’m really confident the docker image is working perfectly.
+
+![ghostfire-screen-2018-07-12_21h46](https://user-images.githubusercontent.com/6694151/42668147-195cfb74-861d-11e8-9d61-d847da6147f9.jpg)
+
 
 **Breaking change**
 
@@ -56,32 +96,6 @@ docker exec <container-id> node --version
 You can also see this information in the Dockerfile and in the Travis builts.
 
 
-## Find the most recent docker image 🐳
-
-- **Docker hub** — https://hub.docker.com/r/devmtl/ghostfire/tags/
-- **Travis** — https://travis-ci.org/firepress-org/ghostfire
-
-My docker images are tagged as follow:
-
-```
-# master branch tags examples:
-  
-devmtl/ghostfire:1.22.5-f5f0952
-devmtl/ghostfire:1.22.5
-devmtl/ghostfire:20180504_20H18_37
-
-# edge branch tags examples:
-
-devmtl/ghostfire:1.22.5-edge-112f2a2
-devmtl/ghostfire:edge
-
-```
-
-I recommand to use the first tag, where:
-- `1.22.5-f5f0952` is the **Ghost Version** PLUS the **SHA of the git commit** used to create the build.
-- The logic is that I can use a **specific** image to test and push it in PROD as needed. In this example, using `devmtl/ghostfire:1.22.5` could turn out to be a broken docker image and is not best practice. 
-
-
 ## Developper setup
 
 [I open sourced](https://github.com/firepress-org/ghost-local-dev-in-docker) the local setup. This is a workflow to run Ghost locally within a docker container. It allows you to easily develop Ghost themes and/or Ghost itself.
@@ -95,15 +109,6 @@ I tweaked elements like:
 - Using `node:8.11.1-alpine` instead of Node:6
 - Better ENV var management
 - Uninstall the `ghost cli` to safe few bytes in the docker image
-
-
-## Branches: edge vs master
-
-Because I run a lot of websites in production using this image, I prefer to do my tests using a dedicated `edge` branch.
-
-Once I confirm the edge build PASS, I update the Dockerfile under the `master` branch as well. At this point, I’m really confident the docker image is working perfectly.
-
-![branch-explanation](https://user-images.githubusercontent.com/6694151/39652598-20980092-4fbc-11e8-9471-84f1cbcb1f4b.jpg)
 
 
 ## Contributing

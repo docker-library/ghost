@@ -3,15 +3,16 @@
 # https://docs.ghost.org/supported-node-versions/
 # https://github.com/nodejs/LTS
 #
-# Update Ghost version on line: 13
-# Update Ghost-CLI on line: 15
+# Update Ghost & Ghost-CLI versions on line: 17 & 18
 
 # $SUB_VERSION is used tag docker images within CI Travis
 
-FROM node:8.11.2-alpine
+FROM node:8.11.3-alpine
 
-ENV GHOST_VERSION="1.22.8"                      \
-    GHOST_CLI_VERSION="1.8.0"                   \
+LABEL maintainer="Pascal Andy <pascalandy.com/blog/now/>"
+
+ENV GHOST_VERSION="1.24.8"                      \
+    GHOST_CLI_VERSION="1.8.1"                   \
     GHOST_INSTALL="/var/lib/ghost"              \
     GHOST_CONTENT="/var/lib/ghost/content"      \
     NODE_ENV="production"
@@ -25,8 +26,8 @@ RUN set -ex                                                     && \
 RUN set -ex                                                     && \
     npm install --production -g "ghost-cli@$GHOST_CLI_VERSION"  && \
     \
-    mkdir -p "$GHOST_INSTALL";                                     \
-    chown node:node "$GHOST_INSTALL";                              \
+    mkdir -p "$GHOST_INSTALL";                                  \
+    chown node:node "$GHOST_INSTALL";                           \
     \
 # Install Ghost
     su-exec node ghost install "$GHOST_VERSION" --db sqlite3 --no-prompt --no-stack --no-setup --dir "$GHOST_INSTALL"; \
@@ -64,4 +65,11 @@ COPY docker-entrypoint.sh /usr/local/bin
 ENTRYPOINT [ "/sbin/tini", "--", "docker-entrypoint.sh" ]
 
 EXPOSE 2368
+
+# Healthcheck setting are made during docker service create (...)
+
 CMD ["node", "current/index.js"]
+
+# Forked from https://github.com/docker-library/ghost/blob/2f6ac6c7770e428a4a50d23d46ec470d5e727456/1/alpine/Dockerfile
+# https://docs.ghost.org/v1/docs/supported-node-versions
+# https://github.com/nodejs/LTS

@@ -1,3 +1,7 @@
+# .gitignore
+############
+node_modules
+
 # Directories
 ############
 
@@ -38,8 +42,58 @@ var-config.sh
 .DS_Store
 .DS_Store?
 .vscode
-._*
-.Spotlight-V100
 .Trashes
 ehthumbs.db
 Thumbs.db
+.AppleDouble
+.LSOverride
+.metadata_never_index
+
+# Thumbnails
+############
+._*
+
+# Icon must end with two \r
+###########################
+Icon
+
+# Files that might appear in the root of a volume
+#################################################
+.DocumentRevisions-V100
+.fseventsd
+.dbfseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.trash
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.com.apple.timemachine.supported
+.PKInstallSandboxManager
+.PKInstallSandboxManager-SystemSoftware
+.file
+.hotfiles.btree
+.quota.ops.user
+.quota.user
+.quota.ops.group
+.quota.group
+.vol
+.efi
+
+# Directories potentially created on remote AFP share
+#####################################################
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+.Mobile*
+.disk_*
+
+# Sherlock files
+################
+TheFindByContentFolder
+TheVolumeSettingsFolder
+.FBCIndex
+.FBCSemaphoreFile
+.FBCLockFolder

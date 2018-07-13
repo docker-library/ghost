@@ -126,6 +126,12 @@ The power of communities, pull request and forks means that `1 + 1 = 3`. Help me
 5. Submit a pull request
 
 
+## Mobile devices and browsers testing
+
+Driven by: [BrowserStack](https://www.browserstack.com/automate)
+
+![screen shot 2018-07-13 at 7 53 03 am](https://user-images.githubusercontent.com/6694151/42690356-e362ad7a-8671-11e8-9e90-fb49d7e2a807.jpg)
+
 ## Copyright & License
 
 View **MIT** license information at https://ghost.org/license/ for the software.

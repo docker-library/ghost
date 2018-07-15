@@ -16,16 +16,11 @@ Because we believe your website should speak up in your name, we consider our mi
 
 ##  Live Demo
 
-Head over to the **[Live Demo](https://play-with-ghost.com/ghost-themes/playground/)** section, and see what Ghost can do for you.
-
-Thanks to `play-with-ghost.com` you can even login directly into the **admin panel** by using the available credentials.
-
-There is many Ghost **Themes** available as well. Some are free some are paid.
-
+Head over to the [Live Demo](https://play-with-ghost.com/ghost-themes/playground/) section, and see what Ghost can do for you. Thanks to `play-with-ghost.com` you can even login directly into the **admin panel** by using the available credentials. You can also see and try many Ghost **Themes**.
 
 ## How to use this image
 
-To run Ghost in a Docker container, here is the setup I use in production. Just execute `runup.sh` bash script and you are good to go. This setup also allows you to run your blog under mysite.com/blog.
+To run Ghost in a Docker container, here is the setup I use in production. Just execute `runup.sh` bash script and you are good to go. This setup also allows you to run your blog under a subdirectory like `mysite.com/blog`.
 
 Ensure you have Docker installed on your server. To update your Ghost container, just stop the container and execute to runup.sh again.
 

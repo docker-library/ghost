@@ -61,10 +61,6 @@ Instead of using edge (*most people use latest but I prefer edge :-p*) use the *
 - **Docker hub** — https://hub.docker.com/r/devmtl/ghostfire/tags/
 - **Travis** — https://travis-ci.org/firepress-org/ghostfire
 
-I recommend to use the **stable tag**, where:
-- `1.24.8-583cc3f-20180713_01H3604` is the **Ghost Version** + the **SHA of the git commit** + the date when the image was created.
-- The logic is that I can use a **specific** image to test and push it in PROD as needed. In this example, using `devmtl/ghostfire:1.22.5` could turn out to be a broken docker image and is not the best practice. 
-
 As an example:
 
 ### master branch (stable) tags are:
@@ -75,6 +71,10 @@ devmtl/ghostfire:1.24.8-583cc3f
 devmtl/ghostfire:1.22.8
 devmtl/ghostfire:20180713_01H3604
 ```
+
+I recommend to use the **stable tag**, where:
+- `1.24.8-583cc3f-20180713_01H3604` is the Ghost **version** + the **SHA** of the git commit + the **date**.
+- The logic is that I can use a **specific** image to test and push it in PROD as needed. In this example, only using `devmtl/ghostfire:1.24.8` could turn out to be a broken docker image and is not the best practice. 
 
 ### edge branch tags are:
 

@@ -1,6 +1,6 @@
 # https://docs.ghost.org/supported-node-versions/
 # https://github.com/nodejs/LTS
-FROM node:6-slim
+FROM node:8-slim
 
 # grab gosu for easy step-down from root
 ENV GOSU_VERSION 1.10
@@ -58,14 +58,14 @@ RUN set -eux; \
 	cd "$GHOST_INSTALL/current"; \
 # scrape the expected version of sqlite3 directly from Ghost itself
 	sqlite3Version="$(npm view . optionalDependencies.sqlite3)"; \
-	if ! gosu node npm install "sqlite3@$sqlite3Version"; then \
+	if ! gosu node yarn add "sqlite3@$sqlite3Version" --force; then \
 # must be some non-amd64 architecture pre-built binaries aren't published for, so let's install some build deps and do-it-all-over-again
 		savedAptMark="$(apt-mark showmanual)"; \
 		apt-get update; \
 		apt-get install -y --no-install-recommends python make gcc g++ libc-dev; \
 		rm -rf /var/lib/apt/lists/*; \
 		\
-		gosu node npm install "sqlite3@$sqlite3Version" --build-from-source; \
+		gosu node yarn add "sqlite3@$sqlite3Version" --force --build-from-source; \
 		\
 		apt-mark showmanual | xargs apt-mark auto > /dev/null; \
 		[ -z "$savedAptMark" ] || apt-mark manual $savedAptMark; \

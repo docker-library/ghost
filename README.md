@@ -104,7 +104,7 @@ Once I confirm the edge build PASS, I update the Dockerfile under the `master` b
 
 ## Developer setup
 
-[I open sourced](https://github.com/firepress-org/ghost-local-dev-in-docker) my advanced local setup. It’s a workflow to run Ghost locally within a Docker container. It allows you to easily develop Ghost themes and/or Ghost itself.
+[I open sourced here](https://github.com/firepress-org/ghost-local-dev-in-docker). It’s a workflow to run Ghost locally within a Docker container. Once your local paths are define it’s really fun and easy to work between many themes.
 
 
 ## Various

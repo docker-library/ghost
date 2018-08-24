@@ -11,12 +11,18 @@
 
 It’s a Docker image for running Ghost in a container.
 
-
-## About Ghost our favorite CMS
-
 **What is Ghost?** — Ghost is an open source software that lets you create your website with a blog. See the [FAQ section](https://play-with-ghost.com/ghost-themes/faq/#what-is-ghost) for more details.
 
-On the other side, **at FirePress we do one thing and we do it with all our heart: we host Ghost’s websites**. The idea behind FirePress is to empower freelancers and small organizations to be able to build an outstanding mobile-first website.
+## FirePress Hosting
+
+**At FirePress we do one thing and we do it with our whole heart: we host fully managed Ghost’s websites**. The idea behind FirePress is to empower freelancers and small organizations to be able to build an outstanding mobile-first website.
+
+We also offer a **workshop** where participants ends up with a website/blog they can easily operate themselves. Details are coming soon. It is available in those cities:
+
+- Montréal - Canada
+- Toronto - Canada
+- New-York - USA
+- Québec City - Canada
 
 Because we believe your website should speak up in your name, we consider our mission completed once your site has become [your impresario](https://play-with-ghost.com/ghost-themes/why-launching-your-next-website-with-firepress/). Start your [free trial here](https://play-with-ghost.com/ghost-themes/free-10-day-trial/).
 

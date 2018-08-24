@@ -4,12 +4,16 @@
 - [![](https://images.microbadger.com/badges/image/devmtl/ghostfire.svg)](https://microbadger.com/images/devmtl/ghostfire "Get your own image badge on microbadger.com")
 - [![](https://images.microbadger.com/badges/version/devmtl/ghostfire.svg)](https://microbadger.com/images/devmtl/ghostfire "Get your own version badge on microbadger.com")
 
+## What is this
+
+It’s a Docker image for running Ghost in a container.
+
 
 ## About Ghost our favorite CMS
 
-[Ghost](https://ghost.org/) is a free and open source website & blogging platform designed to simplify the process of publishing. It’s for individual bloggers as well as online publications. You can see Ghost as a CMS (content management system) designed as an alternative to systems like *WordPress, Medium, Squarespace, Wix, Tumblr, Drupal, Zoola*, etc.
+[Ghost](https://ghost.org/) is a free and open source website & blogging platform designed to simplify the process of publishing. It’s for individual bloggers as well as online publications. You can see Ghost as a CMS (content management system) designed as an alternative to systems like *Medium, WordPress, Squarespace, Wix, Tumblr, Drupal, Zoola*, etc.
 
-On the other side, the idea behind **FirePress** is to empower freelancers and small organizations to be able to build an outstanding mobile-first website.
+On the other side, the idea behind **FirePress** is to empower freelancers and small organizations to be able to build an outstanding mobile-first website. **We exclusively host Ghost websites**.
 
 Because we believe your website should speak up in your name, we consider our mission completed once your site has become [your impresario](https://play-with-ghost.com/ghost-themes/why-launching-your-next-website-with-firepress/).
 
@@ -17,6 +21,10 @@ Because we believe your website should speak up in your name, we consider our mi
 ##  Live Demo
 
 Head over to the [Live Demo](https://play-with-ghost.com/ghost-themes/playground/) section, and see what Ghost can do for you. Thanks to `play-with-ghost.com` you can even login directly into the **admin panel** by using the available credentials. You can also see and try many Ghost **Themes**.
+
+We you can try **Ghost version 2** here:<br>
+https://play-with-ghost.com/ghost-themes/firepress-vapor-for-barbershops/
+
 
 ## How to use this image
 
@@ -63,7 +71,7 @@ Instead of using edge (*most people use latest but I prefer edge :-p*) use the *
 
 As an example:
 
-### master branch (stable) tags are:
+### master branch (stable) tags looks like:
 
 ```
 devmtl/ghostfire:1.24.8-583cc3f-20180713_01H3604
@@ -76,12 +84,14 @@ I recommend to use the **stable tag**, where:
 - `1.24.8-583cc3f-20180713_01H3604` is the Ghost **version** + the **SHA** of the git commit + the **date**.
 - The logic is that I can use a **specific** image to test and push it in PROD as needed. In this example, only using `devmtl/ghostfire:1.24.8` could turn out to be a broken docker image and is not the best practice. 
 
-### edge branch tags are:
+
+### edge branch tags looks like:
 
 ```
 devmtl/ghostfire:1.24.8-edge-79fa76a
 devmtl/ghostfire:edge
 ```
+
 
 ### Branches: edge vs. master
 
@@ -92,14 +102,20 @@ Once I confirm the edge build PASS, I update the Dockerfile under the `master` b
 ![ghostfire-screen-2018-07-12_21h46](https://user-images.githubusercontent.com/6694151/42668147-195cfb74-861d-11e8-9d61-d847da6147f9.jpg)
 
 
-## Various info
+## Developer setup
+
+[I open sourced](https://github.com/firepress-org/ghost-local-dev-in-docker) the local setup. This is a workflow to run Ghost locally within a Docker container. It allows you to easily develop Ghost themes and/or Ghost itself.
+
+
+## Various
 
 **Breaking change**
 
 If you want to run Ghost 0.11.xx, be aware of the container's path difference:
 
-Ghost 1.x.x is: /var/lib/ghost/content
-Ghost 0.11.x is: /var/lib/ghost
+- Ghost 2.x.x is: /var/lib/ghost/content
+- Ghost 1.x.x is: /var/lib/ghost/content
+- Ghost 0.11.x is: /var/lib/ghost
 
 **SQLite Database**
 
@@ -114,18 +130,12 @@ docker exec <container-id> node --version
 You can also see this information in the Dockerfile and in the Travis builds.
 
 
-## Developer setup
-
-[I open sourced](https://github.com/firepress-org/ghost-local-dev-in-docker) the local setup. This is a workflow to run Ghost locally within a Docker container. It allows you to easily develop Ghost themes and/or Ghost itself.
-
-
 ## Why forking the official Dockerfile?
 
-I tweaked elements like:
+I tweaked few elements like:
 
 - Ghost container is running under [tini](https://github.com/krallin/tini#why-tini)
-- Using `node:8.11.3-alpine` instead of Node:6
-- Better ENV VAR management
+- A cleaner ENV VAR management
 - Uninstall the `ghost cli` to safe few bytes in the docker image
 - In the future, the image will support multi-stage build
 
@@ -141,17 +151,10 @@ The power of communities pull request and forks means that `1 + 1 = 3`. Help me 
 5. Submit a pull request
 
 
-## Mobile devices and browsers testing (WIP)
-
-Driven by: [BrowserStack](https://www.browserstack.com/automate)
-
-![screen shot 2018-07-13 at 7 53 03 am](https://user-images.githubusercontent.com/6694151/42690356-e362ad7a-8671-11e8-9e90-fb49d7e2a807.jpg)
-
 ## Copyright & License
 
-View **MIT** license information at https://ghost.org/license/ for the software.
-
-The fork is released under the **GNU** [license](https://github.com/pascalandy/GNU-GENERAL-PUBLIC-LICENSE).
+- This fork is released under the **GNU** [license](https://github.com/pascalandy/GNU-GENERAL-PUBLIC-LICENSE).
+- View **MIT** license information at https://ghost.org/license/ for the software.
 
 As with all Docker images, these likely also contain other software which may be under different licenses (such as Bash, etc. from the base distribution, along with any direct or indirect dependencies of the primary software being contained).
 
@@ -164,12 +167,11 @@ As for any pre-built image usage, it is the image user's responsibility to ensur
 
 - **linear-build** — This Git repo is available [here](https://github.com/firepress-org/ghostfire). It’s based on:
 https://github.com/docker-library/ghost/tree/7eb6348d2a5493546577508d2cbae0a9922e1390/1/alpine
-
 - **multi-build** — A multi-build version might interest you. See https://github.com/mmornati/docker-ghostblog.
 
 
-## Author
+## About
 
-In the world of OSS (open source software) most people refer to themselves as maintainers. The thing is… I hate this expression. It feels heavy and not fun at all. That's why I prefer a role as the Author.
-
-Find me on via my [blog](https://pascalandy.com/blog/now/), on [Twitter](https://twitter.com/askpascalandy) or head over to the [Live Demo](https://play-with-ghost.com/ghost-themes/playground/) section.
+- [Pascal Andy’s « now page »](https://pascalandy.com/blog/now/)
+- Follow me on [Twitter](https://twitter.com/askpascalandy)
+- Find more Ghost Themes on [play-with-ghost.com](https://play-with-ghost.com/)

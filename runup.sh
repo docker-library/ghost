@@ -1,15 +1,16 @@
 #!/usr/bin/env bash
+
+# --- Best practices to manage errors ---
 set -o errexit
 trap 'echo "Aborting due to errexit on line $LINENO. Exit code: $?" >&2' ERR
 set -o errtrace
 set -o nounset
+
 ###############################################################################
 # Functions
 ###############################################################################
 
-
-# --- CONFIGS
-# FIND THE MOST RECENT VERSION HERE: https://hub.docker.com/r/devmtl/ghostfire/tags/
+# --- VARS | Find the most recent Docker image here: https://hub.docker.com/r/devmtl/ghostfire/tags/
 IMG_TO_TEST="devmtl/ghostfire:1.24.8-583cc3f"
 CTN_NAME="ghostUAT"
 WAIT_TIMER="3600"
@@ -67,4 +68,4 @@ docker rm -f "$CTN_NAME";
 
 # UAT (User Acceptance Testing)
 # Easy to copy paste in your terminal
-# By Pascal Andy @askpascalandy 2017-11-15_14h52
+# Pascal Andy https://pascalandy.com/blog/now/ | 2018-08-24_10h37

@@ -104,18 +104,19 @@ Once I confirm the edge build PASS, I update the Dockerfile under the `master` b
 
 ## Developer setup
 
-[I open sourced](https://github.com/firepress-org/ghost-local-dev-in-docker) the local setup. This is a workflow to run Ghost locally within a Docker container. It allows you to easily develop Ghost themes and/or Ghost itself.
+[I open sourced](https://github.com/firepress-org/ghost-local-dev-in-docker) my advanced local setup. It’s a workflow to run Ghost locally within a Docker container. It allows you to easily develop Ghost themes and/or Ghost itself.
 
 
 ## Various
 
 **Breaking change**
 
-If you want to run Ghost 0.11.xx, be aware of the container's path difference:
 
 - Ghost 2.x.x is: /var/lib/ghost/content
 - Ghost 1.x.x is: /var/lib/ghost/content
 - Ghost 0.11.x is: /var/lib/ghost
+
+*If you still run Ghost 0.11.xx, be aware of the container's path difference.*
 
 **SQLite Database**
 
@@ -154,7 +155,7 @@ The power of communities pull request and forks means that `1 + 1 = 3`. Help me 
 ## Copyright & License
 
 - This fork is released under the **GNU** [license](https://github.com/pascalandy/GNU-GENERAL-PUBLIC-LICENSE).
-- View **MIT** license information at https://ghost.org/license/ for the software.
+- View **MIT** license information at:<br> https://ghost.org/license/ for the software.
 
 As with all Docker images, these likely also contain other software which may be under different licenses (such as Bash, etc. from the base distribution, along with any direct or indirect dependencies of the primary software being contained).
 
@@ -165,9 +166,8 @@ As for any pre-built image usage, it is the image user's responsibility to ensur
 
 ## Sources & Fork
 
-- **linear-build** — This Git repo is available [here](https://github.com/firepress-org/ghostfire). It’s based on:
-https://github.com/docker-library/ghost/tree/7eb6348d2a5493546577508d2cbae0a9922e1390/1/alpine
-- **multi-build** — A multi-build version might interest you. See https://github.com/mmornati/docker-ghostblog.
+- **linear-build** — This Git repo is available [here](https://github.com/firepress-org/ghostfire). It’s based on the official [Ghost image](https://github.com/docker-library/ghost/tree/7eb6348d2a5493546577508d2cbae0a9922e1390/1/alpine)
+- **multi-build** — A multi-build version might interest you:<br> https://github.com/mmornati/docker-ghostblog.
 
 
 ## About

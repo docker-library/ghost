@@ -18,7 +18,7 @@ It’s a Docker image for running Ghost in a container.
 
 Head over to [play-with-ghost.com](https://play-with-ghost.com/) . It’s is a playground to learn about Ghost. You can see Ghost themes and login into the **admin panel** by using the available credentials. In short, you can try Ghost on the spot without having to sign-up!
 
-And since Auguest 24th 2018, you can try **Ghost version 2** here:<br>
+And since August 24th 2018, you can try **Ghost version 2** here:<br>
 https://play-with-ghost.com/ghost-themes/firepress-vapor-for-barbershops/
 
 

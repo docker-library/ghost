@@ -3,7 +3,7 @@ set -e
 
 # allow the container to be started with `--user`
 if [[ "$*" == node*current/index.js* ]] && [ "$(id -u)" = '0' ]; then
-	chown -R node "$GHOST_CONTENT"
+	find "$GHOST_CONTENT" \! -user node -exec chown node '{}' +
 	exec gosu node "$BASH_SOURCE" "$@"
 fi
 

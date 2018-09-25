@@ -3,7 +3,7 @@ set -e
 
 # allow the container to be started with `--user`
 if [[ "$*" == npm*start* ]] && [ "$(id -u)" = '0' ]; then
-	chown -R node "$GHOST_CONTENT"
+	find "$GHOST_CONTENT" \! -user node -exec chown node '{}' +
 	exec su-exec node "$BASH_SOURCE" "$@"
 fi
 

@@ -11,7 +11,7 @@ RUN apk add --no-cache \
 
 ENV NODE_ENV production
 
-ENV GHOST_CLI_VERSION 1.9.4
+ENV GHOST_CLI_VERSION 1.9.6
 RUN npm install -g "ghost-cli@$GHOST_CLI_VERSION"
 
 ENV GHOST_INSTALL /var/lib/ghost

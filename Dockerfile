@@ -1,23 +1,23 @@
 # Author: Pascal Andy | pascalandy.com/blog/now/
 # Forked from https://github.com/docker-library/ghost/blob/2f6ac6c7770e428a4a50d23d46ec470d5e727456/1/alpine/Dockerfile
 # https://docs.ghost.org/supported-node-versions/
-# https://github.com/nodejs/LTS
+# https://github.com/nodejs/LTS | FROM node:8.12.0-alpine | devmtl/node-alpine:8.11.4
 #
 # VAR TO UPDATE -> see lines: 8, 12, 13
 
-FROM node:8.11.3-alpine
+FROM node:8.12.0-alpine
 
-LABEL maintainer="Pascal Andy | pascalandy.com/blog/now/"
+LABEL maintainer="Pascal Andy | pascalandy.com/blog/now"
 
-ENV GHOST_VERSION="1.25.5"                      \
-    GHOST_CLI_VERSION="1.9.0"                   \
+ENV GHOST_VERSION="2.2.2"                       \
+    GHOST_CLI_VERSION="1.9.6"                   \
     GHOST_INSTALL="/var/lib/ghost"              \
     GHOST_CONTENT="/var/lib/ghost/content"      \
     NODE_ENV="production"
 
 RUN set -ex                                                     && \
-    apk add --update --no-cache                                 \
-    'su-exec>=0.2' bash curl tini ca-certificates               && \
+    apk --update --no-cache add 'su-exec>=0.2'                     \
+        bash curl tini ca-certificates                          && \
     update-ca-certificates                                      && \
     rm -rf /var/cache/apk/*;
 

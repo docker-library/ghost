@@ -17,7 +17,7 @@ RUN set -x \
 
 ENV NODE_ENV production
 
-ENV GHOST_CLI_VERSION 1.9.6
+ENV GHOST_CLI_VERSION 1.9.7
 RUN npm install -g "ghost-cli@$GHOST_CLI_VERSION"
 
 ENV GHOST_INSTALL /var/lib/ghost

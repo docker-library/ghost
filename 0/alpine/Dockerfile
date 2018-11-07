@@ -14,7 +14,7 @@ RUN apk add --no-cache \
 ENV GHOST_SOURCE /usr/src/ghost
 WORKDIR $GHOST_SOURCE
 
-ENV GHOST_VERSION 0.11.13
+ENV GHOST_VERSION 0.11.14
 
 RUN set -ex; \
 	\

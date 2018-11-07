@@ -11,13 +11,13 @@ RUN apk add --no-cache \
 
 ENV NODE_ENV production
 
-ENV GHOST_CLI_VERSION 1.9.7
+ENV GHOST_CLI_VERSION 1.9.8
 RUN npm install -g "ghost-cli@$GHOST_CLI_VERSION"
 
 ENV GHOST_INSTALL /var/lib/ghost
 ENV GHOST_CONTENT /var/lib/ghost/content
 
-ENV GHOST_VERSION 1.25.5
+ENV GHOST_VERSION 1.25.6
 
 RUN set -ex; \
 	mkdir -p "$GHOST_INSTALL"; \

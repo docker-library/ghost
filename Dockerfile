@@ -5,12 +5,12 @@
 #
 # VAR TO UPDATE -> see lines: 8, 12, 13
 
-FROM node:8.12.0-alpine
+FROM node:10.13.0-alpine
 
 LABEL maintainer="Pascal Andy | pascalandy.com/blog/now"
 
-ENV GHOST_VERSION="2.2.4"                       \
-    GHOST_CLI_VERSION="1.9.6"                   \
+ENV GHOST_VERSION="2.5.0"                       \
+    GHOST_CLI_VERSION="1.9.8"                   \
     GHOST_INSTALL="/var/lib/ghost"              \
     GHOST_CONTENT="/var/lib/ghost/content"      \
     NODE_ENV="production"
@@ -27,7 +27,7 @@ RUN set -ex                                                     && \
     mkdir -p "$GHOST_INSTALL";                                  \
     chown node:node "$GHOST_INSTALL";                           \
     \
-# Install Ghost
+# Install Ghost / optional: --verbose
     su-exec node ghost install "$GHOST_VERSION" --db sqlite3 --no-prompt --no-stack --no-setup --dir "$GHOST_INSTALL"; \
     \
 # Tell Ghost to listen on all ips and not prompt for additional configuration

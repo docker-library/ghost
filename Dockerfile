@@ -2,8 +2,7 @@
 # Forked from https://github.com/docker-library/ghost/blob/2f6ac6c7770e428a4a50d23d46ec470d5e727456/1/alpine/Dockerfile
 # https://docs.ghost.org/supported-node-versions/ | https://github.com/nodejs/LTS
 #
-# VAR TO UPDATE -> lines: 8, 12, 13
-#
+# VAR TO UPDATE -> lines: 7, 11, 12
 
 FROM node:10.14-alpine
 
@@ -62,6 +61,6 @@ COPY docker-entrypoint.sh /usr/local/bin
 
 ENTRYPOINT [ "/sbin/tini", "--", "docker-entrypoint.sh" ]
 
-# Healthcheck, attributes are passed when lauching > $docker service create
+# HEALTHCHECK, attributes are passed when > docker service create
 
 CMD ["node", "current/index.js"]

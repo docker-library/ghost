@@ -1,14 +1,16 @@
 #!/usr/bin/env bash
-# source https://github.com/docker-library/ghost/blob/master/1/alpine/docker-entrypoint.sh
+# based on https://github.com/docker-library/ghost/blob/master/2/alpine/docker-entrypoint.sh
 
-set -o errexit
-trap 'echo "Aborting due to errexit on line $LINENO. Exit code: $?" >&2' ERR
-set -o errtrace
-set -o nounset
+# A better class of script
+set -o errexit          # Exit on most errors (see the manual)
+set -o errtrace         # Make sure any error trap is inherited
+set -o nounset          # Disallow expansion of unset variables
+set -o pipefail         # Use last non-zero exit code in a pipeline
+#set -o xtrace          # Trace the execution of the script (debug)
 
 # allow the container to be started with `--user`
 if [[ "$*" == node*current/index.js* ]] && [ "$(id -u)" = '0' ]; then
-	chown -R node "$GHOST_CONTENT"
+	find "$GHOST_CONTENT" \! -user node -exec chown node '{}' +
 	exec su-exec node "$BASH_SOURCE" "$@"
 fi
 
@@ -22,8 +24,6 @@ if [[ "$*" == node*current/index.js* ]]; then
 			tar -cC "$(dirname "$src")" "$(basename "$src")" | tar -xC "$(dirname "$target")"
 		fi
 	done
-
-	knex-migrator-migrate --init --mgpath "$GHOST_INSTALL/current"
 fi
 
 exec "$@"

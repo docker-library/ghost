@@ -62,6 +62,6 @@ COPY docker-entrypoint.sh /usr/local/bin
 
 ENTRYPOINT [ "/sbin/tini", "--", "docker-entrypoint.sh" ]
 
-# Healthcheck, attributes are passed when > docker service create
+# Healthcheck, attributes are passed when lauching > $docker service create
 
 CMD ["node", "current/index.js"]

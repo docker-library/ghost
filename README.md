@@ -1,109 +1,155 @@
+&nbsp;
+
+<p align="center">
+  <a href="https://firepress.org/">
+    <img src="https://user-images.githubusercontent.com/6694151/50166045-2cc53000-02b4-11e9-8f7f-5332089ec331.jpg" width="340px" alt="FirePress" />
+  </a>
+</p>
+
+<p align="center">
+    <a href="https://firepress.org/">FirePress.org</a> |
+    <a href="https://play-with-ghost.com/">play-with-ghost</a> |
+    <a href="https://github.com/firepress-org/">GitHub</a> |
+    <a href="https://twitter.com/askpascalandy">Twitter</a>
+    <br /> <br />
+    <a href="https://travis-ci.org/firepress-org/ghostfire">
+        <img src="https://images.microbadger.com/badges/version/devmtl/ghostfire.svg" alt="version" />
+    </a>
+    <a href="https://hub.docker.com/r/devmtl/ghostfire">
+        <img src="https://images.microbadger.com/badges/image/devmtl/ghostfire.svg" alt="Downloads" />
+    </a>
+    <a href="https://travis-ci.org/firepress-org/ghostfire">
+        <img src="https://travis-ci.org/firepress-org/ghostfire.svg" alt="CICD build" />
+    </a>
+</p>
+
+&nbsp;
+
 # ghostfire
 
-## Continuous integration (CI) status
 
-- [![Build Status](https://travis-ci.org/firepress-org/ghostfire.svg)](https://travis-ci.org/firepress-org/ghostfire)
-- [![](https://images.microbadger.com/badges/image/devmtl/ghostfire.svg)](https://microbadger.com/images/devmtl/ghostfire "Get your own image badge on microbadger.com")
-- [![](https://images.microbadger.com/badges/version/devmtl/ghostfire.svg)](https://microbadger.com/images/devmtl/ghostfire "Get your own version badge on microbadger.com")
+## What is this?
 
-
-## What is this
-
-It’s a Docker image for running Ghost in a container.
+It’s a Docker image to run Ghost V2 in a container. Fully compatible with a simple `docker run`, Kubernetes or Docker Swarm.
 
 **What is Ghost?** — Ghost is an open source software that lets you create your website with a blog. See the [FAQ section](https://play-with-ghost.com/ghost-themes/faq/#what-is-ghost) for more details.
 
+Source: https://github.com/firepress-org/ghostfire
 
-##  Live Demo (online)
 
-Head over to [play-with-ghost.com](https://play-with-ghost.com/) . It’s is a playground to learn about Ghost. You can see Ghost themes and login into the **admin panel** by using the available credentials. In short, you can try Ghost on the spot without having to sign-up!
+## Live Demo
 
-And since August 24th 2018, you can try **Ghost version 2** here:<br>
-https://play-with-ghost.com/ghost-themes/firepress-vapor-for-barbershops/
+Want to try Ghost quickly? This is for you!
+
+[play-with-ghost.com](https://play-with-ghost.com/) is a playground to learn about Ghost. What's remarkable here, is that you have the option to log in into the admin panel of each live demo available, by using dummy credentials.
+
+In short, you can try Ghost on the spot without having to sign-up!
+
+<br>
+
+[![pwg-video-preview-e](https://user-images.githubusercontent.com/6694151/50233512-9bbc8a80-0381-11e9-83bb-f29a67000378.jpg)
+](https://play-with-ghost.com/)
+
+<br>
+
+#### Explainer video
+
+[![pwg-video-preview-b](https://user-images.githubusercontent.com/6694151/50162583-bc66e080-02ac-11e9-937f-741f6d388d40.jpg)](https://play-with-ghost.com/#video)
+
+
+## Why forking the official Docker image?
+
+We tweaked a few elements like:
+
+- Ghost container is running under [tini](https://github.com/krallin/tini#why-tini)
+- Easier to read Dockerfile with a cleaner envvar display
+- Uninstall the `ghost cli` to save some space in the final docker image
+- Added `curl` to do healthcheck
+
+In the future, we plan to use a multi-stage build to slim down the image
 
 
 ## How to use this image
 
-To run Ghost in a Docker container, here is the setup I use in production. Just execute `runup.sh` bash script and you are good to go. This setup also allows you to run your blog under a subdirectory like `mysite.com/blog`.
+**Requirement**: Ensure you have Docker installed on your machine. ([MAC OS X](https://hub.docker.com/editions/community/docker-ce-desktop-mac))
 
-Ensure you have Docker installed on your server. To update your Ghost container, just stop the container and execute to runup.sh again.
+To run Ghost in a Docker container, here is the setup we use in production. Just execute `runup.sh` bash script and you are good to go.
 
-**Option #1** *(prefered)*:
-- Run the script: `./runup.sh`
+**Option #1** _(prefered)_:
+
+- Run the script by typing: `./runup.sh`
 
 **Option #2**:
 
 ```
-GHOSTFIRE_IMG="devmtl/ghostfire:1.24.8-583cc3f"
+GHOSTFIRE_IMG="devmtl/ghostfire:stable"
 
 docker run -d \
 —name ghostblog \
 -p 2368:2368 \
 -e url=http://localhost:2368 -e NODE_ENV=production \
-"$GHOSTFIRE_IMG"
+${GHOSTFIRE_IMG}
 ```
 
 **Option #3 (Stateful)**
 
-Don’t forget to change the path on your local drive!
+⚠️ warning — change the path `/myuser/localpath/ghost/content` and use the latest stable docker image.
 
 ```
-GHOSTFIRE_IMG="devmtl/ghostfire:1.24.8-583cc3f"
+GHOSTFIRE_IMG="devmtl/ghostfire:stable"
 
 docker run -d \
 —name ghostblog \
 -p 2368:2368 \
 -e url=http://localhost:2368 -e NODE_ENV=production \
--v /myuser/local-path/ghost/content:/var/lib/ghost/content \
-"$GHOSTFIRE_IMG"
+-v /myuser/localpath/ghost/content:/var/lib/ghost/content \
+${GHOSTFIRE_IMG}
 ```
 
-### Find the most recent docker image 🐳
 
-Instead of using edge use the **stable image**.
+### master branch (stable) tags 🐳
 
-- **Docker hub** — https://hub.docker.com/r/devmtl/ghostfire/tags/
-- **Travis** — https://travis-ci.org/firepress-org/ghostfire
-
-As an example:
-
-### master branch (stable) tags looks like:
+I recommend using the tag from this format: $IMAGE_SHA_SHORT
 
 ```
-devmtl/ghostfire:1.24.8-583cc3f-20180713_01H3604
-devmtl/ghostfire:1.24.8-583cc3f
-devmtl/ghostfire:1.22.8
-devmtl/ghostfire:20180713_01H3604
+devmtl/ghostfire:2.9.1-99814a4
+devmtl/ghostfire:2.9.1
+devmtl/ghostfire:stable
 ```
 
-I recommend to use the **stable tag**, where:
-- `1.24.8-583cc3f-20180713_01H3604` is the **Ghost version** + the **SHA** of the git commit + the **date**.
-- The logic is that I can use a **specific** image to test and push it in PROD as needed. In this example, only using `devmtl/ghostfire:1.24.8` could turn out to be a broken docker image and is not the best practice. 
 
-
-### edge branch tags looks like:
+### edge branch (not stable) tags 🐳
 
 ```
-devmtl/ghostfire:1.24.8-edge-79fa76a
+devmtl/ghostfire:edge-2.9.1-7d64db0
+devmtl/ghostfire:edge-2.9.1
 devmtl/ghostfire:edge
 ```
 
 
-### edge vs. master branches
+### Latest docker images 🐳
 
-Because I run a lot of websites in production using this image, I prefer to do my tests using a dedicated `edge` branch.
-
-Once I confirm the edge build PASS, I update the Dockerfile under the `master` branch as well. At this point, I’m reaaaaaally confident the docker image is working correctly.
-
-![ghostfire-screen-2018-07-12_21h46](https://user-images.githubusercontent.com/6694151/42668147-195cfb74-861d-11e8-9d61-d847da6147f9.jpg)
+- **Docker hub** — https://hub.docker.com/r/devmtl/ghostfire/tags/
+- **Travis** — https://travis-ci.org/firepress-org/ghostfire
 
 
-## Developing Ghost theme, my setup
+### Edge VS Master
 
-I open sourced [my setup here](https://github.com/firepress-org/ghost-local-dev-in-docker). It’s a workflow to run Ghost locally within a Docker container. Once your local paths are define it’s really fun and easy to work between many themes.
+⚠️ Workflow warning. You would expect that we merge `edge` into `master`. We don’t do this. Think of it as two independent projects. The main reason for this is the fact that **the two .travis.yml files don’t push the same docker images** (stable VS edge).
+
+Let’s understand our process.
+
+Because we run a lot of websites in production using this image, we prefer to do UAT (tests) using a dedicated `edge` branch. Few sites (a cohort of all site we manage) deploy automatically every update on edge. **It’s a manual checkpoint that helps us avoiding crashing websites at scale**. It also has the advantage to keep a clean commit history (without doing git-fu all the time).
+
+Once we confirm the edge build is a PASS, we update the Dockerfile in `master` branch as well. At this point, we are entirely confident the docker image is working correctly and deploy every site we manage.
 
 
-## Various
+## Developing Ghost themes locally
+
+I open sourced [my setup here](https://github.com/firepress-org/ghost-local-dev-in-docker). It’s a workflow to run Ghost locally within a Docker container. Once your local paths are defined, it’s enjoyable and easy to work **between many themes**.
+
+
+## Random
 
 **Breaking change**
 
@@ -111,7 +157,7 @@ I open sourced [my setup here](https://github.com/firepress-org/ghost-local-dev-
 - Ghost 1.x.x is: /var/lib/ghost/content
 - Ghost 0.11.x is: /var/lib/ghost
 
-*If you still run Ghost 0.11.xx, be aware of the container's path difference.*
+_If you still run Ghost 0.11.xx, be aware of the container's path difference._
 
 **SQLite Database**
 
@@ -126,15 +172,23 @@ docker exec <container-id> node --version
 You can also see this information in the Dockerfile and in the Travis builds.
 
 
-## Why forking the official Dockerfile?
+## Services
 
-I tweaked few elements like:
+#### Hosting
 
-- Ghost container is running under [tini](https://github.com/krallin/tini#why-tini)
-- A cleaner ENV VAR management
-- Uninstall the `ghost cli` to safe few bytes in the docker image
-- In the future, the image will support multi-stage build
+**At FirePress we do one thing and we do it with our whole heart: we host fully managed Ghost’s websites**. The idea behind FirePress is to empower freelancers and small organizations to be able to build an outstanding mobile-first website.
 
+Because we believe your website should speak up in your name, we consider our mission completed once your site has become [your impresario](https://firepress.org/en/why-launching-your-next-website-with-firepress/). Start your [free trial here](https://firepress.org/en/10-day-free-trial/). 
+
+
+#### Workshop
+
+We also offer a workshop where participants end up with a website/blog they can smoothly operate themselves. Details are coming soon. The workshops will be available in those cities:
+
+- Montréal - Canada
+- Toronto - Canada
+- Québec City - Canada
+- New-York - USA
 
 ## Contributing
 
@@ -150,31 +204,19 @@ The power of communities pull request and forks means that `1 + 1 = 3`. Help me 
 ## Copyright & License
 
 - This git repo is under the **GNU** license information. [Find it here](https://github.com/pascalandy/GNU-GENERAL-PUBLIC-LICENSE).
-- The Ghost’s software, is under the **MIT** license. [Find it here](https://ghost.org/license/).
+- The Ghost’s software is under the **MIT** license. [Find it here](https://ghost.org/license/).
 
 
 ## Sources & Fork
 
-- **linear-build** — This Git repo is available [here](https://github.com/firepress-org/ghostfire). It’s based on the official [Ghost image](https://github.com/docker-library/ghost/tree/7eb6348d2a5493546577508d2cbae0a9922e1390/1/alpine)
-- **multi-build** — A multi-build version might interest you:<br> https://github.com/mmornati/docker-ghostblog.
-
-
-## FirePress Hosting
-
-**At FirePress we do one thing and we do it with our whole heart: we host fully managed Ghost’s websites**. The idea behind FirePress is to empower freelancers and small organizations to be able to build an outstanding mobile-first website.
-
-We also offer a **workshop** where participants ends up with a website/blog they can easily operate themselves. Details are coming soon. It is available in those cities:
-
-- Montréal - Canada
-- Toronto - Canada
-- New-York - USA
-- Québec City - Canada
-
-Because we believe your website should speak up in your name, we consider our mission completed once your site has become [your impresario](https://play-with-ghost.com/ghost-themes/why-launching-your-next-website-with-firepress/). Start your [free trial here](https://play-with-ghost.com/ghost-themes/free-10-day-trial/).
-
+- This Git repo is available at [https://github.com/firepress-org/ghostfire](https://github.com/firepress-org/ghostfire)
+- Forked from the [official](https://github.com/docker-library/ghost/) Ghost image
 
 ## Keep in touch
 
-- [Pascal Andy’s « now page »](https://pascalandy.com/blog/now/)
+- My [« now page »](https://pascalandy.com/blog/now/)
 - Follow me on [Twitter](https://twitter.com/askpascalandy)
-- Find more Ghost Themes on [play-with-ghost.com](https://play-with-ghost.com/)
+
+P.S. As you might see, I’m not a native English speaker. If something sounds funny, please let me know.  Just [open an issue](https://github.com/firepress-org/ghostfire/issues). Thank you!
+
+Cheers!

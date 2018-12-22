@@ -14,8 +14,8 @@ branches:
   except:
     - tmp99
 
-notifications:
-    webhooks: https://www.travisbuddy.com/
+#notifications:
+#    webhooks: https://www.travisbuddy.com/
     
 # Secret DOCKER_PASSWORD managed by Travis:
 # See https://docs.travis-ci.com/user/environment-variables/#Defining-Variables-in-Repository-Settings
@@ -50,17 +50,13 @@ before_script:
   - CONTAINER_NAME="ghostuat"
   - DOCKER_USERNAME="devmtl"
   - DOCKER_REPO_NAME="ghostfire"
-  - DOCKER_REPO_PREFIX="ghostfire"
 
-  - THIS_DATE=$(date -u +"%Y%m%d_%HH%M%S")
+  - THIS_DATE=$(date +%Y-%m-%d)
   - THIS_SHA_SHORT=$(git rev-parse --short HEAD)
 
   - IMAGE_SHA_SHORT="$DOCKER_USERNAME"/"$DOCKER_REPO_NAME":"$GHOST_VERSION"-"$THIS_SHA_SHORT"
-  - IMAGE_DATE="$DOCKER_USERNAME"/"$DOCKER_REPO_NAME":"$THIS_DATE"
   - IMAGE_VERSION="$DOCKER_USERNAME"/"$DOCKER_REPO_NAME":"$GHOST_VERSION"
-
-  # This is the one we use in PROD
-  - IMAGE_FULL="$DOCKER_USERNAME"/"$DOCKER_REPO_NAME":"$GHOST_VERSION"-"$THIS_SHA_SHORT"-"$THIS_DATE"
+  - IMAGE_STABLE="$DOCKER_USERNAME"/"$DOCKER_REPO_NAME":stable
 
 script:
   - uname -a;
@@ -81,31 +77,29 @@ after_script:
   - docker inspect "$CONTAINER_NAME";
   - docker images;
   - docker logs "$CONTAINER_NAME";
-
   - echo "Starting unit tests within the container..."
   - docker exec -it "$CONTAINER_NAME" uname -a;
   - docker exec -it "$CONTAINER_NAME" node --version;
   - docker exec -it "$CONTAINER_NAME" cat /var/lib/ghost/current/content/themes/casper/package.json | grep version;
   - docker exec -it "$CONTAINER_NAME" cat /var/lib/ghost/current/package.json | grep version;
-  - docker exec -it "$CONTAINER_NAME" curl -Is --head "http://localhost:2368" | grep -F -o "HTTP/1.1 200 OK" || echo "Error --> http://localhost:2368"
+  - docker exec -it "$CONTAINER_NAME" curl -Is --head "http://localhost:2368" | grep -F -o "HTTP/1.1 200 OK" || echo "Error --> http://localhost:2368";
   - docker rm -f "$CONTAINER_NAME";
+  - echo && echo "GHOST_VERSION_DOCKERFILE=$GHOST_VERSION_DOCKERFILE" && echo "GHOST_LATEST_RELEASE=$GHOST_LATEST_RELEASE" && echo "GHOST_CLI_LATEST_RELEASE=$GHOST_CLI_LATEST_RELEASE" && echo "GHOST_VERSION=$GHOST_VERSION" && echo && echo "IMAGE_SHA_SHORT=$IMAGE_SHA_SHORT" && echo "IMAGE_VERSION=$IMAGE_VERSION" && echo "IMAGE_STABLE=$IMAGE_STABLE" && echo && echo "#IMAGE_SHA_SHORT=$IMAGE_SHA_SHORT" && echo "#IMAGE_VERSION=$IMAGE_VERSION" && echo "#IMAGE_STABLE=$IMAGE_STABLE" && echo;
 
-  # Show all available tags (easy copy-paste style)
-  - echo && echo "GHOST_VERSION_DOCKERFILE=$GHOST_VERSION_DOCKERFILE" && echo "GHOST_LATEST_RELEASE=$GHOST_LATEST_RELEASE" && echo "GHOST_CLI_LATEST_RELEASE=$GHOST_CLI_LATEST_RELEASE" && echo "GHOST_VERSION=$GHOST_VERSION" && echo && echo "IMAGE_SHA_SHORT=$IMAGE_SHA_SHORT" && echo "IMAGE_DATE=$IMAGE_DATE" && echo "IMAGE_VERSION=$IMAGE_VERSION" && echo "IMAGE_FULL=$IMAGE_FULL" && echo && echo "#IMAGE_SHA_SHORT=$IMAGE_SHA_SHORT" && echo "#IMAGE_DATE=$IMAGE_DATE" && echo "#IMAGE_VERSION=$IMAGE_VERSION" && echo "#IMAGE_FULL=$IMAGE_FULL";
-
-# docker build -t "$IMAGE_SHA_SHORT" (already built)
-after_success:  
-  - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" = "false" ] && [ "$DOCKER_REPO_PREFIX" != "" ] && [ "$DOCKER_REPO_NAME" != "" ] && [ "$DOCKER_USERNAME" != "" ] && [ "$DOCKER_PASSWORD" != "" ]; then
-      echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
-
+after_success:
+  - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$DOCKER_REPO_NAME" != "" ] && [ "$DOCKER_USERNAME" != "" ] && [ "$DOCKER_PASSWORD" != "" ]; then
+      echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin;
+    
       docker push "$IMAGE_SHA_SHORT";
-
-      docker build -t "$IMAGE_DATE" .;
-      docker push "$IMAGE_DATE";
-
-      docker build -t "$IMAGE_VERSION" .;
+      
+      docker build -t "$IMAGE_VERSION" . ;
       docker push "$IMAGE_VERSION";
-
-      docker build -t "$IMAGE_FULL" .;
-      docker push "$IMAGE_FULL";
+      
+      docker build -t "$IMAGE_STABLE" .;
+      docker push "$IMAGE_STABLE";
     fi
+
+# Flag output examples:
+# IMAGE_SHA_SHORT=devmtl/ghostfire:2.9.1-e04b5c6
+# IMAGE_VERSION=devmtl/ghostfire:2.9.1
+# IMAGE_STABLE=devmtl/ghostfire:stable

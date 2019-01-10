@@ -200,10 +200,11 @@ The power of communities pull request and forks means that `1 + 1 = 3`. Help me 
 4. Push to the branch: `git push origin my-new-feature`
 5. Submit a pull request
 
+Need help? Check this post: [Contributing to our Github project](https://pascalandy.com/blog/contributing-to-our-github-project/). Also, by contributing you agree to the [Contributor Code of Conduct on GitHub](https://pascalandy.com/blog/contributor-code-of-conduct-on-github/).
 
-## Copyright & License
+## Copyright
 
-- This git repo is under the **GNU** license information. [Find it here](https://github.com/pascalandy/GNU-GENERAL-PUBLIC-LICENSE).
+- This git repo is under the **GNU V3** license. [Find it here](https://github.com/pascalandy/GNU-GENERAL-PUBLIC-LICENSE/blob/master/LICENSE.md).
 - The Ghost’s software is under the **MIT** license. [Find it here](https://ghost.org/license/).
 
 

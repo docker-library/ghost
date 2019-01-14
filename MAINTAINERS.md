@@ -1,11 +1,11 @@
-# ⚠️ Workflow warning
+## ⚠️ Workflow warning
 
-1) Never merge EDGE into MASTER, this would break the .travis instructions
+NEVER MERGE EDGE into MASTER!
 
-2) When the UAT is PASSED, MANUALLY replicate the Dockerfile from EDGE into MASTER. Again, we do this because don’t want to merge/squashed our .travis configurations.
+this would break the .travis instructions. It's because of the way our CICD is setup.
 
-3) Tag only from the master branch (the Ghost versions)
+2) Tag only from the master branch (the Ghost versions). Never tag from EDGE
 
-# CICD setup details
+## Why this funky setup?
 
 https://github.com/firepress-org/ghostfire#edge-vs-master

@@ -23,7 +23,7 @@ RUN npm install -g "ghost-cli@$GHOST_CLI_VERSION"
 ENV GHOST_INSTALL /var/lib/ghost
 ENV GHOST_CONTENT /var/lib/ghost/content
 
-ENV GHOST_VERSION 2.10.1
+ENV GHOST_VERSION 2.11.0
 
 RUN set -ex; \
 	mkdir -p "$GHOST_INSTALL"; \

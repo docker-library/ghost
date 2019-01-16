@@ -46,7 +46,21 @@ RUN set -ex; \
 # we want these from the context of Ghost's "node_modules" directory (instead of doing "npm install -g knex-migrator") so they can share the DB driver modules
 ENV PATH $PATH:$GHOST_INSTALL/current/node_modules/knex-migrator/bin
 
-# TODO multiarch sqlite3 (once either "node:6-alpine" has multiarch or we switch to a base that does)
+RUN set -eux; \
+# force install "sqlite3" manually since it's an optional dependency of "ghost"
+# (which means that if it fails to install, like on ARM/ppc64le/s390x, the failure will be silently ignored and thus turn into a runtime error instead)
+# see https://github.com/TryGhost/Ghost/pull/7677 for more details
+	cd "$GHOST_INSTALL/current"; \
+# scrape the expected version of sqlite3 directly from Ghost itself
+	sqlite3Version="$(npm view . optionalDependencies.sqlite3)"; \
+	if ! su-exec node yarn add "sqlite3@$sqlite3Version" --force; then \
+# must be some non-amd64 architecture pre-built binaries aren't published for, so let's install some build deps and do-it-all-over-again
+		apk add --no-cache --virtual .build-deps python make gcc g++ libc-dev; \
+		\
+		su-exec node yarn add "sqlite3@$sqlite3Version" --force --build-from-source; \
+		\
+		apk del --no-network .build-deps; \
+	fi
 
 WORKDIR $GHOST_INSTALL
 VOLUME $GHOST_CONTENT

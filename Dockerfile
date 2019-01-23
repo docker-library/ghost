@@ -2,20 +2,20 @@
 # Forked from https://github.com/docker-library/ghost/blob/2f6ac6c7770e428a4a50d23d46ec470d5e727456/1/alpine/Dockerfile
 # https://docs.ghost.org/supported-node-versions/ | https://github.com/nodejs/LTS
 #
-# VAR TO UPDATE -> lines: 7, 11, 12 
+# VAR TO UPDATE -> lines: 7, 11, 12
 
-FROM node:10.14-alpine
+FROM node:10.15-alpine
 
 LABEL maintainer="Pascal Andy | https://pascalandy.com/"
 
-ENV GHOST_VERSION="2.9.1"                       \
-    GHOST_CLI_VERSION="1.9.8"                   \
+ENV GHOST_VERSION="2.12.0"                      \
+    GHOST_CLI_VERSION="1.9.9"                   \
     GHOST_INSTALL="/var/lib/ghost"              \
     GHOST_CONTENT="/var/lib/ghost/content"      \
     NODE_ENV="production"
 
 RUN set -ex                                                     && \
-    apk --update --no-cache add 'su-exec>=0.2'                     \
+    apk --update --no-cache add 'su-exec>=0.2'                  \
         bash curl tini ca-certificates                          && \
     update-ca-certificates                                      && \
     rm -rf /var/cache/apk/*;

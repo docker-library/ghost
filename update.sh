@@ -24,6 +24,7 @@ cliVersion="$(
 		| grep -E '^refs/tags/[0-9]+\.[0-9]+' \
 		| cut -d/ -f3 \
 		| cut -d^ -f1 \
+		| grep -vE -- '-(alpha|beta|rc)' \
 		| sort -ruV \
 		| head -n1
 )"

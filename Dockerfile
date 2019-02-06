@@ -1,17 +1,19 @@
 #
 # Forked from https://github.com/docker-library/ghost/blob/2f6ac6c7770e428a4a50d23d46ec470d5e727456/1/alpine/Dockerfile
-# https://docs.ghost.org/supported-node-versions/ | https://github.com/nodejs/LTS
+# docs.ghost.org/faq/node-versions/ (Node v10 since 2.13.2) | https://github.com/nodejs/LTS
 #
-# VAR TO UPDATE -> lines: 7, 11, 12
+# UPDATE LINES -> 7, 9, 10, 13, 14
 
-FROM node:10.15-alpine
+FROM node:10.15.1-alpine
 
-LABEL maintainer="Pascal Andy | https://pascalandy.com/"
+LABEL com.ghost.version="2.13.2"                                \
+      com.baseimage.version="node:10.15.1-alpine"               \
+      maintainer="FIREPRESS Pascal Andy / https://firepress.org/en/contact/"
 
-ENV GHOST_VERSION="2.13.1"                      \
-    GHOST_CLI_VERSION="1.9.9"                   \
-    GHOST_INSTALL="/var/lib/ghost"              \
-    GHOST_CONTENT="/var/lib/ghost/content"      \
+ENV GHOST_VERSION="2.13.2"                                      \
+    GHOST_CLI_VERSION="1.9.9"                                   \
+    GHOST_INSTALL="/var/lib/ghost"                              \
+    GHOST_CONTENT="/var/lib/ghost/content"                      \
     NODE_ENV="production"
 
 RUN set -ex                                                     && \
@@ -61,6 +63,6 @@ COPY docker-entrypoint.sh /usr/local/bin
 
 ENTRYPOINT [ "/sbin/tini", "--", "docker-entrypoint.sh" ]
 
-# HEALTHCHECK, attributes are passed when > docker service create
+# HEALTHCHECK, attributes are passed on runtime <docker service create>
 
 CMD ["node", "current/index.js"]

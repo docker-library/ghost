@@ -47,10 +47,6 @@ In short, you can try Ghost on the spot without having to sign-up!
 
 <br>
 
-[![pwg-video-preview-e](https://user-images.githubusercontent.com/6694151/50233512-9bbc8a80-0381-11e9-83bb-f29a67000378.jpg)
-](https://play-with-ghost.com/)
-
-<br>
 
 #### Explainer video
 
@@ -132,10 +128,21 @@ devmtl/ghostfire:edge
 - **Docker hub** — https://hub.docker.com/r/devmtl/ghostfire/tags/
 - **Travis** — https://travis-ci.org/firepress-org/ghostfire
 
+I'm surprised that at this point, it's been downloaded more than 5 millions of time!
+
+![docker-hub](https://user-images.githubusercontent.com/6694151/53067692-4c8af700-34a3-11e9-9fcf-9c7ad169a91b.jpg)
+
+
+## Well tested
+
+DevOps best practices are essential to us. Many checkpoints ensure this Docker image for Ghost software runs smoothly.
+
+In this post, we explain how we deploy Ghost in production and which best practices we do follow https://firepress.org/en/software-and-ghost-updates/
+
 
 ### Edge VS Master
 
-⚠️ Workflow warning. You would expect that we merge `edge` into `master`. We don’t do this. Think of it as two independent projects. The main reason for this is the fact that **the two .travis.yml files don’t push the same docker images** (stable VS edge).
+⚠️ Workflow warning. You would expect that we merge `edge` into `master`. We DON'T do this. Think of it as two independent projects. The main reason for this is the fact that **the two .travis.yml files don’t push the same docker images** (stable VS edge).
 
 Let’s understand our process.
 

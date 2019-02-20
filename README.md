@@ -71,23 +71,7 @@ In the future, we plan to use a multi-stage build to slim down the image
 
 To run Ghost in a Docker container, here is the setup we use in production. Just execute `runup.sh` bash script and you are good to go.
 
-**Option #1** _(prefered)_:
-
-- Run the script by typing: `./runup.sh`
-
-**Option #2**:
-
-```
-GHOSTFIRE_IMG="devmtl/ghostfire:stable"
-
-docker run -d \
-—name ghostblog \
--p 2368:2368 \
--e url=http://localhost:2368 -e NODE_ENV=production \
-${GHOSTFIRE_IMG}
-```
-
-**Option #3 (Stateful)**
+**Option #1 (Stateful)**
 
 ⚠️ warning — change the path `/myuser/localpath/ghost/content` and use the latest stable docker image.
 
@@ -102,8 +86,33 @@ docker run -d \
 ${GHOSTFIRE_IMG}
 ```
 
+**Option #2**:
 
-### master branch (stable) tags 🐳
+```
+GHOSTFIRE_IMG="devmtl/ghostfire:stable"
+
+docker run -d \
+—name ghostblog \
+-p 2368:2368 \
+-e url=http://localhost:2368 -e NODE_ENV=production \
+${GHOSTFIRE_IMG}
+```
+
+**Option #3**:
+
+- Run the script by typing: `./runup.sh`
+
+#### Find the latest docker images tag 🐳
+
+- **Docker hub** — https://hub.docker.com/r/devmtl/ghostfire/tags/
+- **Travis** — https://travis-ci.org/firepress-org/ghostfire
+
+I'm surprised that at this point, it's been downloaded more than **5 millions of time**!
+
+![docker-hub](https://user-images.githubusercontent.com/6694151/53067692-4c8af700-34a3-11e9-9fcf-9c7ad169a91b.jpg)
+
+
+#### master branch (stable) tags 🐳
 
 I recommend using the tag from this format: $IMAGE_SHA_SHORT
 
@@ -114,7 +123,7 @@ devmtl/ghostfire:stable
 ```
 
 
-### edge branch (not stable) tags 🐳
+#### edge branch (not stable) tags 🐳
 
 ```
 devmtl/ghostfire:edge-2.9.1-7d64db0
@@ -123,24 +132,7 @@ devmtl/ghostfire:edge
 ```
 
 
-### Latest docker images 🐳
-
-- **Docker hub** — https://hub.docker.com/r/devmtl/ghostfire/tags/
-- **Travis** — https://travis-ci.org/firepress-org/ghostfire
-
-I'm surprised that at this point, it's been downloaded more than 5 millions of time!
-
-![docker-hub](https://user-images.githubusercontent.com/6694151/53067692-4c8af700-34a3-11e9-9fcf-9c7ad169a91b.jpg)
-
-
-## Well tested
-
-DevOps best practices are essential to us. Many checkpoints ensure this Docker image for Ghost software runs smoothly.
-
-In this post, we explain how we deploy Ghost in production and which best practices we do follow https://firepress.org/en/software-and-ghost-updates/
-
-
-### Edge VS Master
+#### Git Branches: Edge VS Master
 
 ⚠️ Workflow warning. You would expect that we merge `edge` into `master`. We DON'T do this. Think of it as two independent projects. The main reason for this is the fact that **the two .travis.yml files don’t push the same docker images** (stable VS edge).
 
@@ -156,21 +148,32 @@ Once we confirm the edge build is a PASS, we update the Dockerfile in `master` b
 I open sourced [my setup here](https://github.com/firepress-org/ghost-local-dev-in-docker). It’s a workflow to run Ghost locally within a Docker container. Once your local paths are defined, it’s enjoyable and easy to work **between many themes**.
 
 
-## Random
+## Well tested
 
-**Breaking change**
+DevOps best practices are essential to us. Many checkpoints ensure this Docker image for Ghost software runs smoothly.
 
+In this post, we explain how we deploy Ghost in production and which best practices we do follow.
+
+https://firepress.org/en/software-and-ghost-updates/
+
+
+## Random stuff
+
+**Breaking change**. If you still run Ghost 0.11.xx, be aware of the container's path difference.
+
+```
 - Ghost 2.x.x is: /var/lib/ghost/content
 - Ghost 1.x.x is: /var/lib/ghost/content
 - Ghost 0.11.x is: /var/lib/ghost
-
-_If you still run Ghost 0.11.xx, be aware of the container's path difference._
+```
 
 **SQLite Database**
 
 This Docker image for Ghost uses SQLite. There is nothing special to configure.
 
 **What is the Node.js version?**
+
+We follow the latest Node supported version. See this in the Dockerfile.
 
 ```
 docker exec <container-id> node --version
@@ -183,23 +186,32 @@ You can also see this information in the Dockerfile and in the Travis builds.
 
 #### Hosting
 
-**At FirePress we do one thing and we do it with our whole heart: we host fully managed Ghost’s websites**. The idea behind FirePress is to empower freelancers and small organizations to be able to build an outstanding mobile-first website.
+**At FirePress we host Ghost’s websites with an optional landing page**. It's fully managed for you. It means you never have to touch a server, do an upgrade, manage backups or any annoying stuff like this.
+
+The idea behind FirePress is to empower freelancers and small organizations to be able to build an outstanding mobile-first website.
 
 Because we believe your website should speak up in your name, we consider our mission completed once your site has become [your impresario](https://firepress.org/en/why-launching-your-next-website-with-firepress/). Start your [free trial here](https://firepress.org/en/10-day-free-trial/). 
 
-
 #### Workshop
 
-We also offer a workshop where participants end up with a website/blog they can smoothly operate themselves. Details are coming soon. The workshops will be available in those cities:
+Participants will end up with a website and/or a blog they can smoothly operate themselves. We are actively working on this workshop.
+
+The workshops will be available in those cities:
 
 - Montréal - Canada
 - Toronto - Canada
 - Québec City - Canada
 - New-York - USA
+- Boston - USA
+
+Follow the details [on this page](https://firepress.org/en/workshop/).
+
+<br>
+
 
 ## Contributing
 
-The power of communities pull request and forks means that `1 + 1 = 3`. Help me make this repo a better one!
+The power of communities pull request and forks means that `1 + 1 = 3`. You can help to make this repo a better one! Here is how:
 
 1. Fork it
 2. Create your feature branch: `git checkout -b my-new-feature`
@@ -207,12 +219,17 @@ The power of communities pull request and forks means that `1 + 1 = 3`. Help me 
 4. Push to the branch: `git push origin my-new-feature`
 5. Submit a pull request
 
-Need help? Check this post: [Contributing to our Github project](https://pascalandy.com/blog/contributing-to-our-github-project/). Also, by contributing you agree to the [Contributor Code of Conduct on GitHub](https://pascalandy.com/blog/contributor-code-of-conduct-on-github/).
+Check this post for more details: [Contributing to our Github project](https://pascalandy.com/blog/contributing-to-our-github-project/). Also, by contributing you agree to the [Contributor Code of Conduct on GitHub](https://pascalandy.com/blog/contributor-code-of-conduct-on-github/). It's plain common sense really.
 
-## Copyright
+<br>
+
+
+## License
 
 - This git repo is under the **GNU V3** license. [Find it here](https://github.com/pascalandy/GNU-GENERAL-PUBLIC-LICENSE/blob/master/LICENSE.md).
 - The Ghost’s software is under the **MIT** license. [Find it here](https://ghost.org/license/).
+
+<br>
 
 
 ## Sources & Fork
@@ -220,11 +237,17 @@ Need help? Check this post: [Contributing to our Github project](https://pascala
 - This Git repo is available at [https://github.com/firepress-org/ghostfire](https://github.com/firepress-org/ghostfire)
 - Forked from the [official](https://github.com/docker-library/ghost/) Ghost image
 
-## Keep in touch
+<br>
 
-- My [« now page »](https://pascalandy.com/blog/now/)
-- Follow me on [Twitter](https://twitter.com/askpascalandy)
 
-P.S. As you might see, I’m not a native English speaker. If something sounds funny, please let me know.  Just [open an issue](https://github.com/firepress-org/ghostfire/issues). Thank you!
+## Why all this work?
 
-Cheers!
+Our [mission](https://firepress.org/en/our-mission/) is to empower freelancers and small organizations to build an outstanding mobile-first website.
+
+Because we believe your website should speak up in your name, we consider our mission completed once your site has become your impresario.
+
+For more info about the man behind the startup, check out my [now page](https://pascalandy.com/blog/now/). You can also follow me on Twitter [@askpascalandy](https://twitter.com/askpascalandy).
+
+— The FirePress Team 🔥📰
+
+

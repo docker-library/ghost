@@ -47,10 +47,10 @@ In short, you can try Ghost on the spot without having to sign-up!
 
 <br>
 
+[![pwg-video-preview-e](https://user-images.githubusercontent.com/6694151/50233512-9bbc8a80-0381-11e9-83bb-f29a67000378.jpg)
+](https://play-with-ghost.com/)
 
-#### Explainer video
-
-[![pwg-video-preview-b](https://user-images.githubusercontent.com/6694151/50162583-bc66e080-02ac-11e9-937f-741f6d388d40.jpg)](https://play-with-ghost.com/#video)
+<br>
 
 
 ## Why forking the official Docker image?

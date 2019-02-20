@@ -136,25 +136,19 @@ devmtl/ghostfire:edge
 
 ⚠️ Workflow warning. You would expect that we merge `edge` into `master`. We DON'T do this. Think of it as two independent projects. The main reason for this is the fact that **the two .travis.yml files don’t push the same docker images** (stable VS edge).
 
-Let’s understand our process.
 
-Because we run a lot of websites in production using this image, we prefer to do UAT (tests) using a dedicated `edge` branch. Few sites (a cohort of all site we manage) deploy automatically every update on edge. **It’s a manual checkpoint that helps us avoiding crashing websites at scale**. It also has the advantage to keep a clean commit history (without doing git-fu all the time).
-
-Once we confirm the edge build is a PASS, we update the Dockerfile in `master` branch as well. At this point, we are entirely confident the docker image is working correctly and deploy every site we manage.
-
-
-## Developing Ghost themes locally
-
-I open sourced [my setup here](https://github.com/firepress-org/ghost-local-dev-in-docker). It’s a workflow to run Ghost locally within a Docker container. Once your local paths are defined, it’s enjoyable and easy to work **between many themes**.
-
-
-## Well tested
+#### Well tested
 
 DevOps best practices are essential to us. Many checkpoints ensure this Docker image for Ghost software runs smoothly.
 
 In this post, we explain how we deploy Ghost in production and which best practices we do follow.
 
 https://firepress.org/en/software-and-ghost-updates/
+
+
+## Developing Ghost themes locally
+
+I open sourced [my setup here](https://github.com/firepress-org/ghost-local-dev-in-docker). It’s a workflow to run Ghost locally within a Docker container. Once your local paths are defined, it’s enjoyable and easy to work **between many themes**.
 
 
 ## Random stuff

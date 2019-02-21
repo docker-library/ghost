@@ -4,13 +4,13 @@
 #
 # UPDATE LINES -> 7, 9, 10, 13, 14
 
-FROM node:10.15.1-alpine
+FROM node:10.15-alpine
 
-LABEL com.ghost.version="2.14.0"                                \
+LABEL com.ghost.version="2.14.3"                                \
       com.baseimage.version="node:10.15.1-alpine"               \
       maintainer="FirePress.org Pascal Andy https://firepress.org/en/contact/"
 
-ENV GHOST_VERSION="2.14.0"                                      \
+ENV GHOST_VERSION="2.14.3"                                      \
     GHOST_CLI_VERSION="1.9.9"                                   \
     GHOST_INSTALL="/var/lib/ghost"                              \
     GHOST_CONTENT="/var/lib/ghost/content"                      \

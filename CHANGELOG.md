@@ -17,7 +17,7 @@ https://gist.github.com/pascalandy/af709db02d3fe132a3e6f1c11b934fe4
 
 ---
 
-# Releases push in production
+# Releases
 - https://firepress.org/en/software-and-ghost-updates/
 
 

@@ -1,15 +1,21 @@
-#
-# Set this env_var before running this script:
-#GITHUB_TOKEN="3122133122133211233211233211233211322313123"
-#
-# The tag must be ready to push on git remote
+# This is specific to my local set up
+source .env .
+
+# Set env_var before running this script:
+# GITHUB_TOKEN="3122133122133211233211233211233211322313123"
+
+# vars
 #
 my_repo="ghostfire"
 GIT_REPO="https://github.com/firepress-org/${my_repo}.git"
 GOPATH=${HOME}/go
+
+# The tag must be ready to push on git remote
 #
 cd ${HOME}/Documents/Github/firepress-org/${my_repo} && \
 git push --tags && \
+
+# Find the latest tag
 #
 tag_version="$(
 	git ls-remote --tags ${GIT_REPO} \
@@ -19,7 +25,8 @@ tag_version="$(
 		| sort -rV \
 		| head -n1)" && \
 echo ${tag_version} && \
-#
+
+# Push release on GitHub like a boss
 # Requires: https://github.com/aktau/github-release
 #
 $GOPATH/bin/github-release release \

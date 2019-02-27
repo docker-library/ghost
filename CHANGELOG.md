@@ -21,6 +21,15 @@ https://gist.github.com/pascalandy/af709db02d3fe132a3e6f1c11b934fe4
 - https://firepress.org/en/software-and-ghost-updates/
 
 
+## 2.15.0
+### ⚡️ Updates
+- 0693f81e bump to 2.15.0
+- 4b0b7b79 travis using branch only
+- 9f60fc35 Manage secret locally
+- b5e668e9 update gitignore
+- ddf7f399 add push_release.sh
+- b5b6836a Add a CHANGELOG.md to simplify releases
+
 ## 2.14.3
 ### ⚡️ Updates
 - 0fa89cc4 update to 2.14.3

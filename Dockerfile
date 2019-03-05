@@ -6,11 +6,11 @@
 
 FROM node:10.15-alpine
 
-LABEL com.ghost.version="2.16.2"                                \
-      com.baseimage.version="node:10.15.1-alpine"               \
-      maintainer="FirePress.org Pascal Andy https://firepress.org/en/contact/"
+LABEL com.ghost.version="2.16.3"                                \
+      com.baseimage.version="node:10.15-alpine"                 \
+      maintainer="Pascal Andy https://firepress.org/en/contact/"
 
-ENV GHOST_VERSION="2.16.2"                                      \
+ENV GHOST_VERSION="2.16.3"                                      \
     GHOST_CLI_VERSION="1.9.9"                                   \
     GHOST_INSTALL="/var/lib/ghost"                              \
     GHOST_CONTENT="/var/lib/ghost/content"                      \
@@ -55,17 +55,17 @@ RUN set -eux; \
 # force install "sqlite3" manually since it's an optional dependency of "ghost"
 # (which means that if it fails to install, like on ARM/ppc64le/s390x, the failure will be silently ignored and thus turn into a runtime error instead)
 # see https://github.com/TryGhost/Ghost/pull/7677 for more details
-	cd "$GHOST_INSTALL/current"; \
+  cd "$GHOST_INSTALL/current"; \
 # scrape the expected version of sqlite3 directly from Ghost itself
-	sqlite3Version="$(npm view . optionalDependencies.sqlite3)"; \
-	if ! su-exec node yarn add "sqlite3@$sqlite3Version" --force; then \
+  sqlite3Version="$(npm view . optionalDependencies.sqlite3)"; \
+  if ! su-exec node yarn add "sqlite3@$sqlite3Version" --force; then \
 # must be some non-amd64 architecture pre-built binaries aren't published for, so let's install some build deps and do-it-all-over-again
-		apk add --no-cache --virtual .build-deps python make gcc g++ libc-dev; \
-		\
-		su-exec node yarn add "sqlite3@$sqlite3Version" --force --build-from-source; \
-		\
-		apk del --no-network .build-deps; \
-	fi
+    apk add --no-cache --virtual .build-deps python make gcc g++ libc-dev; \
+    \
+    su-exec node yarn add "sqlite3@$sqlite3Version" --force --build-from-source; \
+    \
+    apk del --no-network .build-deps; \
+  fi
 
 # add knex-migrator bins into PATH
 # we want these from the context of Ghost's "node_modules" directory (instead of doing "npm install -g knex-migrator") so they can share the DB driver modules

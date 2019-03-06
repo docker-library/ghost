@@ -21,6 +21,12 @@ https://gist.github.com/pascalandy/af709db02d3fe132a3e6f1c11b934fe4
 - https://firepress.org/en/software-and-ghost-updates/
 
 
+## 2.16.4
+### ⚡️ Updates  
+- bcaaad37 update to 2.16.4
+- 9956bb43 update to 2.16.3
+- 95975955 Update to 2.16.2 AND manual sqlite3 installation
+
 ## 2.15.0
 ### ⚡️ Updates
 - 0693f81e bump to 2.15.0

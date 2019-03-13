@@ -6,11 +6,11 @@
 
 FROM node:10.15-alpine
 
-LABEL com.ghost.version="2.16.4"                                \
+LABEL com.ghost.version="2.17.1"                                \
       com.baseimage.version="node:10.15-alpine"                 \
       maintainer="Pascal Andy https://firepress.org/en/contact/"
 
-ENV GHOST_VERSION="2.16.4"                                      \
+ENV GHOST_VERSION="2.17.1"                                      \
     GHOST_CLI_VERSION="1.9.9"                                   \
     GHOST_INSTALL="/var/lib/ghost"                              \
     GHOST_CONTENT="/var/lib/ghost/content"                      \

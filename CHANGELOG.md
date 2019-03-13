@@ -21,6 +21,13 @@ https://gist.github.com/pascalandy/af709db02d3fe132a3e6f1c11b934fe4
 - https://firepress.org/en/software-and-ghost-updates/
 
 
+## 2.17.1
+### ⚡️ Updates  
+- 67412e3f update to 2.17.1
+
+### 🐛 Fix bug
+- Fixed a bug we openned: https://github.com/TryGhost/Ghost/issues/10578
+
 ## 2.16.4
 ### ⚡️ Updates  
 - bcaaad37 update to 2.16.4

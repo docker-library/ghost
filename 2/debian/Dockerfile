@@ -1,6 +1,6 @@
-# https://docs.ghost.org/supported-node-versions/
+# https://docs.ghost.org/faq/node-versions/
 # https://github.com/nodejs/LTS
-FROM node:8-slim
+FROM node:10-slim
 
 # grab gosu for easy step-down from root
 ENV GOSU_VERSION 1.10

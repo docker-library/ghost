@@ -1,6 +1,6 @@
-# https://docs.ghost.org/supported-node-versions/
+# https://docs.ghost.org/faq/node-versions/
 # https://github.com/nodejs/LTS
-FROM node:8-alpine
+FROM node:10-alpine
 
 # grab su-exec for easy step-down from root
 RUN apk add --no-cache 'su-exec>=0.2'

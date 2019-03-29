@@ -20,6 +20,15 @@ https://gist.github.com/pascalandy/af709db02d3fe132a3e6f1c11b934fe4
 # Releases
 - https://firepress.org/en/software-and-ghost-updates/
 
+## 2.19.1
+### ⚡️ Updates  
+- e0281b45 update to 2.19.1
+
+## 2.18.3
+### ⚡️ Updates  
+- dd2efe74 update to 2.18.3
+- 489f1b39 update to 2.18.2
+- 5dae7eb7 update to 2.18.1
 
 ## 2.17.1
 ### ⚡️ Updates  

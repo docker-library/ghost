@@ -8,6 +8,11 @@ https://trello.com/b/0fCwwzqc/firepress-public-roadmap
 Based on this template:
 https://gist.github.com/pascalandy/af709db02d3fe132a3e6f1c11b934fe4
 
+# Releases
+- https://firepress.org/en/software-and-ghost-updates/
+
+---
+
 ## 0.0.0 status template
 ### ⚡️ Updates
 ### 🚀 Added (new feat.)
@@ -17,11 +22,31 @@ https://gist.github.com/pascalandy/af709db02d3fe132a3e6f1c11b934fe4
 
 ---
 
-# Releases
-- https://firepress.org/en/software-and-ghost-updates/
+## 2.21.1
+### ⚡️ Updates
+- 6e991c1e 2.21.1
+- 57abf0b9 CLI update 1.10.0
+
+## 2.21.0
+### ⚡️ Updates
+- 3ed5b456 update 2.21.0
+- 01aad764 Now using ARG to simplify updates
+
+## 2.20.1
+### ⚡️ Updates
+- 5a3c2bf1 2.20.1
+
+## 2.19.4
+### ⚡️ Updates
+- 81871ce9 2.19.4
+
+## 2.19.3
+### ⚡️ Updates
+- 7ef96a59 2.19.3
 
 ## 2.19.1
 ### ⚡️ Updates  
+- e93347f6 changelog updates
 - e0281b45 update to 2.19.1
 
 ## 2.18.3

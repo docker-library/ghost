@@ -1,0 +1,46 @@
+{
+  "url": "http://localhost:2368/",
+  "server": {
+      "port": "2368",
+      "host": "0.0.0.0"
+  },
+  "database": {
+      "client": "sqlite3",
+      "connection": {
+          "filename": "/var/lib/ghost/content/data/ghost.db"
+      }
+  },
+  "mail": {
+      "from": "'FirePress Team' example@domain.org",
+      "transport": "SMTP",
+      "options": {
+          "service": "Mailgun",
+          "host": "smtp.mailgun.org",
+          "port": 465,
+          "secureConnection": true,
+          "auth": {
+              "user": "example@domain.org",
+              "pass": "98rstns9r8tn1s9r8t1ns9r8tn1"
+          }
+      }
+  },
+  "logging": {
+      "path": "/var/lib/ghost/content/logs",
+      "level": "info",
+      "rotation": {
+          "enabled": true,
+          "count": 15,
+          "period": "7d"
+      },
+      "transports": ["stdout", "file"]
+  },
+  "caching": {
+      "frontend": {
+          "maxAge": 2
+      }
+  },
+  "process": "local",
+  "paths": {
+      "contentPath": "/var/lib/ghost/content"
+  }
+}

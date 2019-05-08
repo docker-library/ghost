@@ -58,6 +58,7 @@ In short, you can try Ghost on the spot without having to sign-up!
 We tweaked a few elements like:
 
 1. Ghost container is running under [tini](https://github.com/krallin/tini#why-tini)
+2. A great `config.production.json` template
 2. Easier to read Dockerfile with a cleaner ARG display
 3. Uninstall the `ghost cli` to save some space in the final docker image
 4. clean node cache
@@ -84,13 +85,16 @@ docker run -d \
 -p 2368:2368 \
 -e url=http://localhost:2368 -e NODE_ENV=production \
 -v /myuser/localpath/ghost/content:/var/lib/ghost/content \
+-v /myuser/localpath/ghost/content:/var/lib/ghost/config.production.json \
 ${GHOSTFIRE_IMG}
 ```
+
+To configure the `config.production.json` refer the [ghost docs](https://docs.ghost.org/concepts/config/).
 
 #### Option #2:
 
 ```
-GHOSTFIRE_IMG="devmtl/ghostfire:stable"
+GHOSTFIRE_IMG="devmtl/ghostfire:2.9.1-99814a4"
 
 docker run -d \
 —name ghostblog \
@@ -108,7 +112,7 @@ ${GHOSTFIRE_IMG}
 - **Docker hub** — https://hub.docker.com/r/devmtl/ghostfire/tags/
 - **Travis** — https://travis-ci.org/firepress-org/ghostfire
 
-I'm surprised that at this point, it's been pulled more than **11 millions of time**!
+At this point, this docker image have been pulled more than **11 millions of time**!
 
 ![docker-hub](https://user-images.githubusercontent.com/6694151/53067692-4c8af700-34a3-11e9-9fcf-9c7ad169a91b.jpg)
 

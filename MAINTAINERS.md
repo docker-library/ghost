@@ -2,10 +2,9 @@
 
 NEVER MERGE EDGE into MASTER!
 
-this would break the .travis instructions. It's because of the way our CICD is setup.
-
-2) Tag only from the master branch (the Ghost versions). Never tag from EDGE
+- This would break the .travis instructions. It's because of the way our CICD is setup.
+- Tag only from the master branch (the Ghost versions). Never tag from EDGE
 
 ## Why this funky setup?
 
-https://github.com/firepress-org/ghostfire#edge-vs-master
+https://github.com/firepress-org/ghostfire#master-vs-edge

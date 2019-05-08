@@ -22,6 +22,15 @@ https://gist.github.com/pascalandy/af709db02d3fe132a3e6f1c11b934fe4
 
 ---
 
+## 2.22.0
+### ⚡️ Updates
+- ffd10d35 Bump to 2.22.0 / chown is recurisve / npm cache clean --force
+- 3098c1c0 🚀 Added (new feat.) added config.production.json template file
+- e7c3d9b6 README updates
+- cd443593 README updates
+- 0180bace copyproofing our README
+- 45107504 changelog updates
+
 ## 2.21.1
 ### ⚡️ Updates
 - 6e991c1e 2.21.1

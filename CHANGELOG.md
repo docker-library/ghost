@@ -8,12 +8,11 @@ https://trello.com/b/0fCwwzqc/firepress-public-roadmap
 Based on this template:
 https://gist.github.com/pascalandy/af709db02d3fe132a3e6f1c11b934fe4
 
-# Releases
+Releases process:
 - https://firepress.org/en/software-and-ghost-updates/
 
----
+## Status template
 
-## 0.0.0 status template
 ### ⚡️ Updates
 ### 🚀 Added (new feat.)
 ### 🐛 Fix bug
@@ -23,9 +22,11 @@ https://gist.github.com/pascalandy/af709db02d3fe132a3e6f1c11b934fe4
 ---
 
 ## 2.22.0
+### 🚀 Added (new feat.)
+- 3098c1c0 added config.production.json template file
+
 ### ⚡️ Updates
 - ffd10d35 Bump to 2.22.0 / chown is recurisve / npm cache clean --force
-- 3098c1c0 🚀 Added (new feat.) added config.production.json template file
 - e7c3d9b6 README updates
 - cd443593 README updates
 - 0180bace copyproofing our README

@@ -63,7 +63,7 @@ We tweaked a few elements like:
 4. clean node cache
 5. Added `curl` to do healthchecks
 
-In the future, we plan to use a **multi-stage** build to slim down the image when Docker EE will supports it officially.
+In the future, we plan to use a **multi-stage** build to slim down the image when Docker EE supports it officially.
 
 
 ## How to use this image
@@ -140,9 +140,9 @@ devmtl/ghostfire:edge
 
 ### Master VS Edge
 
-⚠️ Workflow warning. You would expect that we would merge `edge` into `master`. We don’t do this. Instead, think of it as independent projects. The main reason is because the **.travis.yml is not the same in those two branches**.
+⚠️ Workflow warning. You would expect that we would merge `edge` into `master`. We don’t do this. Instead, think of it as independent projects. The main reason is that the **.travis.yml is not the same in those two branches**.
 
-Time to understand our processes.
+Let's understand our processes.
 
 
 ## DevOps best practices
@@ -188,9 +188,11 @@ You can also see this information in the Dockerfile and in the Travis builds.
 
 ## FirePress Hosting
 
-**At FirePress we do one thing and we do it with our whole heart: we host fully managed Ghost’s websites**. The idea behind FirePress is to empower freelancers and small organizations to be able to build an outstanding mobile-first website.
+I'm glad to say it finally 🙊. We just **launched** our hosting platform for Ghost out in the wild. At FirePress we empower entrepreneurs and small organizations to create their websites on top of [Ghost](https://firepress.org/en/faq/#what-is-ghost).
 
-Because we believe your website should speak up in your name, we consider our mission completed once your site has become [your impresario](https://firepress.org/en/why-launching-your-next-website-with-firepress/). Start your [free trial here](https://firepress.org/en/10-day-free-trial/). 
+At the moment, our **pricing** for hosting one Ghost website is $15 (Canadian dollars). This price will be only available for our first 100 new clients, starting May 1st, 2019 🙌. [See our pricing section](https://firepress.org/en/pricing/) for details.
+
+More details [about this annoucement](https://forum.ghost.org/t/host-your-ghost-website-on-firepress/7092/1) on Ghost's forum.
 
 
 ## Workshop

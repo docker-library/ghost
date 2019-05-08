@@ -72,7 +72,7 @@ In the future, we plan to use a **multi-stage** build to slim down the image whe
 
 To run Ghost in a Docker container, here is the setup we are using in production. Just execute `runup.sh` bash script and you are good to go.
 
-**Option #1 (Stateful)**
+#### Option #1 (Stateful):
 
 ⚠️ warning — change the path `/myuser/localpath/ghost/content` and use the latest stable docker image.
 
@@ -87,7 +87,7 @@ docker run -d \
 ${GHOSTFIRE_IMG}
 ```
 
-**Option #2**:
+#### Option #2:
 
 ```
 GHOSTFIRE_IMG="devmtl/ghostfire:stable"
@@ -99,7 +99,7 @@ docker run -d \
 ${GHOSTFIRE_IMG}
 ```
 
-**Option #3**:
+#### Option #3:
 
 - Run the script by typing: `./runup.sh`
 
@@ -129,7 +129,7 @@ devmtl/ghostfire:stable
 ```
 
 
-#### edge branch (not stable) tags 🐳
+#### edge branch (for dev) tags 🐳
 
 ```
 devmtl/ghostfire:edge-2.9.1-7d64db0
@@ -138,20 +138,18 @@ devmtl/ghostfire:edge
 ```
 
 
-### Edge VS Master
+### Master VS Edge
 
 ⚠️ Workflow warning. You would expect that we would merge `edge` into `master`. We don’t do this. Instead, think of it as independent projects. The main reason is because the **.travis.yml is not the same in those two branches**.
 
-Let’s understand our process.
+Time to understand our processes.
+
+
+## DevOps best practices
 
 Because we run a lot of websites in production using this image, we prefer to do my UAT (tests) using a dedicated `edge` branch. **In other words, it’s a manual checkpoint to avoid a crash at scale.**
 
 It also has the advantage of keeping a clean commit history in the master branch (without doing git-fu all the time).
-
-Once we confirm the edge build is a PASS, we update the Dockerfile in `master` branch as well. At this point, we are entirely confident the docker image is working correctly.
-
-
-#### Well tested
 
 DevOps best practices are essential to us. Many checkpoints ensure this Docker image for Ghost software runs smoothly.
 
@@ -188,15 +186,14 @@ docker exec <container-id> node --version
 You can also see this information in the Dockerfile and in the Travis builds.
 
 
-## Services
-
 ## FirePress Hosting
 
 **At FirePress we do one thing and we do it with our whole heart: we host fully managed Ghost’s websites**. The idea behind FirePress is to empower freelancers and small organizations to be able to build an outstanding mobile-first website.
 
 Because we believe your website should speak up in your name, we consider our mission completed once your site has become [your impresario](https://firepress.org/en/why-launching-your-next-website-with-firepress/). Start your [free trial here](https://firepress.org/en/10-day-free-trial/). 
 
-#### Workshop
+
+## Workshop
 
 We also offer a workshop where participants end up with a website/blog they can smoothly operate themselves. The workshops are available in:
 

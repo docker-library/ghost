@@ -2,14 +2,11 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-FirePress Public Roadmap:
-https://trello.com/b/0fCwwzqc/firepress-public-roadmap
+FirePress Public Roadmap: https://trello.com/b/0fCwwzqc/firepress-public-roadmap
 
-Based on this template:
-https://gist.github.com/pascalandy/af709db02d3fe132a3e6f1c11b934fe4
+Based on this template: https://gist.github.com/pascalandy/af709db02d3fe132a3e6f1c11b934fe4
 
-Releases process:
-- https://firepress.org/en/software-and-ghost-updates/
+Releases process (blog post): https://firepress.org/en/software-and-ghost-updates/
 
 ## Status template
 

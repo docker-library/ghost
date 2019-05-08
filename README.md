@@ -41,7 +41,7 @@ Source: https://github.com/firepress-org/ghostfire
 
 Want to try Ghost quickly? This is for you!
 
-[play-with-ghost.com](https://play-with-ghost.com/) is a playground to learn about Ghost. What's remarkable here, is that you have the option to log in into the admin panel of each live demo available, by using dummy credentials.
+[play-with-ghost.com](https://play-with-ghost.com/) is a playground to learn about Ghost. What's remarkable here, is that you have the option to log into the admin panel of each live demo available, by using dummy credentials.
 
 In short, you can try Ghost on the spot without having to sign-up!
 
@@ -57,19 +57,20 @@ In short, you can try Ghost on the spot without having to sign-up!
 
 We tweaked a few elements like:
 
-- Ghost container is running under [tini](https://github.com/krallin/tini#why-tini)
-- Easier to read Dockerfile with a cleaner envvar display
-- Uninstall the `ghost cli` to save some space in the final docker image
-- Added `curl` to do healthcheck
+1. Ghost container is running under [tini](https://github.com/krallin/tini#why-tini)
+2. Easier to read Dockerfile with a cleaner ARG display
+3. Uninstall the `ghost cli` to save some space in the final docker image
+4. clean node cache
+5. Added `curl` to do healthchecks
 
-In the future, we plan to use a multi-stage build to slim down the image
+In the future, we plan to use a **multi-stage** build to slim down the image when Docker EE will supports it officially.
 
 
 ## How to use this image
 
 **Requirement**: Ensure you have Docker installed on your machine. ([MAC OS X](https://hub.docker.com/editions/community/docker-ce-desktop-mac))
 
-To run Ghost in a Docker container, here is the setup we use in production. Just execute `runup.sh` bash script and you are good to go.
+To run Ghost in a Docker container, here is the setup we are using in production. Just execute `runup.sh` bash script and you are good to go.
 
 **Option #1 (Stateful)**
 
@@ -107,17 +108,22 @@ ${GHOSTFIRE_IMG}
 - **Docker hub** — https://hub.docker.com/r/devmtl/ghostfire/tags/
 - **Travis** — https://travis-ci.org/firepress-org/ghostfire
 
-I'm surprised that at this point, it's been downloaded more than **5 millions of time**!
+I'm surprised that at this point, it's been pulled more than **11 millions of time**!
 
 ![docker-hub](https://user-images.githubusercontent.com/6694151/53067692-4c8af700-34a3-11e9-9fcf-9c7ad169a91b.jpg)
 
 
 #### master branch (stable) tags 🐳
 
-I recommend using the tag from this format: $IMAGE_SHA_SHORT
+I recommend using the tag from this format: $IMAGE_SHA_SHORT:
 
 ```
 devmtl/ghostfire:2.9.1-99814a4
+```
+
+But if you prefer, you can use:
+
+```
 devmtl/ghostfire:2.9.1
 devmtl/ghostfire:stable
 ```
@@ -132,18 +138,24 @@ devmtl/ghostfire:edge
 ```
 
 
-#### Git Branches: Edge VS Master
+### Edge VS Master
 
-⚠️ Workflow warning. You would expect that we merge `edge` into `master`. We DON'T do this. Think of it as two independent projects. The main reason for this is the fact that **the two .travis.yml files don’t push the same docker images** (stable VS edge).
+⚠️ Workflow warning. You would expect that we would merge `edge` into `master`. We don’t do this. Instead, think of it as independent projects. The main reason is because the **.travis.yml is not the same in those two branches**.
+
+Let’s understand our process.
+
+Because we run a lot of websites in production using this image, we prefer to do my UAT (tests) using a dedicated `edge` branch. **In other words, it’s a manual checkpoint to avoid a crash at scale.**
+
+It also has the advantage of keeping a clean commit history in the master branch (without doing git-fu all the time).
+
+Once we confirm the edge build is a PASS, we update the Dockerfile in `master` branch as well. At this point, we are entirely confident the docker image is working correctly.
 
 
 #### Well tested
 
 DevOps best practices are essential to us. Many checkpoints ensure this Docker image for Ghost software runs smoothly.
 
-In this post, we explain how we deploy Ghost in production and which best practices we do follow.
-
-https://firepress.org/en/software-and-ghost-updates/
+[In this post](https://firepress.org/en/software-and-ghost-updates/), we explain how we deploy Ghost in production and which best practices we do follow.
 
 
 ## Developing Ghost themes locally
@@ -178,29 +190,17 @@ You can also see this information in the Dockerfile and in the Travis builds.
 
 ## Services
 
-#### Hosting
+## FirePress Hosting
 
-**At FirePress we host Ghost’s websites with an optional landing page**. It's fully managed for you. It means you never have to touch a server, do an upgrade, manage backups or any annoying stuff like this.
-
-The idea behind FirePress is to empower freelancers and small organizations to be able to build an outstanding mobile-first website.
+**At FirePress we do one thing and we do it with our whole heart: we host fully managed Ghost’s websites**. The idea behind FirePress is to empower freelancers and small organizations to be able to build an outstanding mobile-first website.
 
 Because we believe your website should speak up in your name, we consider our mission completed once your site has become [your impresario](https://firepress.org/en/why-launching-your-next-website-with-firepress/). Start your [free trial here](https://firepress.org/en/10-day-free-trial/). 
 
 #### Workshop
 
-Participants will end up with a website and/or a blog they can smoothly operate themselves. We are actively working on this workshop.
+We also offer a workshop where participants end up with a website/blog they can smoothly operate themselves. The workshops are available in:
 
-The workshops will be available in those cities:
-
-- Montréal - Canada
-- Toronto - Canada
-- Québec City - Canada
-- New-York - USA
-- Boston - USA
-
-Follow the details [on this page](https://firepress.org/en/workshop/).
-
-<br>
+- [Montréal - Canada](https://firepress.org/en/workshop/)
 
 
 ## Contributing
@@ -243,5 +243,3 @@ Because we believe your website should speak up in your name, we consider our mi
 For more info about the man behind the startup, check out my [now page](https://pascalandy.com/blog/now/). You can also follow me on Twitter [@askpascalandy](https://twitter.com/askpascalandy).
 
 — The FirePress Team 🔥📰
-
-

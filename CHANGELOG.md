@@ -18,6 +18,26 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## wip (still on 2.22.1)
+### 🚀 Added (new feat.)
+- 3f320520 Rocking with multi-stage
+- b21a931d Add Dockerfile-single-build
+### ⚡️ Updates
+- 10937e01 update commit / version / update scripts
+
+## 2.22.1
+### ⚡️ Updates
+- a06da861 Ghost updated to 2.22.1 version
+- 45442dad maintainer / minor updates
+- a10f0479 changelog minor updates
+- c29af54f CHANGELOG update
+- aa481c34 CHANGELOG update
+- 7c8b9173 CHANGELOG update
+### 🚀 Added (new feat.)
+- 9b893dff rename run_version.sh
+- 4abb004e rename version_is.sh
+- fdf6f9ff Add update_push_version.sh in master
+
 ## 2.22.0
 ### 🚀 Added (new feat.)
 - 3098c1c0 added config.production.json template file

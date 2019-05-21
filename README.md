@@ -76,12 +76,12 @@ To run Ghost in a Docker container, here is the setup we are using in production
 ⚠️ warning — change the path `/myuser/localpath/ghost/content` and use the latest stable docker image.
 
 ```
-GHOSTFIRE_IMG="devmtl/ghostfire:stable"
+GHOSTFIRE_IMG="devmtl/ghostfire:2.9.1-99814a4"
 
 docker run -d \
 —name ghostblog \
 -p 2368:2368 \
--e url=http://localhost:2368 -e NODE_ENV=production \
+-e url=http://localhost:2368 \
 -v /myuser/localpath/ghost/content:/var/lib/ghost/content \
 -v /myuser/localpath/ghost/content:/var/lib/ghost/config.production.json \
 ${GHOSTFIRE_IMG}
@@ -97,7 +97,7 @@ GHOSTFIRE_IMG="devmtl/ghostfire:2.9.1-99814a4"
 docker run -d \
 —name ghostblog \
 -p 2368:2368 \
--e url=http://localhost:2368 -e NODE_ENV=production \
+-e url=http://localhost:2368 \
 ${GHOSTFIRE_IMG}
 ```
 
@@ -149,11 +149,9 @@ Let's understand our processes.
 
 ## DevOps best practices
 
-Because we run a lot of websites in production using this image, we prefer to do my UAT (tests) using a dedicated `edge` branch. **In other words, it’s a manual checkpoint to avoid a crash at scale.**
+Because we run a lot of websites in production using this image, we prefer to do UAT (unit acceptance tests) using the `edge` branch. **In other words, it’s a manual checkpoint to avoid a crash at scale.** DevOps best practices are essential to us. Many checkpoints ensure this Docker image for Ghost software runs smoothly.
 
 It also has the advantage of keeping a clean commit history in the master branch (without doing git-fu all the time).
-
-DevOps best practices are essential to us. Many checkpoints ensure this Docker image for Ghost software runs smoothly.
 
 [In this post](https://firepress.org/en/software-and-ghost-updates/), we explain how we deploy Ghost in production and which best practices we do follow.
 

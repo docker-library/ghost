@@ -34,7 +34,7 @@ It’s a Docker image to run Ghost V2 in a container. Fully compatible with a si
 
 **What is Ghost?** — Ghost is an open source software that lets you create your website with a blog. See the [FAQ section](https://play-with-ghost.com/ghost-themes/faq/#what-is-ghost) for more details.
 
-Source: https://github.com/firepress-org/ghostfire
+Source: [https://github.com/firepress-org/ghostfire](https://github.com/firepress-org/ghostfire)
 
 
 ## Live Demo
@@ -50,22 +50,20 @@ In short, you can try Ghost on the spot without having to sign-up!
 [![pwg-video-preview-e](https://user-images.githubusercontent.com/6694151/50233512-9bbc8a80-0381-11e9-83bb-f29a67000378.jpg)
 ](https://play-with-ghost.com/)
 
-<br>
-
-
 ## Why forking the official Docker image?
 
-We tweaked a few elements like:
+- [x] Using multi-stage builds. The docker image size is 79MB (instead of 210MB)
+- [x] The Docker image use a multi-architecture:  AMD64, ARM64, ARM
+- [x] Ghost container is running under [tini](https://github.com/krallin/tini#why-tini)
+- [x] A better `config.production.json` template
+- [x] Easier to read Dockerfile with a cleaner ARG display
+- [x] Uninstalled the `ghost cli` to save some space in the final docker image
+- [x] Added `npm cache clean --force` to safe some space
+- [x] Added `curl` to do healthchecks
 
-1. Ghost container is running under [tini](https://github.com/krallin/tini#why-tini)
-2. A great `config.production.json` template
-2. Easier to read Dockerfile with a cleaner ARG display
-3. Uninstall the `ghost cli` to save some space in the final docker image
-4. clean node cache
-5. Added `curl` to do healthchecks
+In the future, we plan to merge our Dockerfile into the official docker Ghost image. [Follow the updates here](https://github.com/docker-library/ghost/issues/95).
 
-In the future, we plan to use a **multi-stage** build to slim down the image when Docker EE supports it officially.
-
+<br>
 
 ## How to use this image
 

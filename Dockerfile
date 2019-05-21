@@ -30,13 +30,13 @@ LABEL com.firepress.ghost.version="$GHOST_VERSION"              \
       com.firepress.node.version="$NODE_VERSION"                \
       com.firepress.maintainer.name="$MAINTAINER"
 
-RUN set -ex                                                     && \
+RUN set -eux                                                    && \
     apk --update --no-cache add 'su-exec>=0.2'                  \
         bash curl tini ca-certificates                          && \
     update-ca-certificates                                      && \
     rm -rf /var/cache/apk/*;
 
-RUN set -ex                                                     && \
+RUN set -eux                                                    && \
     npm install --production -g "ghost-cli@$GHOST_CLI_VERSION"  && \
     npm cache clean --force                                     && \
     \
@@ -111,9 +111,8 @@ LABEL com.firepress.ghost.version="$GHOST_VERSION"              \
       com.firepress.node.version="$NODE_VERSION"                \
       com.firepress.maintainer.name="$MAINTAINER"
 
-RUN set -ex                                                     && \
-    apk update                                                  && \
-    apk --update --no-cache add                                 \
+RUN set -eux                                                    && \
+    apk --update --no-cache add 'su-exec>=0.2'                  \
         bash curl tini ca-certificates                          && \
     update-ca-certificates                                      && \
     rm -rf /var/cache/apk/*;

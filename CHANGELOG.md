@@ -18,11 +18,29 @@ All notable changes to this project will be documented in this file.
 
 ---
 
-## wip (still on 2.22.1)
-### 🚀 Added (new feat.)
-- 3f320520 Rocking with multi-stage
-- b21a931d Add Dockerfile-single-build
+## 2.22.2
+
 ### ⚡️ Updates
+
+We had a nasty a bug. The container were running but under the hood there was permission issue. This happened at the same time we were testing multi-stage. That complicated the debugging process. It should be all good now.
+
+- 9a3ef3cf 🐛 Fix bug / FIXED / permission issue is gone
+- c83192b6 Fixed the permission issue we had
+- 407acbd7 Update renovate.json (#14)
+- c89aee32 update to 2.22.2
+- 5209aa4c rollback to single-stage
+- 29bafeba added multi-stage
+- 4c7fd945 renamed
+- e9ac3e77 renamed
+- 713fadb3 rollback accidental rename / runup.sh
+- af522a61 🚀 Added (new feat.) / Added / renovate.json
+- f1b50599 Ghost updated to 2.22.2 version
+- 80e38553 added in the final build | su-exec
+- 8b3f7935 a better README
+- 21e32868 updated section / Why forking the official Docker image
+- 02b75f58 changelog update
+- 3f320520 🚀 Added (new feat.) / Rocking with multi-stage
+- b21a931d Add Dockerfile-single-build
 - 10937e01 update commit / version / update scripts
 
 ## 2.22.1

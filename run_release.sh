@@ -13,7 +13,8 @@ GOPATH=${HOME}/go
 # The tag must be ready to push on git remote
 #
 cd ${HOME}/Documents/Github/firepress-org/${my_repo} && \
-git push --tags && \
+
+# git push --tags && \
 
 # Find the latest tag
 #

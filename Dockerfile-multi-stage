@@ -1,11 +1,8 @@
-# WARNING
-# This multistage create some unsattented permission issues
-# https://gist.github.com/pascalandy/8511cb47bb586f74fb714ced98d28972
 #
 # Forked from https://github.com/docker-library/ghost/blob/2f6ac6c7770e428a4a50d23d46ec470d5e727456/1/alpine/Dockerfile
 # docs.ghost.org/faq/node-versions/ (Node v10 since 2.13.2) | https://github.com/nodejs/LTS
 #
-# UPDATE LINES -> 10 to 12
+# UPDATE LINES -> 7.8.9 
 
 ARG GHOST_VERSION="2.22.2"
 ARG GHOST_CLI_VERSION="1.10.0"
@@ -78,18 +75,17 @@ RUN set -eux                                                    && \
 # force install "sqlite3" manually since it's an optional dependency of "ghost"
 # (which means that if it fails to install, like on ARM/ppc64le/s390x, the failure will be silently ignored and thus turn into a runtime error instead)
 # see https://github.com/TryGhost/Ghost/pull/7677 for more details
-  cd "$GHOST_INSTALL/current"                                   && \
+	cd "$GHOST_INSTALL/current"; \
 # scrape the expected version of sqlite3 directly from Ghost itself
-  sqlite3Version="$(npm view . optionalDependencies.sqlite3)" && \
-  if ! su-exec node yarn add "sqlite3@$sqlite3Version" --force; then \
+	sqlite3Version="$(npm view . optionalDependencies.sqlite3)"; \
+	if ! su-exec node yarn add "sqlite3@$sqlite3Version" --force; then \
 # must be some non-amd64 architecture pre-built binaries aren't published for, so let's install some build deps and do-it-all-over-again
-    apk add --no-cache --virtual .build-deps python make gcc g++ libc-dev; \
-    \
-    su-exec node yarn add "sqlite3@$sqlite3Version" --force --build-from-source; \
-    \
-    apk del --no-network .build-deps; \
-  fi
-
+		apk add --no-cache --virtual .build-deps python make gcc g++ libc-dev; \
+		\
+		su-exec node yarn add "sqlite3@$sqlite3Version" --force --build-from-source; \
+		\
+		apk del --no-network .build-deps; \
+	fi
 
 
 ### ### ### ### ### ### ### ### ###
@@ -123,20 +119,19 @@ RUN set -eux                                                    && \
 # Copy Ghost installation
 COPY --from=ghost-builder --chown=node:node $GHOST_INSTALL $GHOST_INSTALL
 
-# add knex-migrator bins into PATH
-# we want these from the context of Ghost's "node_modules" directory (instead of doing "npm install -g knex-migrator") so they can share the DB driver modules
-ENV PATH $PATH:$GHOST_INSTALL/current/node_modules/knex-migrator/bin
+# USER $GHOST_USER
+    # bypassed as it causes all kind of permission issues
 
 WORKDIR $GHOST_INSTALL
 VOLUME $GHOST_CONTENT
 
-USER $GHOST_USER
 EXPOSE 2368
 
 COPY docker-entrypoint.sh /usr/local/bin
 
 ENTRYPOINT [ "/sbin/tini", "--", "docker-entrypoint.sh" ]
 
-# HEALTHCHECK / Attributes are passed during runtime <docker service create>
+# HEALTHCHECK CMD wget -q -s http://localhost:2368 || exit 1
+    # bypassed as attributes are passed during runtime <docker service create>
 
 CMD [ "node", "current/index.js" ]

@@ -22,7 +22,12 @@ All notable changes to this project will be documented in this file.
 
 ### ⚡️ Updates
 
-We had a nasty a bug. The container were running but under the hood there was permission issue. This happened at the same time we were testing multi-stage. That complicated the debugging process. It should be all good now.
+We had a nasty a bug. Our containers were running normally but under the hood there was a permission issue.
+
+This happened at the same time we were testing our new multi-stage Dockerfile.
+That complicated the debugging process.
+
+It should be all good now.
 
 - 9a3ef3cf 🐛 Fix bug / FIXED / permission issue is gone
 - c83192b6 Fixed the permission issue we had

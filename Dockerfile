@@ -120,7 +120,7 @@ RUN set -eux                                                    && \
 COPY --from=ghost-builder --chown=node:node $GHOST_INSTALL $GHOST_INSTALL
 
 # USER $GHOST_USER
-    # bypassed as it causes all kind of permission issues
+# bypassed as it causes all kind of permission issues
 
 WORKDIR $GHOST_INSTALL
 VOLUME $GHOST_CONTENT
@@ -128,10 +128,12 @@ VOLUME $GHOST_CONTENT
 EXPOSE 2368
 
 COPY docker-entrypoint.sh /usr/local/bin
+COPY Dockerfile /usr/local/bin
+COPY README.md /usr/local/bin
 
 ENTRYPOINT [ "/sbin/tini", "--", "docker-entrypoint.sh" ]
 
 # HEALTHCHECK CMD wget -q -s http://localhost:2368 || exit 1
-    # bypassed as attributes are passed during runtime <docker service create>
+# bypassed as attributes are passed during runtime <docker service create>
 
 CMD [ "node", "current/index.js" ]

@@ -119,6 +119,10 @@ RUN set -eux                                                    && \
 # Copy Ghost installation
 COPY --from=ghost-builder --chown=node:node $GHOST_INSTALL $GHOST_INSTALL
 
+# testing permission
+RUN set -eux                                                    && \
+chown -R node:node "$GHOST_INSTALL";
+
 # USER $GHOST_USER
 # bypassed as it causes all kind of permission issues
 

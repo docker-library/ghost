@@ -2,7 +2,7 @@
 # docs.ghost.org/faq/node-versions/ (Node v10 since 2.13.2) | https://github.com/nodejs/LTS
 # Update lines -> 5,6,7
 
-ARG GHOST_VERSION="2.22.3"
+ARG GHOST_VERSION="2.23.0"
 ARG GHOST_CLI_VERSION="1.10.0"
 ARG NODE_VERSION="10.15-alpine"
 
@@ -88,7 +88,6 @@ RUN set -eux                                                    && \
 		apk del --no-network .build-deps; \
 	fi
 
-# set permission
 RUN set -eux                                                    && \
     chown -R node:node "$GHOST_INSTALL"                         ;
 
@@ -115,9 +114,9 @@ LABEL com.firepress.ghost.version="$GHOST_VERSION"              \
       com.firepress.node.version="$NODE_VERSION"                \
       com.firepress.maintainer.name="$MAINTAINER"
 
-RUN set -eux                      && \
-    apk --update --no-cache add   \
-      bash curl tini              && \
+RUN set -eux                                    && \
+    apk --update --no-cache add 'su-exec>=0.2'  \
+        bash curl tini                          && \
     rm -rf /var/cache/apk/*;
 
 # Copy Ghost installation
@@ -128,8 +127,8 @@ COPY README.md /usr/local/bin
 
 WORKDIR $GHOST_INSTALL
 VOLUME $GHOST_CONTENT
-USER $GHOST_USER
 EXPOSE 2368
+# USER $GHOST_USER // bypassed as it causes all kind of permission issues
 
 # HEALTHCHECK CMD wget -q -s http://localhost:2368 || exit 1 // bypassed as attributes are passed during runtime <docker service create>
 

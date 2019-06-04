@@ -24,9 +24,9 @@ ARG NODE_VERSION
 LABEL com.firepress.ghost.version="$GHOST_VERSION"              \
       com.firepress.ghost.cliversion="$GHOST_CLI_VERSION"       \
       com.firepress.ghost.user="$GHOST_USER"                    \
-      com.firepress.node.env="$NODE_ENV"                        \
-      com.firepress.node.version="$NODE_VERSION"                \
-      com.firepress.maintainer.name="$MAINTAINER"
+      com.firepress.ghost.nodeenv="$NODE_ENV"                   \
+      com.firepress.ghost.nodeversion="$NODE_VERSION"           \
+      com.firepress.ghost.maintainer="$MAINTAINER"
 
 RUN set -eux                                                    && \
     apk --update --no-cache add 'su-exec>=0.2'                  \

@@ -1,3 +1,9 @@
+
+## Publish updates
+
+1. `./runversion.sh` / Ensure everything is fine
+2. `./runtag.sh` / This will tag the commit and publish a release on Github
+
 ## ⚠️ Workflow warning
 
 NEVER MERGE EDGE into MASTER!

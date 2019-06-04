@@ -18,10 +18,43 @@ All notable changes to this project will be documented in this file.
 
 ---
 
-## 2.22.2
+## 2.xx.x WIP
+### 🚀 Added (new feat.)
+The scripts to update the tag + release on github was not clean. See MAINTAINERS.md
 
+- 1909a30a splitting the process / part3
+- 5875c73e splitting the process / part2
+- bc3f388e splitting the process / part1
+- 582a79f4 keep this script as standalone
+- 9756ae13 rename files
+
+## 2.23.2
 ### ⚡️ Updates
+- 62c2727a RM tag comment
+- 169c6783 Ghost updated to 2.23.2 version
+- c61f6f0b cleaner labels / best practices /b
+- 586581c2 cleaner labels / best practices
+- ea9d3cc9 FIX with CLI 1.11.0
+- 8909318b bump to Ghost 2.23.1 & CLI 1.10.1
+	- 🛑 CLI 1.10.1 is buggy
+- 5fa1a0d9 USER node must not be defined
+- 4ed3d669 cleaner and optimized (2.22.3)
+- 38c4b1ee RM chmod as it make the final image much bigger
+- 009d1ca0 Added a chmod
+- a616570e Added / COPY Dockerfile  and README
+- c8de2c71 added file and dir
+- 65c6aa7f comment out
+- d47ce839 script update
 
+## 2.22.3
+### ⚡️ Updates
+- 755dbcc0 Ghost updated to 2.22.3 version
+- 138e660e Ghost updated to 2.22.3 version
+- d54d6281 copyproofing
+
+
+## 2.22.2
+### 🐛 Fix bug
 We had a nasty a bug. Our containers were running normally but under the hood there was a permission issue.
 
 This happened at the same time we were testing our new multi-stage Dockerfile.
@@ -31,6 +64,8 @@ It should be all good now.
 
 - 9a3ef3cf 🐛 Fix bug / FIXED / permission issue is gone
 - c83192b6 Fixed the permission issue we had
+
+### ⚡️ Updates
 - 407acbd7 Update renovate.json (#14)
 - c89aee32 update to 2.22.2
 - 5209aa4c rollback to single-stage

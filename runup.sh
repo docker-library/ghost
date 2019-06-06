@@ -13,7 +13,7 @@ set -o nounset
 # --- VARS | Find the most recent Docker image here: https://hub.docker.com/r/devmtl/ghostfire/tags/
 GHOSTFIRE_IMG="devmtl/ghostfire:stable"
 CTN_NAME="ghostUAT"
-WAIT_TIMER="3600"
+WAIT_TIMER="21600"
 
 
 echo; echo "--- Unit Test for image: <${GHOSTFIRE_IMG}> - Start ---"; \

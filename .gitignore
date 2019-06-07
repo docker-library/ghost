@@ -1,6 +1,9 @@
 # .gitignore
 ############
-node_modules/
+.cache
+coverage
+dist
+node_modules
 npm-debug
 .env
 .git

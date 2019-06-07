@@ -30,17 +30,19 @@ LABEL org.label-schema.ghost.version="${GHOST_VERSION}"           \
       org.label-schema.schema-version="1.0"
 
 RUN set -eux                                                      && \
-    apk --update --no-cache add 'su-exec>=0.2'                    \
-        bash curl tini                                            && \
+    apk --update --no-cache add \
+        'su-exec>=0.2' \
+        bash \
+        curl \
+        tini \
+        ca-certificates                                           && \
+    update-ca-certificates                                        && \
     rm -rf /var/cache/apk/*                                       ;
 
 ### ### ### ### ### ### ### ### ###
 # Builder layer
 ### ### ### ### ### ### ### ### ###
 FROM ghost-base AS ghost-builder
-
-RUN apk --update --no-cache add                                   \
-    ca-certificates && update-ca-certificates                     ;
 
 RUN set -eux                                                      && \
     npm install --production -g "ghost-cli@${GHOST_CLI_VERSION}"  && \

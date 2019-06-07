@@ -98,7 +98,6 @@ RUN set -eux                                                    && \
 
 ### ### ### ### ### ### ### ### ###
 # Final layer
-#
 # USER $GHOST_USER // bypassed as it causes all kinds of permission issues
 # HEALTHCHECK CMD wget -q -s http://localhost:2368 || exit 1 // bypassed as attributes are passed during runtime <docker service create>
 ### ### ### ### ### ### ### ### ###

@@ -18,10 +18,27 @@ All notable changes to this project will be documented in this file.
 
 ---
 
-## 2.xx.x WIP
+## 2.23.3
 ### 🚀 Added (new feat.)
-The scripts to update the tag + release on github was not clean. See MAINTAINERS.md
+- 23fcf508 MAJOR update, now with a base image
 
+### 🐛 Fix bug
+- eac49b54 added / git push
+
+### ⚡️ Updates
+- 5c16f305 update to 10.16-alpine
+- bf541c70 RM older Dockerfile pattern
+- bb0d277d cleaner dummy var
+- cfc16e90 RM older Dockerfile pattern
+- e67f885f init
+- 714f81f3 Init
+- 9e5222bf adding folders to ignore
+- 9fe4b3ff cleaner spacing + FIX VAR
+- 404fdb9b minor / spacing fix
+- 5e9f54df Ghost updated to 2.23.3 version
+- 82975976 config / 6 hours by default
+- 454150dc CHANGELOG updates
+The scripts to update the tag + release on github was not clean. See MAINTAINERS.md
 - 1909a30a splitting the process / part3
 - 5875c73e splitting the process / part2
 - bc3f388e splitting the process / part1

@@ -15,5 +15,6 @@ VERSION=$1 && \
 sed -i '' "s/^ARG GHOST_VERSION=.*$/ARG GHOST_VERSION=\"$VERSION\"/" Dockerfile && \
 git add . && \
 git commit -m "Ghost updated to $VERSION version" && \
+git push && \
 \
-echo "You will need to publish a tag + release as well :-p";
+echo "You will need to run ./runtag.sh as well.";

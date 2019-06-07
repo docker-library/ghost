@@ -1,6 +1,6 @@
 # Forked from official Ghost image https://bit.ly/2JWOTam
 
-ARG GHOST_VERSION="2.23.2"
+ARG GHOST_VERSION="2.23.3"
 ARG GHOST_CLI_VERSION="1.11.0"
 ARG NODE_VERSION="10.15-alpine"
 

@@ -2,11 +2,12 @@
 
 ARG GHOST_VERSION="2.23.3"
 ARG GHOST_CLI_VERSION="1.11.0"
-ARG NODE_VERSION="10.16-alpine"
+ARG NODE_VERSION_BASE="mhart/alpine-node:10.16"
+ARG NODE_VERSION_SLIM="mhart/alpine-node:slim-10.16"
 
 # Base layer
-### ### ### ### ### ### ### ### ###
-FROM node:${NODE_VERSION} AS ghost-base
+### ### ### ### ### ### ### ### ### ### ###
+FROM ${NODE_VERSION_SLIM} AS ghost-base
 
 ARG GHOST_VERSION
 ARG GHOST_CLI_VERSION
@@ -24,23 +25,55 @@ LABEL org.label-schema.ghost.version="${GHOST_VERSION}"           \
       org.label-schema.ghost.cli-version="${GHOST_CLI_VERSION}"   \
       org.label-schema.ghost.user="${GHOST_USER}"                 \
       org.label-schema.ghost.node-env="${NODE_ENV}"               \
-      org.label-schema.ghost.node-version="${NODE_VERSION}"       \
+      org.label-schema.ghost.node-version="${NODE_VERSION_SLIM}"  \
       org.label-schema.ghost.maintainer="${MAINTAINER}"           \
       org.label-schema.schema-version="1.0"
 
 RUN set -eux                                                      && \
+    \
+# setup node user and group
+    addgroup -g 1000 node                                         \
+    && adduser -u 1000 -G node -s /bin/sh -D node                 && \
+    \
+# install required apps
     apk --update --no-cache add \
         'su-exec>=0.2' \
         bash \
         curl \
-        tini && \
+        tini                                                      && \
     rm -rf /var/cache/apk/*                                       ;
 
 # Builder layer
-### ### ### ### ### ### ### ### ###
-FROM ghost-base AS ghost-builder
+### ### ### ### ### ### ### ### ### ### ###
+FROM ${NODE_VERSION_BASE} AS ghost-builder
+
+ARG GHOST_VERSION
+ARG GHOST_CLI_VERSION
+ARG NODE_VERSION
+
+ENV GHOST_INSTALL="/var/lib/ghost"                                \
+    GHOST_CONTENT="/var/lib/ghost/content"                        \
+    NODE_ENV="production"                                         \
+    GHOST_USER="node"                                             \
+    GHOST_VERSION=${GHOST_VERSION}                                \
+    GHOST_CLI_VERSION=${GHOST_CLI_VERSION}                        \
+    MAINTAINER="Pascal Andy <https://firepress.org/en/contact/>"
 
 RUN set -eux                                                      && \
+    \
+# setup node user and group
+    addgroup -g 1000 node                                         \
+    && adduser -u 1000 -G node -s /bin/sh -D node                 && \
+    \
+# install required apps
+    apk --update --no-cache add \
+        'su-exec>=0.2' \
+        bash \
+        ca-certificates                                           && \
+    update-ca-certificates                                        && \
+    rm -rf /var/cache/apk/*                                       && \
+    \
+# install Ghost CLI
     npm install --production -g "ghost-cli@${GHOST_CLI_VERSION}"  && \
     npm cache clean --force                                       && \
     \
@@ -95,7 +128,7 @@ RUN set -eux                                                      && \
 	fi
 
 # Final layer
-### ### ### ### ### ### ### ### ###
+### ### ### ### ### ### ### ### ### ### ###
 FROM ghost-base AS ghost-final
 
 COPY --from=ghost-builder --chown=node:node "${GHOST_INSTALL}" "${GHOST_INSTALL}"

@@ -4,7 +4,6 @@ ARG GHOST_VERSION="2.23.3"
 ARG GHOST_CLI_VERSION="1.11.0"
 ARG NODE_VERSION="10.16-alpine"
 
-### ### ### ### ### ### ### ### ###
 # Base layer
 ### ### ### ### ### ### ### ### ###
 FROM node:${NODE_VERSION} AS ghost-base
@@ -37,7 +36,6 @@ RUN set -eux                                                      && \
         tini && \
     rm -rf /var/cache/apk/*                                       ;
 
-### ### ### ### ### ### ### ### ###
 # Builder layer
 ### ### ### ### ### ### ### ### ###
 FROM ghost-base AS ghost-builder
@@ -96,10 +94,7 @@ RUN set -eux                                                      && \
 		apk del --no-network .build-deps                              ; \
 	fi
 
-### ### ### ### ### ### ### ### ###
 # Final layer
-# USER $GHOST_USER // bypassed as it causes all kinds of permission issues
-# HEALTHCHECK CMD wget -q -s http://localhost:2368 || exit 1 // bypassed as attributes are passed during runtime <docker service create>
 ### ### ### ### ### ### ### ### ###
 FROM ghost-base AS ghost-final
 
@@ -111,6 +106,9 @@ COPY README.md /usr/local/bin
 WORKDIR "${GHOST_INSTALL}"
 VOLUME "${GHOST_CONTENT}"
 EXPOSE 2368
+
+# USER $GHOST_USER // bypassed as it causes all kinds of permission issues
+# HEALTHCHECK CMD wget -q -s http://localhost:2368 || exit 1 // bypassed as attributes are passed during runtime <docker service create>
 
 ENTRYPOINT [ "/sbin/tini", "--", "docker-entrypoint.sh" ]
 CMD [ "node", "current/index.js" ]

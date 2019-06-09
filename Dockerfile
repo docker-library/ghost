@@ -34,9 +34,7 @@ RUN set -eux                                                      && \
         'su-exec>=0.2' \
         bash \
         curl \
-        tini \
-        ca-certificates                                           && \
-    update-ca-certificates                                        && \
+        tini && \
     rm -rf /var/cache/apk/*                                       ;
 
 ### ### ### ### ### ### ### ### ###

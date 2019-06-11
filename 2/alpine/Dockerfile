@@ -56,7 +56,7 @@ RUN set -ex; \
 	fi; \
 	\
 	su-exec node yarn cache clean; \
-    su-exec node npm cache clean --force; \
+	su-exec node npm cache clean --force; \
 	npm cache clean --force; \
 	rm -r /tmp/*
 

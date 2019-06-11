@@ -73,7 +73,7 @@ RUN set -eux; \
 	gosu node yarn cache clean; \
 	gosu node npm cache clean --force; \
 	npm cache clean --force; \
-	rm -r /tmp/*
+	rm -rv /tmp/yarn* /tmp/v8*
 
 # add knex-migrator bins into PATH
 # we want these from the context of Ghost's "node_modules" directory (instead of doing "npm install -g knex-migrator") so they can share the DB driver modules

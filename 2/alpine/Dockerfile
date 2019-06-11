@@ -59,7 +59,7 @@ RUN set -eux; \
 	su-exec node yarn cache clean; \
 	su-exec node npm cache clean --force; \
 	npm cache clean --force; \
-	rm -r /tmp/*
+	rm -rv /tmp/yarn* /tmp/v8*
 
 WORKDIR $GHOST_INSTALL
 VOLUME $GHOST_CONTENT

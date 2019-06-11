@@ -12,14 +12,16 @@ RUN apk add --no-cache \
 ENV NODE_ENV production
 
 ENV GHOST_CLI_VERSION 1.11.0
-RUN npm install -g "ghost-cli@$GHOST_CLI_VERSION"
+RUN set -eux; \
+	npm install -g "ghost-cli@$GHOST_CLI_VERSION"; \
+	npm cache clean --force
 
 ENV GHOST_INSTALL /var/lib/ghost
 ENV GHOST_CONTENT /var/lib/ghost/content
 
 ENV GHOST_VERSION 2.23.3
 
-RUN set -ex; \
+RUN set -eux; \
 	mkdir -p "$GHOST_INSTALL"; \
 	chown node:node "$GHOST_INSTALL"; \
 	\
@@ -38,8 +40,7 @@ RUN set -ex; \
 	mv "$GHOST_CONTENT" "$GHOST_INSTALL/content.orig"; \
 	mkdir -p "$GHOST_CONTENT"; \
 	chown node:node "$GHOST_CONTENT"; \
-    \
-    set -eux; \
+	\
 # force install "sqlite3" manually since it's an optional dependency of "ghost"
 # (which means that if it fails to install, like on ARM/ppc64le/s390x, the failure will be silently ignored and thus turn into a runtime error instead)
 # see https://github.com/TryGhost/Ghost/pull/7677 for more details

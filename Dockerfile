@@ -149,6 +149,11 @@ RUN set -eux                                                      && \
       apk del --no-network .build-deps                            ; \
     fi                                                            ;
 
+# next, copy the Ghost app into the final layer
+
+# LAYER ghost-source — — — — — — — — — — — — — — — — — — — — — — —
+FROM ghost-base AS ghost-source
+COPY --from=ghost-builder --chown=node:node "${GHOST_INSTALL}" "${GHOST_INSTALL}"
 
 # LAYER scan — — — — — — — — — — — — — — — — — — — — — — — — — — —
 FROM node-slim AS ghost-to-scan

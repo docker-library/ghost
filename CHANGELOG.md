@@ -44,6 +44,10 @@ All notable changes to this project will be documented in this file.
 - 149a915a RM ca-certificates in base image
 - 30da41fb Add ca-certificates in base image
 
+### Vulnerability Scanner for Containers
+
+- https://gist.github.com/pascalandy/e313e094036f329482cc53ede6669c9c
+- https://github.com/knqyf263/trivy
 
 ## 2.23.3
 ### 🚀 Added (new feat.)

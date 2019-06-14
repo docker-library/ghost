@@ -155,17 +155,6 @@ RUN set -eux                                                      && \
 FROM ghost-base AS ghost-source
 COPY --from=ghost-builder --chown=node:node "${GHOST_INSTALL}" "${GHOST_INSTALL}"
 
-# LAYER scan — — — — — — — — — — — — — — — — — — — — — — — — — — —
-FROM node-slim AS ghost-to-scan
-COPY --from=ghost-builder --chown=node:node "${GHOST_INSTALL}" "${GHOST_INSTALL}"
-WORKDIR "${GHOST_INSTALL}"
-VOLUME "${GHOST_CONTENT}"
-EXPOSE 2368
-#USER $GHOST_USER                                             // bypassed as it causes all kinds of permission issues
-#HEALTHCHECK CMD wget -q -s http://localhost:2368 || exit 1   // bypassed as attributes are passed during runtime <docker service create>
-ENTRYPOINT [ "/sbin/tini", "--", "docker-entrypoint.sh" ]
-CMD [ "node", "current/index.js" ]
-
 # LAYER audit — — — — — — — — — — — — — — — — — — — — — — — — — — —
 FROM ghost-source AS ghost-audit
 ARG MICROSCANNER_TOKEN

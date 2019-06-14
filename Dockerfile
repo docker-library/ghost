@@ -167,11 +167,11 @@ ENTRYPOINT [ "/sbin/tini", "--", "docker-entrypoint.sh" ]
 CMD [ "node", "current/index.js" ]
 
 # LAYER audit — — — — — — — — — — — — — — — — — — — — — — — — — — —
-FROM ghost-to-scan AS ghost-audit
-USER root
+FROM ghost-source AS ghost-audit
 ARG MICROSCANNER_TOKEN
+USER root
 ADD https://get.aquasec.com/microscanner /
-RUN chmod +x /microscanner && \
+RUN chmod +x /microscanner                                         && \
     /microscanner "${MICROSCANNER_TOKEN}" --continue-on-failure;
 
 # LAYER final — — — — — — — — — — — — — — — — — — — — — — — — — — —

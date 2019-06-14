@@ -2,6 +2,8 @@ ARG GHOST_VERSION="2.23.3"
 ARG GHOST_CLI_VERSION="1.11.0"
 ARG ALPINE_VERSION="3.9"
 ARG NODE_VERSION="10.16-alpine"
+ARG CREATED_DATE=not-set
+ARG SOURCE_COMMIT=not-set
 
 # LAYER node-compress — — — — — — — — — — — — — — — — — — — — — — — —
 FROM node:${NODE_VERSION} AS node-compress

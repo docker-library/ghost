@@ -60,6 +60,14 @@ LABEL org.opencontainers.image.authors="Pascal Andy https://firepress.org/en/con
       org.firepress.image.alpineversion="${ALPINE_VERSION}"                             \
       org.firepress.image.schemaversion="1.0"
 
+WORKDIR "${GHOST_INSTALL}"
+VOLUME "${GHOST_CONTENT}"
+EXPOSE 2368
+#USER $GHOST_USER                                             // bypassed as it causes all kinds of permission issues
+#HEALTHCHECK CMD wget -q -s http://localhost:2368 || exit 1   // bypassed as attributes are passed during runtime <docker service create>
+
+# ==> next, copy the Ghost's app
+
 # LAYER BUILDER — — — — — — — — — — — — — — — — — — — — — — — — — —
 FROM node:${NODE_VERSION} AS ghost-builder
 

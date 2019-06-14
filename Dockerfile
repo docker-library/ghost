@@ -72,6 +72,8 @@ EXPOSE 2368
 
 # LAYER BUILDER — — — — — — — — — — — — — — — — — — — — — — — — — —
 FROM node:${NODE_VERSION} AS ghost-builder
+ LAYER BUILDER — — — — — — — — — — — — — — — — — — — — — — — — — —
+FROM node:${NODE_VERSION} AS ghost-builder
 
 ARG GHOST_VERSION
 ARG GHOST_CLI_VERSION
@@ -81,11 +83,10 @@ ENV GHOST_INSTALL="/var/lib/ghost"                                \
     GHOST_CONTENT="/var/lib/ghost/content"                        \
     NODE_ENV="production"                                         \
     GHOST_USER="node"                                             \
-    GHOST_VERSION=${GHOST_VERSION}                                \
-    GHOST_CLI_VERSION=${GHOST_CLI_VERSION}                        \
-    MAINTAINER="Pascal Andy <https://firepress.org/en/contact/>"
+    GHOST_VERSION="${GHOST_VERSION}"                              \
+    GHOST_CLI_VERSION="${GHOST_CLI_VERSION}"
 
-# follows the instructions from the official Ghost image https://bit.ly/2JWOTam
+# installation process from the official Ghost image https://bit.ly/2JWOTam
 RUN set -eux                                                      && \
     apk --update --no-cache add su-exec>="0.2" bash="4.4.19-r1"   \
       ca-certificates="20190108-r0"                               && \
@@ -104,7 +105,7 @@ RUN set -eux                                                      && \
       --db sqlite3 --no-prompt --no-stack                         \
       --no-setup --dir "${GHOST_INSTALL}"                         && \
     \
-# tell Ghost to listen on all ips and not prompt for additional configuration
+# tell Ghost to listen on all IPs and not prompt for additional configuration
     cd "${GHOST_INSTALL}"                                         && \
     su-exec node ghost config --ip 0.0.0.0                        \
       --port 2368 --no-prompt --db sqlite3                        \
@@ -125,7 +126,9 @@ RUN set -eux                                                      && \
     \
 # sanity check to ensure knex-migrator was installed
     "${GHOST_INSTALL}/current/node_modules/knex-migrator/bin/knex-migrator" --version && \
-    \
+# sanity check to list all packages
+    npm config list                                               ;
+
 # force install "sqlite3" manually since it's an optional dependency of "ghost"
 # (which means that if it fails to install, like on ARM/ppc64le/s390x, the failure will be silently ignored and thus turn into a runtime error instead)
 # see https://github.com/TryGhost/Ghost/pull/7677 for more details

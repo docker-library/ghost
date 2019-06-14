@@ -43,14 +43,22 @@ ENV GHOST_INSTALL="/var/lib/ghost"                                \
     GHOST_VERSION="${GHOST_VERSION}"                              \
     GHOST_CLI_VERSION="${GHOST_CLI_VERSION}"
 
-LABEL org.label-schema.ghost.version="${GHOST_VERSION}"           \
-      org.label-schema.ghost.cli-version="${GHOST_CLI_VERSION}"   \
-      org.label-schema.ghost.user="${GHOST_USER}"                 \
-      org.label-schema.ghost.node-env="${NODE_ENV}"               \
-      org.label-schema.ghost.node-version="${NODE_VERSION}"       \
-      org.label-schema.ghost.alpine-version="${ALPINE_VERSION}"   \
-      org.label-schema.ghost.maintainer="${MAINTAINER}"           \
-      org.label-schema.schema-version="1.0"
+# best practice from https://github.com/opencontainers/image-spec/blob/master/annotations.md
+LABEL org.opencontainers.image.authors="Pascal Andy https://firepress.org/en/contact/"  \
+      org.opencontainers.image.vendors="https://firepress.org/"                         \
+      org.opencontainers.image.created="${CREATED_DATE}"                                \
+      org.opencontainers.image.revision="${SOURCE_COMMIT}"                              \
+      org.opencontainers.image.title="Ghost V2"                                         \
+      org.opencontainers.image.description="Docker image for Ghost ${GHOST_VERSION}"    \
+      org.opencontainers.image.url="https://hub.docker.com/r/devmtl/ghostfire/tags/"    \
+      org.opencontainers.image.source="https://github.com/firepress-org/ghostfire"      \
+      org.opencontainers.image.licenses="GNUv3 https://github.com/pascalandy/GNU-GENERAL-PUBLIC-LICENSE/blob/master/LICENSE.md" \
+      org.firepress.image.cliversion="${GHOST_CLI_VERSION}"                             \
+      org.firepress.image.user="${GHOST_USER}"                                          \
+      org.firepress.image.node-env="${NODE_ENV}"                                        \
+      org.firepress.image.nodeversion="${NODE_VERSION}"                                 \
+      org.firepress.image.alpineversion="${ALPINE_VERSION}"                             \
+      org.firepress.image.schemaversion="1.0"
 
 # LAYER BUILDER — — — — — — — — — — — — — — — — — — — — — — — — — —
 FROM node:${NODE_VERSION} AS ghost-builder

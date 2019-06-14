@@ -3,30 +3,33 @@ ARG GHOST_CLI_VERSION="1.11.0"
 ARG ALPINE_VERSION="3.9"
 ARG NODE_VERSION="10.16-alpine"
 
-# LAYER node-official — — — — — — — — — — — — — — — — — — — — — — — —
-FROM node:${NODE_VERSION} AS node-official
+# LAYER node-compress — — — — — — — — — — — — — — — — — — — — — — — —
+FROM node:${NODE_VERSION} AS node-compress
 RUN set -eux                                                      && \
     apk --update --no-cache add upx="3.95-r1"                     && \
+# compress node. Size before=39.8MO and after=14.2MO
     upx /usr/local/bin/node;
-    # node size before=39.8MO, after=14.2MO   / Thanks for the idea https://github.com/mhart/alpine-node/blob/master/slim/Dockerfile
 
-# LAYER node-slim — — — — — — — — — — — — — — — — — — — — — — — — — —
-FROM alpine:${ALPINE_VERSION} AS node-slim
-RUN set -eux                                                      && \
+# LAYER node-core — — — — — — — — — — — — — — — — — — — — — — — — — —
+FROM alpine:${ALPINE_VERSION} AS node-core
 # set up node user and group
+RUN set -eux                                                      && \
     addgroup -g 1000 node                                         \
-    && adduser -u 1000 -G node -s /bin/sh -D node                 && \
-# install required apps
-    apk --update --no-cache add 'su-exec>=0.2' bash="4.4.19-r1"   \
-      curl="7.64.0-r2" tini="0.18.0-r0"                           && \
-    rm -rf /var/cache/apk/*;
-# install node without yarn, npm, npx, etc.
-COPY --from=node-official /usr/local/bin/node /usr/bin/
-COPY --from=node-official /usr/lib/libgcc* /usr/lib/libstdc* /usr/lib/
-# needed by ghost
+    && adduser -u 1000 -G node -s /bin/sh -D node;
+# create our node-core layer (no extra stuff like yarn, npm, npx, etc.)
+# thanks for the idea https://github.com/mhart/alpine-node/blob/master/slim/Dockerfile
+COPY --from=node-compress /usr/local/bin/node /usr/bin/
+COPY --from=node-compress /usr/lib/libgcc* /usr/lib/libstdc* /usr/lib/
+
+# LAYER ghost-base — — — — — — — — — — — — — — — — — — — — — — — — — —
+FROM node-core AS ghost-base
 COPY docker-entrypoint.sh /usr/local/bin
 COPY Dockerfile /usr/local/bin
 COPY README.md /usr/local/bin
+RUN set -eux                                                      && \
+    apk --update --no-cache add 'su-exec>=0.2' bash="4.4.19-r1"   \
+      curl="7.64.0-r2" tini="0.18.0-r0"                           && \
+    rm -rf /var/cache/apk/*;
 
 ARG GHOST_VERSION
 ARG GHOST_CLI_VERSION
@@ -37,9 +40,8 @@ ENV GHOST_INSTALL="/var/lib/ghost"                                \
     GHOST_CONTENT="/var/lib/ghost/content"                        \
     NODE_ENV="production"                                         \
     GHOST_USER="node"                                             \
-    GHOST_VERSION=${GHOST_VERSION}                                \
-    GHOST_CLI_VERSION=${GHOST_CLI_VERSION}                        \
-    MAINTAINER="Pascal Andy <https://firepress.org/en/contact/>"
+    GHOST_VERSION="${GHOST_VERSION}"                              \
+    GHOST_CLI_VERSION="${GHOST_CLI_VERSION}"
 
 LABEL org.label-schema.ghost.version="${GHOST_VERSION}"           \
       org.label-schema.ghost.cli-version="${GHOST_CLI_VERSION}"   \

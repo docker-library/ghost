@@ -132,6 +132,7 @@ RUN set -eux                                                      && \
 # force install "sqlite3" manually since it's an optional dependency of "ghost"
 # (which means that if it fails to install, like on ARM/ppc64le/s390x, the failure will be silently ignored and thus turn into a runtime error instead)
 # see https://github.com/TryGhost/Ghost/pull/7677 for more details
+RUN set -eux                                                      && \
     cd "${GHOST_INSTALL}/current"                                 && \
 # scrape the expected version of sqlite3 directly from Ghost itself
     sqlite3Version="$(npm view . optionalDependencies.sqlite3)"   && \
@@ -146,7 +147,8 @@ RUN set -eux                                                      && \
         --force --build-from-source                               && \
       \
       apk del --no-network .build-deps                            ; \
-    fi;
+    fi                                                            ;
+
 
 # LAYER scan — — — — — — — — — — — — — — — — — — — — — — — — — — —
 FROM node-slim AS ghost-to-scan

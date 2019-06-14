@@ -8,4 +8,5 @@ set -o nounset          # Disallow expansion of unset variables
 set -o pipefail         # Use last non-zero exit code in a pipeline
 #set -o xtrace          # Trace the execution of the script (debug)
 
-docker run --rm -v $HOME/Library/Caches:/root/.cache/ knqyf263/trivy devmtl/ghostfire:edge
+VERSION="2.23.4-0254867"
+docker run --rm -v $HOME/Library/Caches:/root/.cache/ knqyf263/trivy devmtl/ghostfire:${VERSION}

@@ -72,8 +72,6 @@ EXPOSE 2368
 
 # LAYER BUILDER — — — — — — — — — — — — — — — — — — — — — — — — — —
 FROM node:${NODE_VERSION} AS ghost-builder
- LAYER BUILDER — — — — — — — — — — — — — — — — — — — — — — — — — —
-FROM node:${NODE_VERSION} AS ghost-builder
 
 ARG GHOST_VERSION
 ARG GHOST_CLI_VERSION
@@ -172,7 +170,7 @@ CMD [ "node", "current/index.js" ]
     ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ###
     # NOTES
     #
-    # multi-stage / using node-slim
+    # multi-stage / using node-core
     # devmtl/ghostfire:edge               fd2a63304e85        198MB (73MO)
     #
     # multi-stage / using node_10.16-alpine

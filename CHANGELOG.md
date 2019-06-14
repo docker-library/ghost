@@ -18,6 +18,33 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## 2.23.4
+
+**MAJOR UPDATE, wave 2**
+
+- 02548676 Update Ghost to 2.23.4
+- 164f5f77 comment updates
+- e568d0ff simplify ghost-final layer
+- 0a5dd642 remove layer ghost-to-scan
+- fac4199b rename FROM
+- 79b39842 Added layer ghost-source
+- 9f74ae5e using RUN for this section
+- 0b68f028 added npm config list
+- f4129c1b new default ARG
+- 84af7c14 Added WORKDIR, VOLUME, EXPOSE in the base layer
+- e202cdcf using LABELS from opencontainer standard
+- 73eccd44 now using node-core layer
+
+**MAJOR UPDATE, wave 1**
+- 9b469594 Added / linting tool
+- 6bce7558 Added layer to scan Aquasec / version for each apps
+- eeebfeb4 MAJOR update / Creating node-slim our of the official node image
+- da339c97 MAJOR update / now using mhart/alpine-node:10.16
+- 41a21ef8 Easier to read comments
+- 149a915a RM ca-certificates in base image
+- 30da41fb Add ca-certificates in base image
+
+
 ## 2.23.3
 ### 🚀 Added (new feat.)
 - 23fcf508 MAJOR update, now with a base image
@@ -26,6 +53,7 @@ All notable changes to this project will be documented in this file.
 - eac49b54 added / git push
 
 ### ⚡️ Updates
+- 1f4bfc48 what happened in 2.23.3
 - 5c16f305 update to 10.16-alpine
 - bf541c70 RM older Dockerfile pattern
 - bb0d277d cleaner dummy var

@@ -35,7 +35,7 @@
 
 **How to use this image** — To run Ghost in a Docker container, here is the setup we are using in production. Just execute `./runup.sh`.
 
-**Git repo source** — [https://github.com/firepress-org/ghostfire](https://github.com/firepress-org/ghostfire)
+**Git repo** — [https://github.com/firepress-org/ghostfire](https://github.com/firepress-org/ghostfire)
 
 <br>
 

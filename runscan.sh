@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# based on https://github.com/mmornati/docker-ghostblog/blob/master/update_push_version.sh
 
 # A better class of script
 set -o errexit          # Exit on most errors (see the manual)

@@ -1,6 +1,6 @@
 #notifications:
-#    webhooks: https://www.travisbuddy.com/
-    
+# webhooks: https://www.travisbuddy.com/
+#
 # Secret DOCKER_PASSWORD managed by Travis:
 # See https://docs.travis-ci.com/user/environment-variables/#Defining-Variables-in-Repository-Settings
 #
@@ -59,7 +59,7 @@ before_script:
   - GHOST_VERSION_DOCKERFILE="$(cat Dockerfile | grep GHOST_VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g')"
   - GHOST_LATEST_RELEASE="$(git ls-remote --tags https://github.com/TryGhost/Ghost.git | cut -d$'\t' -f2 | grep -E '^refs/tags/[0-9]+\.[0-9]+' | cut -d/ -f3 | sort -rV | head -n1)"
   - GHOST_CLI_LATEST_RELEASE="$(git ls-remote --tags https://github.com/TryGhost/Ghost-CLI.git | cut -d$'\t' -f2 | grep -E '^refs/tags/[0-9]+\.[0-9]+' | cut -d/ -f3 | sort -rV | head -n1)"
-  - GHOST_VERSION="$GHOST_VERSION_DOCKERFILE"
+  - GHOST_VERSION=${GHOST_VERSION_DOCKERFILE}
 
   - DOCKER_USERNAME="devmtl"
   - DOCKER_REPO_NAME="ghostfire"
@@ -68,14 +68,14 @@ before_script:
   - THIS_DATE=$(date +%Y-%m-%d)
   - THIS_SHA_SHORT=$(git rev-parse --short HEAD)
 
-  - IMAGE_SHA_SHORT="$DOCKER_USERNAME"/"$DOCKER_REPO_NAME":"$GHOST_VERSION"-"$THIS_SHA_SHORT"
-  - IMAGE_VERSION="$DOCKER_USERNAME"/"$DOCKER_REPO_NAME":"$GHOST_VERSION"
-  - IMAGE_STABLE="$DOCKER_USERNAME"/"$DOCKER_REPO_NAME":stable
+  - IMAGE_SHA_SHORT=${DOCKER_USERNAME}/${DOCKER_REPO_NAME}:${GHOST_VERSION}-${THIS_SHA_SHORT}
+  - IMAGE_VERSION=${DOCKER_USERNAME}/${DOCKER_REPO_NAME}:${GHOST_VERSION}
+  - IMAGE_STABLE=${DOCKER_USERNAME}/${DOCKER_REPO_NAME}:stable
 
-  - IMAGE_NODE_COMPRESS="$DOCKER_USERNAME"/"$DOCKER_REPO_NAME":layer-node-compress
-  - IMAGE_NODE_CORE="$DOCKER_USERNAME"/"$DOCKER_REPO_NAME":layer-node-core
-  - IMAGE_GHOST_BASE="$DOCKER_USERNAME"/"$DOCKER_REPO_NAME":layer-ghost-base
-  - IMAGE_EDGE="$DOCKER_USERNAME"/"$DOCKER_REPO_NAME":edge
+  - IMAGE_NODE_COMPRESS=${DOCKER_USERNAME}/${DOCKER_REPO_NAME}:layer-node-compress
+  - IMAGE_NODE_CORE=${DOCKER_USERNAME}/${DOCKER_REPO_NAME}:layer-node-core
+  - IMAGE_GHOST_BASE=${DOCKER_USERNAME}/${DOCKER_REPO_NAME}:layer-ghost-base
+  - IMAGE_EDGE=${DOCKER_USERNAME}/${DOCKER_REPO_NAME}:edge
 
 # docker log in
   - echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin;
@@ -89,8 +89,8 @@ before_script:
 script:
   - uname -a && echo & echo && echo "BUILD OUR DOCKERFILE FROM HERE ==========>"
   - docker build --build-arg=MICROSCANNER_TOKEN=${MICROSCANNER_TOKEN} -t ${IMAGE_SHA_SHORT} .
-
   - docker run -d --name ${CONTAINER_NAME} -p 2368:2368 -e url=http://localhost:2368 -e NODE_ENV=production ${IMAGE_SHA_SHORT}
+  
   - echo & echo && echo "Ensure ${CONTAINER_NAME} is starting ==========>"
   - until $(curl --output /dev/null --silent --head --fail http://localhost:2368); do
       echo & echo && echo "Waiting for ${CONTAINER_NAME} container to run  ==========>";
@@ -100,10 +100,13 @@ script:
 
   - echo & echo && echo "Starting official docker unit test on the image ==========>"
   - ~/official-images/test/run.sh ${IMAGE_SHA_SHORT}
+
 # Execute Trivy Vulnerability Scanner
 #  - ./trivy --exit-code 0 --severity HIGH --quiet --auto-refresh ${IMAGE_SHA_SHORT}
 #  - ./trivy --exit-code 0 --severity CRITICAL --quiet --auto-refresh ${IMAGE_SHA_SHORT}
 # Execute microscanner Aquasec Scanner
+# issue openned: https://github.com/knqyf263/trivy/issues/61#issuecomment-502400785
+
   - MICROSCANNER_TOKEN=${MICROSCANNER_TOKEN} ./scan.sh ${IMAGE_SHA_SHORT}
 
 after_script:

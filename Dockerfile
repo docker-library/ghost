@@ -68,7 +68,7 @@ EXPOSE 2368
 #USER $GHOST_USER                                             // bypassed as it causes all kinds of permission issues
 #HEALTHCHECK CMD wget -q -s http://localhost:2368 || exit 1   // bypassed as attributes are passed during runtime <docker service create>
 
-# ==> next, copy the Ghost's app
+# ==> next, copy Ghost's app in the final layer
 
 # LAYER BUILDER — — — — — — — — — — — — — — — — — — — — — — — — — —
 FROM node:${NODE_VERSION} AS ghost-builder
@@ -146,8 +146,6 @@ RUN set -eux                                                      && \
       \
       apk del --no-network .build-deps                            ; \
     fi                                                            ;
-
-# next, copy the Ghost app into the final layer
 
 # LAYER ghost-source — — — — — — — — — — — — — — — — — — — — — — —
 FROM ghost-base AS ghost-source

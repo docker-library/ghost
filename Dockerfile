@@ -159,6 +159,14 @@ ADD https://get.aquasec.com/microscanner /
 RUN chmod +x /microscanner                                         && \
     /microscanner "${MICROSCANNER_TOKEN}" --continue-on-failure;
 
+# LAYER upgrade — — — — — — — — — — — — — — — — — — — — — — — — — —
+FROM ghost-source AS ghost-what-to-upgrade
+# the point is to keep trace of logs in Travis CI
+RUN apk update && \
+    apk info && \
+    apk policy package && \
+    apk upgrade
+
 # LAYER final — — — — — — — — — — — — — — — — — — — — — — — — — — —
 FROM ghost-source AS ghost-final
 ENTRYPOINT [ "/sbin/tini", "--", "docker-entrypoint.sh" ]

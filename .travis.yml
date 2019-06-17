@@ -1,3 +1,21 @@
+#notifications:
+#    webhooks: https://www.travisbuddy.com/
+    
+# Secret DOCKER_PASSWORD managed by Travis:
+# See https://docs.travis-ci.com/user/environment-variables/#Defining-Variables-in-Repository-Settings
+#
+# In a commit, by using [ci skip] it will skip Travis build
+#
+# THIS_SHA_LONG=$(git log -1 | head -1 | awk '{print $2}')
+#
+# In the master branch, the GHOST_VERSION is parsed from the Dockerfile https://github.com/firepress-org/ghostfire/blob/master/Dockerfile
+# WIP in the followrelease branch, the GHOST_VERSION is parsed from: https://github.com/TryGhost/Ghost/releases
+#
+# Flag output examples:
+# IMAGE_SHA_SHORT=devmtl/ghostfire:2.9.1-e04b5c6
+# IMAGE_VERSION=devmtl/ghostfire:2.9.1
+# IMAGE_STABLE=devmtl/ghostfire:stable
+
 sudo: required
 language: bash
 
@@ -15,29 +33,24 @@ branches:
   - master
   - edge
 
-#notifications:
-#    webhooks: https://www.travisbuddy.com/
-    
-# Secret DOCKER_PASSWORD managed by Travis:
-# See https://docs.travis-ci.com/user/environment-variables/#Defining-Variables-in-Repository-Settings
-#
-# In a commit, by using [ci skip] it will skip Travis build
-#
-# THIS_SHA_LONG=$(git log -1 | head -1 | awk '{print $2}')
-#
-# In the master branch, the GHOST_VERSION is parsed from the Dockerfile https://github.com/firepress-org/ghostfire/blob/master/Dockerfile
-# WIP in the followrelease branch, the GHOST_VERSION is parsed from: https://github.com/TryGhost/Ghost/releases
+addons:
+  apt:
+    packages:
+
+cache:
+  directories:
+    - $HOME/.cache/trivy
 
 before_install:
   - sudo apt-get -qq update
   - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
-  - sudo apt-get install -qqy openssl parallel
+  - sudo apt-get install --no-install-recommends -qqy openssl parallel ca-certificates
   - docker --version
-
-addons:
-  apt:
-    packages:
-      - docker-ce
+# install Trivy Vulnerability Scanner
+#  - export TRIVY_VERSION=$(curl --silent "https://api.github.com/repos/knqyf263/trivy/releases/latest" | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
+#  - wget https://github.com/knqyf263/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz && tar zxvf trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz
+# install microscanner Aquasec Scanner
+  - wget --retry-connrefused --waitretry=1 --read-timeout=5 --timeout=5 --tries=10 https://raw.githubusercontent.com/lukebond/microscanner-wrapper/master/scan.sh && chmod +x scan.sh
 
 install:
 - git clone https://github.com/docker-library/official-images.git ~/official-images
@@ -48,9 +61,9 @@ before_script:
   - GHOST_CLI_LATEST_RELEASE="$(git ls-remote --tags https://github.com/TryGhost/Ghost-CLI.git | cut -d$'\t' -f2 | grep -E '^refs/tags/[0-9]+\.[0-9]+' | cut -d/ -f3 | sort -rV | head -n1)"
   - GHOST_VERSION="$GHOST_VERSION_DOCKERFILE"
 
-  - CONTAINER_NAME="ghostuat"
   - DOCKER_USERNAME="devmtl"
   - DOCKER_REPO_NAME="ghostfire"
+  - CONTAINER_NAME="ghostuat"
 
   - THIS_DATE=$(date +%Y-%m-%d)
   - THIS_SHA_SHORT=$(git rev-parse --short HEAD)
@@ -59,48 +72,71 @@ before_script:
   - IMAGE_VERSION="$DOCKER_USERNAME"/"$DOCKER_REPO_NAME":"$GHOST_VERSION"
   - IMAGE_STABLE="$DOCKER_USERNAME"/"$DOCKER_REPO_NAME":stable
 
-script:
-  - uname -a;
-  - docker build -t "$IMAGE_SHA_SHORT" .
-  - docker run -d --name "$CONTAINER_NAME" -p 2368:2368 -e url=http://localhost:2368 -e NODE_ENV=production "$IMAGE_SHA_SHORT"
+  - IMAGE_NODE_COMPRESS="$DOCKER_USERNAME"/"$DOCKER_REPO_NAME":layer-node-compress
+  - IMAGE_NODE_CORE="$DOCKER_USERNAME"/"$DOCKER_REPO_NAME":layer-node-core
+  - IMAGE_GHOST_BASE="$DOCKER_USERNAME"/"$DOCKER_REPO_NAME":layer-ghost-base
+  - IMAGE_EDGE="$DOCKER_USERNAME"/"$DOCKER_REPO_NAME":edge
 
-  - echo "Ensure $CONTAINER_NAME is starting..."
+# docker log in
+  - echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin;
+
+# download these layers to make our build faster
+  - docker pull ${IMAGE_NODE_COMPRESS} || true;
+  - docker pull ${IMAGE_NODE_CORE} || true;
+  - docker pull ${IMAGE_GHOST_BASE} || true;
+  - docker pull ${IMAGE_EDGE} || true;
+
+script:
+  - uname -a && echo & echo && echo "BUILD OUR DOCKERFILE FROM HERE ==========>"
+  - docker build --build-arg=MICROSCANNER_TOKEN=${MICROSCANNER_TOKEN} -t ${IMAGE_SHA_SHORT} .
+
+  - docker run -d --name ${CONTAINER_NAME} -p 2368:2368 -e url=http://localhost:2368 -e NODE_ENV=production ${IMAGE_SHA_SHORT}
+  - echo & echo && echo "Ensure ${CONTAINER_NAME} is starting ==========>"
   - until $(curl --output /dev/null --silent --head --fail http://localhost:2368); do
-      echo "Waiting for $CONTAINER_NAME container to run...";
+      echo & echo && echo "Waiting for ${CONTAINER_NAME} container to run  ==========>";
       sleep 3;
     done
   - curl http://localhost:2368 | grep "The professional publishing platform"
 
-  - echo "Starting official docker unit test on the image..."
-  - ~/official-images/test/run.sh "$IMAGE_SHA_SHORT"
+  - echo & echo && echo "Starting official docker unit test on the image ==========>"
+  - ~/official-images/test/run.sh ${IMAGE_SHA_SHORT}
+# Execute Trivy Vulnerability Scanner
+#  - ./trivy --exit-code 0 --severity HIGH --quiet --auto-refresh ${IMAGE_SHA_SHORT}
+#  - ./trivy --exit-code 0 --severity CRITICAL --quiet --auto-refresh ${IMAGE_SHA_SHORT}
+# Execute microscanner Aquasec Scanner
+  - MICROSCANNER_TOKEN=${MICROSCANNER_TOKEN} ./scan.sh ${IMAGE_SHA_SHORT}
 
 after_script:
-  - docker inspect "$CONTAINER_NAME";
+  - docker inspect ${CONTAINER_NAME};
   - docker images;
-  - docker logs "$CONTAINER_NAME";
-  - echo "Starting unit tests within the container..."
-  - docker exec -it "$CONTAINER_NAME" uname -a;
-  - docker exec -it "$CONTAINER_NAME" node --version;
-  - docker exec -it "$CONTAINER_NAME" cat /var/lib/ghost/current/content/themes/casper/package.json | grep version;
-  - docker exec -it "$CONTAINER_NAME" cat /var/lib/ghost/current/package.json | grep version;
-  - docker exec -it "$CONTAINER_NAME" curl -Is --head "http://localhost:2368" | grep -F -o "HTTP/1.1 200 OK" || echo "Error --> http://localhost:2368";
-  - docker rm -f "$CONTAINER_NAME";
-  - echo && echo "GHOST_VERSION_DOCKERFILE=$GHOST_VERSION_DOCKERFILE" && echo "GHOST_LATEST_RELEASE=$GHOST_LATEST_RELEASE" && echo "GHOST_CLI_LATEST_RELEASE=$GHOST_CLI_LATEST_RELEASE" && echo "GHOST_VERSION=$GHOST_VERSION" && echo && echo "IMAGE_SHA_SHORT=$IMAGE_SHA_SHORT" && echo "IMAGE_VERSION=$IMAGE_VERSION" && echo "IMAGE_STABLE=$IMAGE_STABLE" && echo && echo "#IMAGE_SHA_SHORT=$IMAGE_SHA_SHORT" && echo "#IMAGE_VERSION=$IMAGE_VERSION" && echo "#IMAGE_STABLE=$IMAGE_STABLE" && echo;
+  - docker logs ${CONTAINER_NAME};
+  - echo & echo && echo "Starting unit tests within the container ==========>"
+  - docker exec -it ${CONTAINER_NAME} uname -a;
+  - docker exec -it ${CONTAINER_NAME} node --version;
+  - docker exec -it ${CONTAINER_NAME} cat /var/lib/ghost/current/content/themes/casper/package.json | grep version;
+  - docker exec -it ${CONTAINER_NAME} cat /var/lib/ghost/current/package.json | grep version;
+  - docker exec -it ${CONTAINER_NAME} curl -Is --head "http://localhost:2368" | grep -F -o "HTTP/1.1 200 OK" || echo "Error --> http://localhost:2368";
+  - docker rm -f ${CONTAINER_NAME};
+  - echo & echo && echo GHOST_VERSION_DOCKERFILE=${GHOST_VERSION_DOCKERFILE} && echo GHOST_LATEST_RELEASE=${GHOST_LATEST_RELEASE} && echo GHOST_CLI_LATEST_RELEASE=${GHOST_CLI_LATEST_RELEASE} && echo GHOST_VERSION=${GHOST_VERSION} && echo && echo IMAGE_SHA_SHORT=${IMAGE_SHA_SHORT} && echo IMAGE_VERSION=${IMAGE_VERSION} && echo IMAGE_STABLE=${IMAGE_STABLE} && echo && echo "#IMAGE_SHA_SHORT=${IMAGE_SHA_SHORT}" && echo "#IMAGE_VERSION=${IMAGE_VERSION}" && echo "#IMAGE_STABLE=${IMAGE_STABLE}" && echo;
 
 after_success:
-  - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$DOCKER_REPO_NAME" != "" ] && [ "$DOCKER_USERNAME" != "" ] && [ "$DOCKER_PASSWORD" != "" ]; then
-      echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin;
-    
-      docker push "$IMAGE_SHA_SHORT";
-      
-      docker build -t "$IMAGE_VERSION" . ;
-      docker push "$IMAGE_VERSION";
-      
-      docker build -t "$IMAGE_STABLE" .;
-      docker push "$IMAGE_STABLE";
-    fi
+  - if [ ${TRAVIS_BRANCH} == "master" ] && [ ${DOCKER_REPO_NAME} != "" ] && [ ${DOCKER_USERNAME} != "" ] && [ ${DOCKER_PASSWORD} != "" ]; then
 
-# Flag output examples:
-# IMAGE_SHA_SHORT=devmtl/ghostfire:2.9.1-e04b5c6
-# IMAGE_VERSION=devmtl/ghostfire:2.9.1
-# IMAGE_STABLE=devmtl/ghostfire:stable
+      docker push ${IMAGE_SHA_SHORT};
+
+      docker build --build-arg=MICROSCANNER_TOKEN=${MICROSCANNER_TOKEN} -t ${IMAGE_VERSION} . ;
+      docker push ${IMAGE_VERSION};
+
+      docker build --build-arg=MICROSCANNER_TOKEN=${MICROSCANNER_TOKEN} -t ${IMAGE_STABLE} .;
+      docker push "$IMAGE_STABLE";
+
+      docker build --build-arg=MICROSCANNER_TOKEN=${MICROSCANNER_TOKEN} -t ${IMAGE_NODE_COMPRESS} --target node-compress . ;
+      docker push "${IMAGE_NODE_COMPRESS}";
+
+      docker build --build-arg=MICROSCANNER_TOKEN=${MICROSCANNER_TOKEN} -t ${IMAGE_NODE_CORE} --target node-core . ;
+      docker push "${IMAGE_NODE_CORE}";
+
+      docker build --build-arg=MICROSCANNER_TOKEN=${MICROSCANNER_TOKEN} -t ${IMAGE_GHOST_BASE} --target ghost-base . ;
+      docker push "${IMAGE_GHOST_BASE}";
+
+    fi

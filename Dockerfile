@@ -171,23 +171,3 @@ RUN apk upgrade
 FROM ghost-source AS ghost-final
 ENTRYPOINT [ "/sbin/tini", "--", "docker-entrypoint.sh" ]
 CMD [ "node", "current/index.js" ]
-
-
-    ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ###
-    # NOTES
-    #
-    # multi-stage / using node-core
-    # devmtl/ghostfire:edge               fd2a63304e85        198MB (73MO)
-    #
-    # multi-stage / using node_10.16-alpine
-    # devmtl/ghostfire:2.23.3-bf541c7     7c9797443ff5        246MB (79MO)
-    #
-    # single stage / using node_10.16-alpine
-    # devmtl/ghostfire:2.22.2-407acbd      bea1138a850f       552MB (210MO)
-    #
-    # WIP: comform the ghost node app as a binary and compress this binary
-    # 223 MO npm build
-    # 170 MO (ghostapp binary)
-    # 58 MO (ghostapp binary with upx)
-    #
-    ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ###

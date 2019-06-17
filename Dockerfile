@@ -162,10 +162,10 @@ RUN chmod +x /microscanner                                         && \
 # LAYER upgrade — — — — — — — — — — — — — — — — — — — — — — — — — —
 FROM ghost-source AS ghost-what-to-upgrade
 # the point is to keep trace of logs in Travis CI
-RUN apk update && \
-    apk info && \
-    apk policy package && \
-    apk upgrade
+RUN apk update
+RUN apk info
+RUN apk policy package
+RUN apk upgrade
 
 # LAYER final — — — — — — — — — — — — — — — — — — — — — — — — — — —
 FROM ghost-source AS ghost-final

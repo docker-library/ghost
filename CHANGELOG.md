@@ -38,7 +38,7 @@ All notable changes to this project will be documented in this file.
 **MAJOR UPDATE, wave 1**
 - 9b469594 Added / linting tool
 - 6bce7558 Added layer to scan Aquasec / version for each apps
-- eeebfeb4 MAJOR update / Creating node-slim our of the official node image
+- eeebfeb4 MAJOR update / Creating node-core our of the official node image
 - da339c97 MAJOR update / now using mhart/alpine-node:10.16
 - 41a21ef8 Easier to read comments
 - 149a915a RM ca-certificates in base image

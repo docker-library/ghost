@@ -33,7 +33,7 @@
 
 **What is Ghost?** — Ghost is an open source software that lets you create your website with a blog. See the [FAQ section](https://play-with-ghost.com/ghost-themes/faq/#what-is-ghost) for more details.
 
-**How to use this image** — To run Ghost in a Docker container, here is the setup we are using in production. Just execute `runup.sh` bash script and you are good to go.
+**How to use this image** — To run Ghost in a Docker container, here is the setup we are using in production. Just execute `./runup.sh`.
 
 **Git repo source** — [https://github.com/firepress-org/ghostfire](https://github.com/firepress-org/ghostfire)
 
@@ -87,6 +87,8 @@ In short, you can try Ghost on the spot without having to sign-up!
 ](https://play-with-ghost.com/)
 
 <br>
+
+## Running the container
 
 #### Find the latest docker images tag 🐳
 

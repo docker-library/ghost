@@ -18,9 +18,31 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## 2.25.1
+
+### ⚡️ Updates
+- 6175032b Ghost updated to 2.25.1 version
+- 971d3545 Ghost updated to 2.25.0 version
+- ae430dd9 minor update
+- 04519493 minor updates
+- 02f3efce Remove notes
+- 67f1d823 Using multiple RUN to make logs clearer
+- 45282ad0 Add layer ghost-what-to-upgrade
+- 22a9e8be remove comment
+- 7509ccf0 remove comment
+- 940bf5d6 major feature updates since 2.24.4
+- e8019107 minor comment
+- 77c5e565 Better bash linting
+- 2dd74ca9 minor commenting
+- 84e09557 Added caching layer, Scanners AquaSec + Trivy
+- ee5c860d Add scan log
+- 7df05b24 Added scan, local
+- 8448b8c3 add scan - local
+- ea9fcf64 Changelog 2.23.4
+
 ## 2.23.4
 
-**MAJOR UPDATE, wave 2**
+### ⚡️ Updates, MAJOR UPDATE part 1
 
 - 02548676 Update Ghost to 2.23.4
 - 164f5f77 comment updates
@@ -35,7 +57,7 @@ All notable changes to this project will be documented in this file.
 - e202cdcf using LABELS from opencontainer standard
 - 73eccd44 now using node-core layer
 
-**MAJOR UPDATE, wave 1**
+### ⚡️ Updates, MAJOR UPDATE part 2
 - 9b469594 Added / linting tool
 - 6bce7558 Added layer to scan Aquasec / version for each apps
 - eeebfeb4 MAJOR update / Creating node-core our of the official node image

@@ -1,4 +1,4 @@
-ARG GHOST_VERSION="2.25.5"
+ARG GHOST_VERSION="2.25.6"
 ARG GHOST_CLI_VERSION="1.11.0"
 ARG ALPINE_VERSION="3.9"
 ARG NODE_VERSION="10.16-alpine"
@@ -6,10 +6,10 @@ ARG CREATED_DATE=not-set
 ARG SOURCE_COMMIT=not-set
 
 # LAYER node-compress — — — — — — — — — — — — — — — — — — — — — — — —
+# compress node. Size before=39.8MO and after=14.2MO
 FROM node:${NODE_VERSION} AS node-compress
 RUN set -eux                                                      && \
     apk --update --no-cache add upx="3.95-r1"                     && \
-# compress node. Size before=39.8MO and after=14.2MO
     upx /usr/local/bin/node;
 
 # LAYER node-core — — — — — — — — — — — — — — — — — — — — — — — — — —
@@ -19,7 +19,7 @@ RUN set -eux                                                      && \
     addgroup -g 1000 node                                         \
     && adduser -u 1000 -G node -s /bin/sh -D node;
 # create our node-core layer (no extra stuff like yarn, npm, npx, etc.)
-# thanks for the idea https://github.com/mhart/alpine-node/blob/master/slim/Dockerfile
+# credit for the idea: https://github.com/mhart/alpine-node/blob/master/slim/Dockerfile
 COPY --from=node-compress /usr/local/bin/node /usr/bin/
 COPY --from=node-compress /usr/lib/libgcc* /usr/lib/libstdc* /usr/lib/
 
@@ -28,10 +28,13 @@ FROM node-core AS ghost-base
 COPY docker-entrypoint.sh /usr/local/bin
 COPY Dockerfile /usr/local/bin
 COPY README.md /usr/local/bin
-RUN set -eux                                                      && \
-    apk --update --no-cache add 'su-exec>=0.2' bash="4.4.19-r1"   \
-      curl="7.64.0-r2" tini="0.18.0-r0"                           && \
-    rm -rf /var/cache/apk/*;
+RUN set -eux && \
+    apk --update --no-cache add \
+      'su-exec>=0.2' bash="4.4.19-r1" curl="7.64.0-r2" tini="0.18.0-r0" tzdata && \
+      cp /usr/share/zoneinfo/America/New_York /etc/localtime      && \
+      echo "America/New_York" > /etc/timezone                     && \
+      apk del tzdata                                              && \
+    rm -rf /var/cache/apk/* /tmp/*                                ;
 
 ARG GHOST_VERSION
 ARG GHOST_CLI_VERSION
@@ -45,7 +48,7 @@ ENV GHOST_INSTALL="/var/lib/ghost"                                \
     GHOST_VERSION="${GHOST_VERSION}"                              \
     GHOST_CLI_VERSION="${GHOST_CLI_VERSION}"
 
-# best practice from https://github.com/opencontainers/image-spec/blob/master/annotations.md
+# best practice credit: https://github.com/opencontainers/image-spec/blob/master/annotations.md
 LABEL org.opencontainers.image.authors="Pascal Andy https://firepress.org/en/contact/"  \
       org.opencontainers.image.vendors="https://firepress.org/"                         \
       org.opencontainers.image.created="${CREATED_DATE}"                                \
@@ -160,8 +163,8 @@ RUN chmod +x /microscanner                                         && \
     /microscanner "${MICROSCANNER_TOKEN}" --continue-on-failure;
 
 # LAYER upgrade — — — — — — — — — — — — — — — — — — — — — — — — — —
+# The point is to keep trace of logs in Travis CI
 FROM ghost-source AS ghost-what-to-upgrade
-# the point is to keep trace of logs in Travis CI
 RUN apk update
 RUN apk info
 RUN apk policy package

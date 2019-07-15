@@ -18,8 +18,11 @@ All notable changes to this project will be documented in this file.
 
 ---
 
-## 2.25.1
+## 2.25.6-ff75200
+### ⚡️ Updates
 
+
+## 2.25.1
 ### ⚡️ Updates
 - 6175032b Ghost updated to 2.25.1 version
 - 971d3545 Ghost updated to 2.25.0 version

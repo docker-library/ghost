@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 - Based on this template: https://gist.github.com/pascalandy/af709db02d3fe132a3e6f1c11b934fe4
 - Release process at FirePress (blog post): https://firepress.org/en/software-and-ghost-updates/
 - Based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+- This represents the docker's image hash (i.e. 2.25.6-ff75200)
 
 ## Status template
 
@@ -19,8 +20,16 @@ All notable changes to this project will be documented in this file.
 ---
 
 ## 2.25.6-ff75200
-### ⚡️ Updates
 
+### ⚡️ Updates
+- fdf013ed update to 2.25.6, added tzdata
+- ccc57465 Ghost updated to 2.25.5 version
+- 0eda3a7a Ghost updated to 2.25.4 version
+- de88f909 Ghost updated to 2.25.3 version
+- 299d4498 update to 2.25.1
+
+### 🛑 Removed
+- ff75200e Travis / bypass test as America timezone fail the test
 
 ## 2.25.1
 ### ⚡️ Updates

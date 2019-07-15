@@ -1,13 +1,13 @@
 # CHANGELOG.md - ghostfire
 
-All notable changes to this project will be documented in this file. 
+All notable changes to this project will be documented in this file.
 
 - GitHub sources: https://github.com/firepress-org/ghostfire
 - FirePress Public Roadmap: https://trello.com/b/0fCwwzqc/firepress-public-roadmap
 - Based on this template: https://gist.github.com/pascalandy/af709db02d3fe132a3e6f1c11b934fe4
 - Release process at FirePress (blog post): https://firepress.org/en/software-and-ghost-updates/
 - Based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-- This represents the docker's image hash (i.e. 2.25.6-ff75200)
+- When reading `2.25.6-ff75200` the represents the docker's image hash (not the commit's hash)
 
 ## Status template
 
@@ -20,7 +20,8 @@ All notable changes to this project will be documented in this file.
 ---
 
 ## 2.25.6-ff75200
-
+### 🛑 Removed
+- ff75200e Travis / bypass test as America timezone fail the test
 ### ⚡️ Updates
 - fdf013ed update to 2.25.6, added tzdata
 - ccc57465 Ghost updated to 2.25.5 version
@@ -28,10 +29,10 @@ All notable changes to this project will be documented in this file.
 - de88f909 Ghost updated to 2.25.3 version
 - 299d4498 update to 2.25.1
 
-### 🛑 Removed
-- ff75200e Travis / bypass test as America timezone fail the test
-
 ## 2.25.1
+### 🔑 Security
+- 84e09557 Added caching layer, Scanners AquaSec + Trivy
+
 ### ⚡️ Updates
 - 6175032b Ghost updated to 2.25.1 version
 - 971d3545 Ghost updated to 2.25.0 version
@@ -46,7 +47,6 @@ All notable changes to this project will be documented in this file.
 - e8019107 minor comment
 - 77c5e565 Better bash linting
 - 2dd74ca9 minor commenting
-- 84e09557 Added caching layer, Scanners AquaSec + Trivy
 - ee5c860d Add scan log
 - 7df05b24 Added scan, local
 - 8448b8c3 add scan - local

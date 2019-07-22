@@ -1,21 +1,3 @@
-#notifications:
-# webhooks: https://www.travisbuddy.com/
-#
-# Secret DOCKER_PASSWORD managed by Travis:
-# See https://docs.travis-ci.com/user/environment-variables/#Defining-Variables-in-Repository-Settings
-#
-# In a commit, by using [ci skip] it will skip Travis build
-#
-# THIS_SHA_LONG=$(git log -1 | head -1 | awk '{print $2}')
-#
-# In the master branch, the GHOST_VERSION is parsed from the Dockerfile https://github.com/firepress-org/ghostfire/blob/master/Dockerfile
-# WIP in the followrelease branch, the GHOST_VERSION is parsed from: https://github.com/TryGhost/Ghost/releases
-#
-# Flag output examples:
-# IMAGE_SHA_SHORT=devmtl/ghostfire:2.9.1-e04b5c6
-# IMAGE_VERSION=devmtl/ghostfire:2.9.1
-# IMAGE_STABLE=devmtl/ghostfire:stable
-
 sudo: required
 language: bash
 
@@ -46,14 +28,12 @@ before_install:
   - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
   - sudo apt-get install --no-install-recommends -qqy openssl parallel ca-certificates
   - docker --version
-# install Trivy Vulnerability Scanner
-#  - export TRIVY_VERSION=$(curl --silent "https://api.github.com/repos/knqyf263/trivy/releases/latest" | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
-#  - wget https://github.com/knqyf263/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz && tar zxvf trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz
+
 # install microscanner Aquasec Scanner
   - wget --retry-connrefused --waitretry=1 --read-timeout=5 --timeout=5 --tries=10 https://raw.githubusercontent.com/lukebond/microscanner-wrapper/master/scan.sh && chmod +x scan.sh
 
-install:
-- git clone https://github.com/docker-library/official-images.git ~/official-images
+# install:
+# - git clone https://github.com/docker-library/official-images.git ~/official-images
 
 before_script:
   - GHOST_VERSION_DOCKERFILE="$(cat Dockerfile | grep GHOST_VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g')"
@@ -72,10 +52,11 @@ before_script:
   - IMAGE_VERSION=${DOCKER_USERNAME}/${DOCKER_REPO_NAME}:${GHOST_VERSION}
   - IMAGE_STABLE=${DOCKER_USERNAME}/${DOCKER_REPO_NAME}:stable
 
-  - IMAGE_NODE_COMPRESS=${DOCKER_USERNAME}/${DOCKER_REPO_NAME}:layer-node-compress
-  - IMAGE_NODE_CORE=${DOCKER_USERNAME}/${DOCKER_REPO_NAME}:layer-node-core
-  - IMAGE_GHOST_BASE=${DOCKER_USERNAME}/${DOCKER_REPO_NAME}:layer-ghost-base
-  - IMAGE_EDGE=${DOCKER_USERNAME}/${DOCKER_REPO_NAME}:edge
+# caching
+# - IMAGE_NODE_COMPRESS=${DOCKER_USERNAME}/${DOCKER_REPO_NAME}:layer-node-compress
+# - IMAGE_NODE_CORE=${DOCKER_USERNAME}/${DOCKER_REPO_NAME}:layer-node-core
+# - IMAGE_GHOST_BASE=${DOCKER_USERNAME}/${DOCKER_REPO_NAME}:layer-ghost-base
+# - IMAGE_EDGE=${DOCKER_USERNAME}/${DOCKER_REPO_NAME}:edge
 
 # docker log in
   - echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin;
@@ -98,29 +79,31 @@ script:
     done
   - curl http://localhost:2368 | grep "The professional publishing platform"
 
-  #- echo "Starting official docker unit test on the image..."
-  #- echo "bypass test as America timezone fail the test" https://travis-ci.org/firepress-org/ghostfire/jobs/557452260#L857
-  #- ~/official-images/test/run.sh "$IMAGE_SHA_SHORT"
-
-# Execute Trivy Vulnerability Scanner
-#  - ./trivy --exit-code 0 --severity HIGH --quiet --auto-refresh ${IMAGE_SHA_SHORT}
-#  - ./trivy --exit-code 0 --severity CRITICAL --quiet --auto-refresh ${IMAGE_SHA_SHORT}
-# Execute microscanner Aquasec Scanner
-# issue openned: https://github.com/knqyf263/trivy/issues/61#issuecomment-502400785
-
-  - MICROSCANNER_TOKEN=${MICROSCANNER_TOKEN} ./scan.sh ${IMAGE_SHA_SHORT}
+  - echo "Starting official docker unit test on the image..."
+  - echo "bypass test" https://travis-ci.org/firepress-org/ghostfire/jobs/557452260#L857
+# - ~/official-images/test/run.sh "$IMAGE_SHA_SHORT"
 
 after_script:
   - docker inspect ${CONTAINER_NAME};
   - docker images;
   - docker logs ${CONTAINER_NAME};
-  - echo & echo && echo "Starting unit tests within the container ==========>"
+
+  - echo && echo "Starting unit tests within the container ==========>"
+  - echo && echo "1) Trivy > A Simple and Comprehensive Vulnerability Scanner for Containers:"
+  - docker run --rm -v /var/run/docker.sock:/var/run/docker.sock knqyf263/trivy:latest -q -d --exit-code 1 ${IMAGE_SHA_SHORT}
+  - echo && echo "2) MicroScanner > Scan your container images for package vulnerabilities with Aqua Security:"
+  - MICROSCANNER_TOKEN=${MICROSCANNER_TOKEN} ./scan.sh ${IMAGE_SHA_SHORT}
+  - echo && echo "3) Docker exec checkpoints:"
   - docker exec -it ${CONTAINER_NAME} uname -a;
   - docker exec -it ${CONTAINER_NAME} node --version;
   - docker exec -it ${CONTAINER_NAME} cat /var/lib/ghost/current/content/themes/casper/package.json | grep version;
   - docker exec -it ${CONTAINER_NAME} cat /var/lib/ghost/current/package.json | grep version;
   - docker exec -it ${CONTAINER_NAME} curl -Is --head "http://localhost:2368" | grep -F -o "HTTP/1.1 200 OK" || echo "Error --> http://localhost:2368";
+
+  - echo && echo "Remove container:"
   - docker rm -f ${CONTAINER_NAME};
+
+  - echo && echo "Confirm our TAGS:"
   - echo & echo && echo GHOST_VERSION_DOCKERFILE=${GHOST_VERSION_DOCKERFILE} && echo GHOST_LATEST_RELEASE=${GHOST_LATEST_RELEASE} && echo GHOST_CLI_LATEST_RELEASE=${GHOST_CLI_LATEST_RELEASE} && echo GHOST_VERSION=${GHOST_VERSION} && echo && echo IMAGE_SHA_SHORT=${IMAGE_SHA_SHORT} && echo IMAGE_VERSION=${IMAGE_VERSION} && echo IMAGE_STABLE=${IMAGE_STABLE} && echo && echo "#IMAGE_SHA_SHORT=${IMAGE_SHA_SHORT}" && echo "#IMAGE_VERSION=${IMAGE_VERSION}" && echo "#IMAGE_STABLE=${IMAGE_STABLE}" && echo;
 
 after_success:
@@ -144,3 +127,22 @@ after_success:
       docker push "${IMAGE_GHOST_BASE}";
 
     fi
+
+
+#notifications:
+# webhooks: https://www.travisbuddy.com/
+#
+# Secret DOCKER_PASSWORD managed by Travis:
+# See https://docs.travis-ci.com/user/environment-variables/#Defining-Variables-in-Repository-Settings
+#
+# In a commit, by using [ci skip] it will skip Travis build
+#
+# THIS_SHA_LONG=$(git log -1 | head -1 | awk '{print $2}')
+#
+# In the master branch, the GHOST_VERSION is parsed from the Dockerfile https://github.com/firepress-org/ghostfire/blob/master/Dockerfile
+# WIP in the followrelease branch, the GHOST_VERSION is parsed from: https://github.com/TryGhost/Ghost/releases
+#
+# Flag output examples:
+# IMAGE_SHA_SHORT=devmtl/ghostfire:2.9.1-e04b5c6
+# IMAGE_VERSION=devmtl/ghostfire:2.9.1
+# IMAGE_STABLE=devmtl/ghostfire:stable

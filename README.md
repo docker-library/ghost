@@ -174,13 +174,13 @@ In this post « [How we update hundreds of Ghost's websites on Docker Swarm?](ht
 
 ## Enhanced unit tests (screen shots from Travis CI)
 
-PIC 1
+![unit-test-a](https://user-images.githubusercontent.com/6694151/61649557-b80a0800-ac7f-11e9-85b7-425e5456cb2d.jpg)
+<br>
+![unit-test-b](https://user-images.githubusercontent.com/6694151/61649559-b80a0800-ac7f-11e9-9154-cd6f5264af71.jpg)
+<br>
+![unit-test-c](https://user-images.githubusercontent.com/6694151/61649558-b80a0800-ac7f-11e9-9638-4b3241e4dcee.jpg)
 
-PIC 2
-
-PIC 3
-
-Because we use scanners, the build time went from about 4 min to 9 min.
+Because we use scanners, the build time went from about 4 min to about 9 min.
 
 <br>
 

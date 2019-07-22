@@ -29,11 +29,13 @@ before_install:
   - sudo apt-get install --no-install-recommends -qqy openssl parallel ca-certificates
   - docker --version
 
-# install microscanner Aquasec Scanner
+  - echo "install microscanner Aquasec Scanner ==========>"
   - wget --retry-connrefused --waitretry=1 --read-timeout=5 --timeout=5 --tries=10 https://raw.githubusercontent.com/lukebond/microscanner-wrapper/master/scan.sh && chmod +x scan.sh
 
 # install:
-# - git clone https://github.com/docker-library/official-images.git ~/official-images
+  - git clone https://github.com/docker-library/official-images.git ~/official-images
+  - echo "Change utc to America/New_York. The test would fail as all official docker images uses utc timzone and our image use America/New_York ==========>"
+  - sed '0,@utc@s@utc@America/New_York@' ~/official-images/test/config.sh
 
 before_script:
   - GHOST_VERSION_DOCKERFILE="$(cat Dockerfile | grep GHOST_VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g')"
@@ -81,7 +83,7 @@ script:
 
   - echo "Starting official docker unit test on the image..."
   - echo "bypass test" https://travis-ci.org/firepress-org/ghostfire/jobs/557452260#L857
-# - ~/official-images/test/run.sh "$IMAGE_SHA_SHORT"
+  - ~/official-images/test/run.sh "$IMAGE_SHA_SHORT"
 
 after_script:
   - docker inspect ${CONTAINER_NAME};
@@ -89,21 +91,21 @@ after_script:
   - docker logs ${CONTAINER_NAME};
 
   - echo && echo "Starting unit tests within the container ==========>"
-  - echo && echo "1) Trivy > A Simple and Comprehensive Vulnerability Scanner for Containers:"
+  - echo && echo "1) Trivy > A Simple and Comprehensive Vulnerability Scanner for Containers ==========>"
   - docker run --rm -v /var/run/docker.sock:/var/run/docker.sock knqyf263/trivy:latest -q -d --exit-code 1 ${IMAGE_SHA_SHORT}
-  - echo && echo "2) MicroScanner > Scan your container images for package vulnerabilities with Aqua Security:"
+  - echo && echo "2) MicroScanner > Scan your container images for package vulnerabilities with Aqua Security ==========>"
   - MICROSCANNER_TOKEN=${MICROSCANNER_TOKEN} ./scan.sh ${IMAGE_SHA_SHORT}
-  - echo && echo "3) Docker exec checkpoints:"
+  - echo && echo "3) Docker exec checkpoints ==========>"
   - docker exec -it ${CONTAINER_NAME} uname -a;
   - docker exec -it ${CONTAINER_NAME} node --version;
   - docker exec -it ${CONTAINER_NAME} cat /var/lib/ghost/current/content/themes/casper/package.json | grep version;
   - docker exec -it ${CONTAINER_NAME} cat /var/lib/ghost/current/package.json | grep version;
   - docker exec -it ${CONTAINER_NAME} curl -Is --head "http://localhost:2368" | grep -F -o "HTTP/1.1 200 OK" || echo "Error --> http://localhost:2368";
 
-  - echo && echo "Remove container:"
+  - echo && echo "Remove container ==========>"
   - docker rm -f ${CONTAINER_NAME};
 
-  - echo && echo "Confirm our TAGS:"
+  - echo && echo "Confirm our TAGS ==========>"
   - echo & echo && echo GHOST_VERSION_DOCKERFILE=${GHOST_VERSION_DOCKERFILE} && echo GHOST_LATEST_RELEASE=${GHOST_LATEST_RELEASE} && echo GHOST_CLI_LATEST_RELEASE=${GHOST_CLI_LATEST_RELEASE} && echo GHOST_VERSION=${GHOST_VERSION} && echo && echo IMAGE_SHA_SHORT=${IMAGE_SHA_SHORT} && echo IMAGE_VERSION=${IMAGE_VERSION} && echo IMAGE_STABLE=${IMAGE_STABLE} && echo && echo "#IMAGE_SHA_SHORT=${IMAGE_SHA_SHORT}" && echo "#IMAGE_VERSION=${IMAGE_VERSION}" && echo "#IMAGE_STABLE=${IMAGE_STABLE}" && echo;
 
 after_success:
@@ -129,7 +131,7 @@ after_success:
     fi
 
 
-#notifications:
+# notifications:
 # webhooks: https://www.travisbuddy.com/
 #
 # Secret DOCKER_PASSWORD managed by Travis:

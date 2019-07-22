@@ -33,28 +33,27 @@
 
 **What is Ghost?** — Ghost is an open source software that lets you create your website with a blog. See the [FAQ section](https://play-with-ghost.com/ghost-themes/faq/#what-is-ghost) for more details.
 
-**How to use this image** — To run Ghost in a Docker container, here is the setup we are using in production. Just execute `./runup.sh`.
-
 **Git repo** — [https://github.com/firepress-org/ghostfire](https://github.com/firepress-org/ghostfire)
 
 <br>
 
 ## Why forking the official Docker image?
 
-- [x] Using multi-stage builds. The docker image size is much smaller. See details below.
-- [x] Using a `node-core` layer in order to bypass npm, yarn, npx in the final layer
-- [x] Compress node using `upx`
-- [x] Travis CI is caching layers from previous builds
+- [x] Using multi-stage builds. This docker image is much smaller. See details below.
+- [x] Using a `node-core` layer in order to not include npm, yarn, npx in the final docker image
+- [x] Compress `node` using `upx`
 - [x] Ghost container is running under [tini](https://github.com/krallin/tini#why-tini)
 - [x] Using a better `config.production.json` template
 - [x] Uninstall the `ghost cli` to save some space in the final docker image
 - [x] Using `npm cache clean --force` to safe some space
-- [x] Using `curl` to do healthchecks
-- [x] Scanner vulnerabilities are track in Travis CI logs using AquaSec in a layer
+- [x] Adding `curl` to do healthchecks
+- [x] Enhanced unit tests (Aqua Security, Trivy)
 - [x] Using LABELS based on the opencontainer standard
-- [x] The Docker image use a multi-architecture: `AMD64`, `ARM64`, `ARM`
+- [x] The Docker image is multi-architecture: `AMD64`, `ARM64`, `ARM`
 
-**Overall, I try to apply best practices**. Please let me know if something can be improved.
+**Overall, I try my best to apply best practices**. Please let me know if something can be improved :)
+
+ Ideas for features are tracked under [this label](https://github.com/firepress-org/ghostfire/issues?q=is%3Aissue+is%3Aopen+label%3A%22feature+request%22).
 
 #### Comparing docker image sizes
 
@@ -68,8 +67,6 @@ devmtl/ghostfire:2.23.3-bf541c7                 246 MB (79 MO)
 single-stage docker official
 ghost:alpine  / simply using node_10.16-alpine  284MB (123 MB)
 ```
-
-[Coming next](https://github.com/firepress-org/ghostfire/issues?q=is%3Aissue+is%3Aopen+label%3A%22feature+request%22)
 
 <br>
 
@@ -87,10 +84,10 @@ In short, you can try Ghost on the spot without having to sign-up!
 ](https://play-with-ghost.com/)
 
 <br>
+*‌*
+## How to use this docker image?
 
-## Running the container
-
-#### Find the latest docker images tag 🐳
+First, find the latest docker images tags 🐳
 
 - **Docker hub** — https://hub.docker.com/r/devmtl/ghostfire/tags/
 - **Travis** — https://travis-ci.org/firepress-org/ghostfire
@@ -129,13 +126,13 @@ docker run -d \
 ${GHOSTFIRE_IMG}
 ```
 
-#### Option #3:
+#### Option #3 (simple rundry):
 
 - Run the script by typing: `./runup.sh`
 
 #### master branch (stable) tags 🐳
 
-I recommend using the tag from this format: $IMAGE_SHA_SHORT:
+I recommend using the tag in this format: $IMAGE_SHA_SHORT:
 
 ```
 devmtl/ghostfire:2.23.4-77c5e56
@@ -150,7 +147,7 @@ devmtl/ghostfire:stable
 ```
 
 
-#### edge branch (for dev) tags 🐳
+For the **edge** branch (for dev) tags 🐳
 
 ```
 devmtl/ghostfire:edge-2.9.1-7d64db0
@@ -175,6 +172,14 @@ It also has the advantage of keeping a clean commit history in the master branch
 
 In this post « [How we update hundreds of Ghost's websites on Docker Swarm?](https://firepress.org/en/how-we-update-hundreds-of-ghosts-websites-on-docker-swarm/) », we explain how we deploy Ghost in production and which best practices we do follow.
 
+## Enhanced unit tests (screen shots from Travis CI)
+
+PIC 1
+
+PIC 2
+
+PIC 3
+
 <br>
 
 ## Developing Ghost themes locally
@@ -185,7 +190,7 @@ I open sourced [my setup here](https://github.com/firepress-org/ghost-local-dev-
 
 ## Random stuff
 
-**Breaking change**. If you still run Ghost 0.11.xx, be aware of the container's path difference.
+**Breaking change**. If you still run Ghost 0.11.xx (not recommanded!), be aware of the container's path difference.
 
 ```
 - Ghost 2.x.x is: /var/lib/ghost/content
@@ -205,25 +210,17 @@ We follow the latest Node supported version. See this in the Dockerfile.
 docker exec <container-id> node --version
 ```
 
-You can also see this information in the Dockerfile and in the Travis builds.
+You can also see this information in the Travis CI logs.
 
 <br>
 
 ## FirePress Hosting
 
-I'm glad to say it finally 🙊. We just **launched** our hosting platform for Ghost out in the wild. At FirePress we empower entrepreneurs and small organizations to create their websites on top of [Ghost](https://firepress.org/en/faq/#what-is-ghost).
+At FirePress we empower entrepreneurs and small organizations to create their websites on top of [Ghost](https://firepress.org/en/faq/#what-is-ghost).
 
 At the moment, our **pricing** for hosting one Ghost website is $15 (Canadian dollars). This price will be only available for our first 100 new clients, starting May 1st, 2019 🙌. [See our pricing section](https://firepress.org/en/pricing/) for details.
 
 More details [about this annoucement](https://forum.ghost.org/t/host-your-ghost-website-on-firepress/7092/1) on Ghost's forum.
-
-<br>
-
-## Workshop
-
-We also offer a workshop where participants end up with a website/blog they can smoothly operate themselves. The workshops are available in:
-
-- [Montréal - Canada](https://firepress.org/en/workshop/)
 
 <br>
 

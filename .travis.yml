@@ -86,10 +86,11 @@ after_script:
   - docker logs ${CONTAINER_NAME};
 
   - echo && echo "Unit tests (and keeping them in Travis logs) ==========>"
-
+  - echo "CHECKPOINT"
   - echo && echo "1) Official docker unit test on the image ==========>"
   - ~/official-images/test/run.sh "$IMAGE_SHA_SHORT"
 
+  - echo "CHECKPOINT"
   - echo && echo "2) Docker exec checkpoints ==========>"
   - docker exec -it ${CONTAINER_NAME} uname -a;
   - docker exec -it ${CONTAINER_NAME} node --version;
@@ -97,15 +98,18 @@ after_script:
   - docker exec -it ${CONTAINER_NAME} cat /var/lib/ghost/current/package.json | grep version;
   - docker exec -it ${CONTAINER_NAME} curl -Is --head "http://localhost:2368" | grep -F -o "HTTP/1.1 200 OK" || echo "Error --> http://localhost:2368";
 
+  - echo "CHECKPOINT"
   - echo && echo "3) Trivy scanner for Containers ==========>"
   - docker run --rm -v /var/run/docker.sock:/var/run/docker.sock knqyf263/trivy:latest -q -d --exit-code 1 ${IMAGE_SHA_SHORT}
 
+  - echo "CHECKPOINT"
   - echo && echo "4) MicroScanner scanner from Aqua Security ==========>"
   - MICROSCANNER_TOKEN=${MICROSCANNER_TOKEN} ./scan.sh ${IMAGE_SHA_SHORT}
 
   - echo && echo "Remove container ==========>"
   - docker rm -f ${CONTAINER_NAME};
 
+  - echo "CHECKPOINT"
   - echo && echo "Confirm our TAGS ==========>"
   - echo & echo && echo GHOST_VERSION_DOCKERFILE=${GHOST_VERSION_DOCKERFILE} && echo GHOST_LATEST_RELEASE=${GHOST_LATEST_RELEASE} && echo GHOST_CLI_LATEST_RELEASE=${GHOST_CLI_LATEST_RELEASE} && echo GHOST_VERSION=${GHOST_VERSION} && echo && echo IMAGE_SHA_SHORT=${IMAGE_SHA_SHORT} && echo IMAGE_VERSION=${IMAGE_VERSION} && echo IMAGE_STABLE=${IMAGE_STABLE} && echo && echo "#IMAGE_SHA_SHORT=${IMAGE_SHA_SHORT}" && echo "#IMAGE_VERSION=${IMAGE_VERSION}" && echo "#IMAGE_STABLE=${IMAGE_STABLE}" && echo;
 

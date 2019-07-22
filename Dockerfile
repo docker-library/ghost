@@ -152,8 +152,9 @@ RUN set -eux                                                      && \
 
 # LAYER upgrade — — — — — — — — — — — — — — — — — — — — — — — — — —
 # The point is to keep trace of logs in Travis CI
-FROM ghost-base AS ghost-what-to-upgrade
+FROM ghost-base AS ghost-upgrade
 COPY --from=ghost-builder --chown=node:node "${GHOST_INSTALL}" "${GHOST_INSTALL}"
+RUN echo "CHECKPOINT"
 RUN apk update
 RUN apk info
 RUN apk policy package

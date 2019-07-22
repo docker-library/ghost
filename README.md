@@ -180,6 +180,8 @@ PIC 2
 
 PIC 3
 
+Because we use scanners, the build time went from about 4 min to 9 min.
+
 <br>
 
 ## Developing Ghost themes locally

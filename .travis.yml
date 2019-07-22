@@ -29,15 +29,16 @@ before_install:
   - sudo apt-get install --no-install-recommends -qqy openssl parallel ca-certificates
   - docker --version
 
+# install:
   - echo "install microscanner Aquasec Scanner ==========>"
   - wget --retry-connrefused --waitretry=1 --read-timeout=5 --timeout=5 --tries=10 https://raw.githubusercontent.com/lukebond/microscanner-wrapper/master/scan.sh && chmod +x scan.sh
 
-# install:
   - git clone https://github.com/docker-library/official-images.git ~/official-images
-  #- echo "Change utc to America/New_York. The test would fail as all official docker images uses utc timzone and our image use America/New_York ==========>"
-  #- sed '0,@utc@s@utc@America/New_York@' ~/official-images/test/config.sh
+  - echo "Bypass timezone'stest "utc" as we use America/New_York timezone in our image ==========>"
+  - sed -i "/utc/d" ~/official-images/test/config.sh
 
 before_script:
+# define our labels and tags
   - GHOST_VERSION_DOCKERFILE="$(cat Dockerfile | grep GHOST_VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g')"
   - GHOST_LATEST_RELEASE="$(git ls-remote --tags https://github.com/TryGhost/Ghost.git | cut -d$'\t' -f2 | grep -E '^refs/tags/[0-9]+\.[0-9]+' | cut -d/ -f3 | sort -rV | head -n1)"
   - GHOST_CLI_LATEST_RELEASE="$(git ls-remote --tags https://github.com/TryGhost/Ghost-CLI.git | cut -d$'\t' -f2 | grep -E '^refs/tags/[0-9]+\.[0-9]+' | cut -d/ -f3 | sort -rV | head -n1)"
@@ -54,20 +55,18 @@ before_script:
   - IMAGE_VERSION=${DOCKER_USERNAME}/${DOCKER_REPO_NAME}:${GHOST_VERSION}
   - IMAGE_STABLE=${DOCKER_USERNAME}/${DOCKER_REPO_NAME}:stable
 
-# caching
-# - IMAGE_NODE_COMPRESS=${DOCKER_USERNAME}/${DOCKER_REPO_NAME}:layer-node-compress
-# - IMAGE_NODE_CORE=${DOCKER_USERNAME}/${DOCKER_REPO_NAME}:layer-node-core
-# - IMAGE_GHOST_BASE=${DOCKER_USERNAME}/${DOCKER_REPO_NAME}:layer-ghost-base
-# - IMAGE_EDGE=${DOCKER_USERNAME}/${DOCKER_REPO_NAME}:edge
+# caching (so far this is not making our builds faster)
+  # - IMAGE_NODE_COMPRESS=${DOCKER_USERNAME}/${DOCKER_REPO_NAME}:layer-node-compress
+  # - IMAGE_NODE_CORE=${DOCKER_USERNAME}/${DOCKER_REPO_NAME}:layer-node-core
+  # - IMAGE_GHOST_BASE=${DOCKER_USERNAME}/${DOCKER_REPO_NAME}:layer-ghost-base
+  # - IMAGE_EDGE=${DOCKER_USERNAME}/${DOCKER_REPO_NAME}:edge
+  # - docker pull ${IMAGE_NODE_COMPRESS} || true;
+  # - docker pull ${IMAGE_NODE_CORE} || true;
+  # - docker pull ${IMAGE_GHOST_BASE} || true;
+  # - docker pull ${IMAGE_EDGE} || true;
 
-# docker log in
+# docker hub log in
   - echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin;
-
-# download these layers to make our build faster
-  - docker pull ${IMAGE_NODE_COMPRESS} || true;
-  - docker pull ${IMAGE_NODE_CORE} || true;
-  - docker pull ${IMAGE_GHOST_BASE} || true;
-  - docker pull ${IMAGE_EDGE} || true;
 
 script:
   - uname -a && echo & echo && echo "BUILD OUR DOCKERFILE FROM HERE ==========>"
@@ -81,26 +80,28 @@ script:
     done
   - curl http://localhost:2368 | grep "The professional publishing platform"
 
-  #- echo "Starting official docker unit test on the image..."
-  - echo "bypass test" https://travis-ci.org/firepress-org/ghostfire/jobs/557452260#L857
-  #- ~/official-images/test/run.sh "$IMAGE_SHA_SHORT"
-
 after_script:
   - docker inspect ${CONTAINER_NAME};
   - docker images;
   - docker logs ${CONTAINER_NAME};
 
-  - echo && echo "Starting unit tests within the container ==========>"
-  - echo && echo "1) Trivy > A Simple and Comprehensive Vulnerability Scanner for Containers ==========>"
-  - docker run --rm -v /var/run/docker.sock:/var/run/docker.sock knqyf263/trivy:latest -q -d --exit-code 1 ${IMAGE_SHA_SHORT}
-  - echo && echo "2) MicroScanner > Scan your container images for package vulnerabilities with Aqua Security ==========>"
-  - MICROSCANNER_TOKEN=${MICROSCANNER_TOKEN} ./scan.sh ${IMAGE_SHA_SHORT}
-  - echo && echo "3) Docker exec checkpoints ==========>"
+  - echo && echo "Unit tests (and keeping them in Travis logs) ==========>"
+
+  - echo && echo "1) Official docker unit test on the image ==========>"
+  - ~/official-images/test/run.sh "$IMAGE_SHA_SHORT"
+
+  - echo && echo "2) Docker exec checkpoints ==========>"
   - docker exec -it ${CONTAINER_NAME} uname -a;
   - docker exec -it ${CONTAINER_NAME} node --version;
   - docker exec -it ${CONTAINER_NAME} cat /var/lib/ghost/current/content/themes/casper/package.json | grep version;
   - docker exec -it ${CONTAINER_NAME} cat /var/lib/ghost/current/package.json | grep version;
   - docker exec -it ${CONTAINER_NAME} curl -Is --head "http://localhost:2368" | grep -F -o "HTTP/1.1 200 OK" || echo "Error --> http://localhost:2368";
+
+  - echo && echo "3) Trivy scanner for Containers ==========>"
+  - docker run --rm -v /var/run/docker.sock:/var/run/docker.sock knqyf263/trivy:latest -q -d --exit-code 1 ${IMAGE_SHA_SHORT}
+
+  - echo && echo "4) MicroScanner scanner from Aqua Security ==========>"
+  - MICROSCANNER_TOKEN=${MICROSCANNER_TOKEN} ./scan.sh ${IMAGE_SHA_SHORT}
 
   - echo && echo "Remove container ==========>"
   - docker rm -f ${CONTAINER_NAME};

@@ -150,27 +150,20 @@ RUN set -eux                                                      && \
       apk del --no-network .build-deps                            ; \
     fi                                                            ;
 
-# LAYER ghost-source — — — — — — — — — — — — — — — — — — — — — — —
-FROM ghost-base AS ghost-source
-COPY --from=ghost-builder --chown=node:node "${GHOST_INSTALL}" "${GHOST_INSTALL}"
-
-# LAYER audit — — — — — — — — — — — — — — — — — — — — — — — — — — —
-FROM ghost-source AS ghost-audit
-ARG MICROSCANNER_TOKEN
-USER root
-ADD https://get.aquasec.com/microscanner /
-RUN chmod +x /microscanner                                         && \
-    /microscanner "${MICROSCANNER_TOKEN}" --continue-on-failure;
-
 # LAYER upgrade — — — — — — — — — — — — — — — — — — — — — — — — — —
 # The point is to keep trace of logs in Travis CI
-FROM ghost-source AS ghost-what-to-upgrade
+FROM ghost-base AS ghost-what-to-upgrade
+COPY --from=ghost-builder --chown=node:node "${GHOST_INSTALL}" "${GHOST_INSTALL}"
 RUN apk update
 RUN apk info
 RUN apk policy package
 RUN apk upgrade
 
+# LAYER audit — — — — — — — — — — — — — — — — — — — — — — — — — — —
+# This is executed via Travis CI. Details in the README.
+
 # LAYER final — — — — — — — — — — — — — — — — — — — — — — — — — — —
-FROM ghost-source AS ghost-final
+FROM ghost-base AS ghost-final
+COPY --from=ghost-builder --chown=node:node "${GHOST_INSTALL}" "${GHOST_INSTALL}"
 ENTRYPOINT [ "/sbin/tini", "--", "docker-entrypoint.sh" ]
 CMD [ "node", "current/index.js" ]

@@ -19,7 +19,38 @@ All notable changes to this project will be documented in this file.
 
 ---
 
-## 2.25.6-ff75200
+## 2.26.0
+### ⚡️ Updates
+- 39eab43d update release process
+- 3595a9a0 Ghost updated to 2.26.0 version
+- 33f48fad update release process
+
+## 2.25.9
+- 7517e6e7 Ghost updated to 2.25.9 version
+- 495c2196 Ghost updated to 2.25.9 version
+
+## 2.25.8
+### ⚡️ Updates
+- cc5f5f6f Adding CHECKPOINT flag. Will make it easier to verify things in the logs
+- 0162f7e7 Remove layer LAYER ghost-source as we don’t execute audit within the dockerfile
+- 8f79f6ba Added screenshots
+- 2500fe5b README wip
+- 96916dce MAJOR updates
+- 665db942 remove standalone scanner
+- fa7c4471 re-introducing official docker test, better structure
+- 467e312a bypass test / need to fix a glitch with sed
+- b397d3c0 enable official docker tests / wip 1
+- 958a989d Enable Trivy scanner, removing image pre-download, better testing suite
+- b252d4f1 clean comments
+- b18ad165 Ghost updated to 2.25.8 version
+
+### ⚡️ Updates
+- 618a27dd Ghost updated to 2.25.7 version
+
+### ⚡️ Updates
+- fb460617 update to 2.25.6
+
+## 2.25.6
 ### 🛑 Removed
 - ff75200e Travis / bypass test as America timezone fail the test
 ### ⚡️ Updates

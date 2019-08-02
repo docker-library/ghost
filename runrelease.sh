@@ -10,19 +10,8 @@ source .env .
 user="firepress-org"
 git_repo="ghostfire"
 
-
-# The tag must be ready to push on git remote
-#
-cd ${local_repo} && \
-git push --tags && \
-
 # Find the latest tag
-#
-tag_version="$(
-	git ls-remote --tags https://github.com/${user}/${git_repo} \
-		| cut -d$'\t' -f2 \
-		| cut -d/ -f3 \
-		| tail -n1)" && \
+tag_version="$(git tag --sort=-creatordate | head -n1)" && \
 
 # confirm
 echo ${tag_version} && \

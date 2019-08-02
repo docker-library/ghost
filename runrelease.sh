@@ -12,8 +12,6 @@ git_repo="ghostfire"
 
 # Find the latest tag
 tag_version="$(git tag --sort=-creatordate | head -n1)" && \
-
-# confirm
 echo ${tag_version} && \
 
 # Requires https://github.com/aktau/github-release

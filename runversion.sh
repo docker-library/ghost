@@ -11,12 +11,14 @@ set -o pipefail         # Use last non-zero exit code in a pipeline
 
 ##################################################
 # Update the Dockerfile
-VERSION=$1 && \
-sed -i '' "s/^ARG GHOST_VERSION=.*$/ARG GHOST_VERSION=\"$VERSION\"/" Dockerfile && \
+tag_version=$1 && \
+sed -i '' "s/^ARG GHOST_VERSION=.*$/ARG GHOST_VERSION=\"$tag_version\"/" Dockerfile && \
 git add . && \
-git commit -m "Ghost updated to $VERSION version" && \
+git commit -m "Ghost updated to $tag_version version" && \
 git push && \
 sleep 1 && \
 # push tag
-git tag ${VERSION} && \
-git push --tags;
+git tag ${tag_version} && \
+git push --tags && \
+
+echo "Update CHANGELOG.md / ./runrelease.sh";

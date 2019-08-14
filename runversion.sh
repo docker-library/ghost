@@ -21,4 +21,4 @@ sleep 1 && \
 git tag ${tag_version} && \
 git push --tags && \
 
-echo "Update CHANGELOG.md / ./runrelease.sh";
+echo "Update CHANGELOG.md  Then run: ./runrelease.sh";

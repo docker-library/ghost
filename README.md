@@ -84,7 +84,7 @@ In short, you can try Ghost on the spot without having to sign-up!
 ](https://play-with-ghost.com/)
 
 <br>
-*‌*
+
 ## How to use this docker image?
 
 First, find the latest docker images tags 🐳

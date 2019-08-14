@@ -19,6 +19,12 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## 2.27.0
+### ⚡️ Updates
+- 59cc5396 Ghost updated to 2.27.0 version
+- cc7831e4 rename var
+- c62df6ef esthetic
+
 ## 2.26.0
 ### ⚡️ Updates
 - 39eab43d update release process

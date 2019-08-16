@@ -27,6 +27,8 @@
 
 # [ghostfire](https://github.com/firepress-org/ghostfire)
 
+<br>
+
 ## What is this?
 
 **Docker image** — This is a Docker image to run Ghost (v 2.x.x) in a container 🐳. Fully compatible with a simple `docker run`, Docker Swarm or Kubernetes. Ensure you have Docker installed on your machine.
@@ -88,6 +90,7 @@ In short, you can try Ghost on the spot without having to sign-up!
 First, find the latest docker images tags 🐳.
 
 #### Docker hub
+Find the latest tags here: 
 [https://hub.docker.com/r/devmtl/ghostfire/tags/](https://hub.docker.com/r/devmtl/ghostfire/tags/)
 
 #### Travis CI
@@ -97,9 +100,23 @@ At this point, this docker image has been pulled more than **11 millions of time
 
 ![docker-hub](https://user-images.githubusercontent.com/6694151/53067692-4c8af700-34a3-11e9-9fcf-9c7ad169a91b.jpg)
 
-#### Option #1 (Stateful):
+#### Option #1 (let the script work for you):
 
-⚠️ warning — change path `/myuser/localpath/ghost/content` and use the latest stable docker image.
+- Run the script by typing: `./runup.sh`
+
+#### Option #2:
+
+```
+GHOSTFIRE_IMG="devmtl/ghostfire:2.23.4-77c5e56"
+
+docker run -d \
+—name ghostblog \
+-p 2368:2368 \
+-e url=http://localhost:2368 \
+${GHOSTFIRE_IMG}
+```
+
+#### Option #3 (Stateful with configs):
 
 ```
 GHOSTFIRE_IMG="devmtl/ghostfire:2.23.4-77c5e56"
@@ -115,56 +132,33 @@ ${GHOSTFIRE_IMG}
 
 To configure the `config.production.json` refer the [ghost docs](https://docs.ghost.org/concepts/config/).
 
-#### Option #2:
-
-```
-GHOSTFIRE_IMG="devmtl/ghostfire:2.23.4-77c5e56"
-
-docker run -d \
-—name ghostblog \
--p 2368:2368 \
--e url=http://localhost:2368 \
-${GHOSTFIRE_IMG}
-```
-
-#### Option #3 (let this script work for you):
-
-- Run the script by typing: `./runup.sh`
-
 #### master branch (stable) tags 🐳
 
-I recommend using the tag in this format: $IMAGE_SHA_SHORT:
+For the **stable** branch, I recommend using the tag from the **first line**:
 
 ```
-devmtl/ghostfire:2.23.4-77c5e56
-```
-
-But if you prefer, you can use:
-
-```
+devmtl/ghostfire:2.23.4-77c5e56 (best practice)
 devmtl/ghostfire:2.23.4
 devmtl/ghostfire:stable
 ```
 
+#### edge branch (dev) tags 🐳
 
-For the **edge** branch (for dev) tags 🐳
+For the **edge** branch (for dev), I recommend using the tag from the **last line**:
 
 ```
-devmtl/ghostfire:edge-2.9.1-7d64db0
-devmtl/ghostfire:edge-2.9.1
+devmtl/ghostfire:edge-2.23.4-7d64db0
+devmtl/ghostfire:edge-2.23.4
 devmtl/ghostfire:edge
 ```
-
-
-#### Master VS Edge
-
-⚠️ Workflow warning. You would expect that we would merge `edge` into `master`. We don’t do this. Instead, think of it as independent projects. The main reason is that the **.travis.yml is not the same in those two branches**.
-
-Let's understand our processes.
 
 <br>
 
 ## DevOps best practices
+
+⚠️ Workflow warning. You would expect that we would merge `edge` into `master`. We don’t do this. Instead, think of it as independent projects. The main reason is that the **.travis.yml is not the same in those two branches**.
+
+Let's understand our processes.
 
 Because we run a lot of websites in production using this image, we prefer to do UAT (unit acceptance tests) using the `edge` branch. **In other words, it’s a manual checkpoint to avoid a crash at scale.** DevOps best practices are essential to us. Many checkpoints ensure this Docker image for Ghost software runs smoothly.
 
@@ -179,8 +173,6 @@ In this post « [How we update hundreds of Ghost's websites on Docker Swarm?](ht
 ![unit-test-b](https://user-images.githubusercontent.com/6694151/61649559-b80a0800-ac7f-11e9-9154-cd6f5264af71.jpg)
 <br>
 ![unit-test-c](https://user-images.githubusercontent.com/6694151/61649558-b80a0800-ac7f-11e9-9638-4b3241e4dcee.jpg)
-
-Because we use scanners, the build time went from about 4 min to about 9 min.
 
 <br>
 

@@ -25,35 +25,33 @@
 
 &nbsp;
 
-# ghostfire
+# [ghostfire](https://github.com/firepress-org/ghostfire)
 
 ## What is this?
 
-**Docker stuff** — It’s a Docker image to run Ghost (V2) in a container 🐳. Fully compatible with a simple `docker run`, Kubernetes or Docker Swarm. Ensure you have Docker installed on your machine.
+**Docker image** — This is a Docker image to run Ghost (v 2.x.x) in a container 🐳. Fully compatible with a simple `docker run`, Docker Swarm or Kubernetes. Ensure you have Docker installed on your machine.
 
 **What is Ghost?** — Ghost is an open source software that lets you create your website with a blog. See the [FAQ section](https://play-with-ghost.com/ghost-themes/faq/#what-is-ghost) for more details.
-
-**Git repo** — [https://github.com/firepress-org/ghostfire](https://github.com/firepress-org/ghostfire)
 
 <br>
 
 ## Why forking the official Docker image?
 
-- [x] Using multi-stage builds. This docker image is much smaller. See details below.
-- [x] Using a `node-core` layer in order to not include npm, yarn, npx in the final docker image
-- [x] Compress `node` using `upx`
-- [x] Ghost container is running under [tini](https://github.com/krallin/tini#why-tini)
-- [x] Using a better `config.production.json` template
+- [x] Use a complexe but easy to follow **multi-stage build**. This docker image is much smaller. See details below.
+- [x] Use a `node-core` layer in order to **not include** npm, yarn, npx and friends in the final docker image
+- [x] **Compress** `node` using `upx`
+- [x] Use [**tini**](https://github.com/krallin/tini#why-tini)
+- [x] Use a better `config.production.json` **template**. These overide the [default one](https://github.com/TryGhost/Ghost/blob/0faf89b5abcf6de747d4b309cdac364a863c71dc/core/server/config/defaults.json#L82)
+- [x] Have `curl` in the final image to support **`healthchecks`**
+- [x] Enhanced **unit tests with scanners** (Aqua Security, Trivy) when Travis CI does it's thing
+- [x] Using **LABELS** based on the opencontainer standard
 - [x] Uninstall the `ghost cli` to save some space in the final docker image
-- [x] Using `npm cache clean --force` to safe some space
-- [x] Adding `curl` to do healthchecks
-- [x] Enhanced unit tests (Aqua Security, Trivy)
-- [x] Using LABELS based on the opencontainer standard
-- [x] The Docker image is multi-architecture: `AMD64`, `ARM64`, `ARM`
+- [x] Use `npm cache clean --force` to safe some space
+- [x] The Docker image is **multi-arch ready**: `AMD64`, `ARM64`, `ARM`
+- [x] Feature requests are [tracked in our issues](https://github.com/firepress-org/ghostfire/labels/feature%20request)
 
-**Overall, I try my best to apply best practices**. Please let me know if something can be improved :)
+Overall, I do my best to apply **best practices**. Please let me know if something can be improved :)
 
- Ideas for features are tracked under [this label](https://github.com/firepress-org/ghostfire/issues?q=is%3Aissue+is%3Aopen+label%3A%22feature+request%22).
 
 #### Comparing docker image sizes
 
@@ -87,10 +85,13 @@ In short, you can try Ghost on the spot without having to sign-up!
 
 ## How to use this docker image?
 
-First, find the latest docker images tags 🐳
+First, find the latest docker images tags 🐳.
 
-- **Docker hub** — https://hub.docker.com/r/devmtl/ghostfire/tags/
-- **Travis** — https://travis-ci.org/firepress-org/ghostfire
+#### Docker hub
+[https://hub.docker.com/r/devmtl/ghostfire/tags/](https://hub.docker.com/r/devmtl/ghostfire/tags/)
+
+#### Travis CI
+[https://travis-ci.org/firepress-org/ghostfire](https://travis-ci.org/firepress-org/ghostfire)
 
 At this point, this docker image has been pulled more than **11 millions of time**!
 
@@ -126,7 +127,7 @@ docker run -d \
 ${GHOSTFIRE_IMG}
 ```
 
-#### Option #3 (simple rundry):
+#### Option #3 (let this script work for you):
 
 - Run the script by typing: `./runup.sh`
 
@@ -142,7 +143,6 @@ But if you prefer, you can use:
 
 ```
 devmtl/ghostfire:2.23.4
-or …
 devmtl/ghostfire:stable
 ```
 

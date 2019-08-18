@@ -19,6 +19,16 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## 2.28.1
+### ⚡️ Updates
+- ff3e2ccb Ghost updated to 2.28.1 version
+- bad034b6 Better copy
+- c4292642 Update FUNDING.yml
+- d6a72fff Create FUNDING.yml
+- ea72a501 Better copy
+- 0941efec Fix typo
+- 445416ea changelog update
+
 ## 2.28.0
 ### ⚡️ Updates
 - 4989a9e9 Ghost updated to 2.28.0 version

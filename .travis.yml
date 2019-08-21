@@ -55,16 +55,6 @@ before_script:
   - IMAGE_VERSION=${DOCKER_USERNAME}/${DOCKER_REPO_NAME}:${GHOST_VERSION}
   - IMAGE_STABLE=${DOCKER_USERNAME}/${DOCKER_REPO_NAME}:stable
 
-# caching (so far this is not making our builds faster)
-  # - IMAGE_NODE_COMPRESS=${DOCKER_USERNAME}/${DOCKER_REPO_NAME}:layer-node-compress
-  # - IMAGE_NODE_CORE=${DOCKER_USERNAME}/${DOCKER_REPO_NAME}:layer-node-core
-  # - IMAGE_GHOST_BASE=${DOCKER_USERNAME}/${DOCKER_REPO_NAME}:layer-ghost-base
-  # - IMAGE_EDGE=${DOCKER_USERNAME}/${DOCKER_REPO_NAME}:edge
-  # - docker pull ${IMAGE_NODE_COMPRESS} || true;
-  # - docker pull ${IMAGE_NODE_CORE} || true;
-  # - docker pull ${IMAGE_GHOST_BASE} || true;
-  # - docker pull ${IMAGE_EDGE} || true;
-
 # log in and Docker Hub 
   - echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin;
 

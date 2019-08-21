@@ -62,7 +62,6 @@ script:
   - docker run -d --name ${CONTAINER_NAME} -p 2368:2368 -e url=http://localhost:2368 -e NODE_ENV=production ${IMAGE_SHA_SHORT}
 
 after_script:
-
   - echo && echo "< = = = = = = = = = = = = = = = = = = = = = >"
   - echo "A) Ensure ${CONTAINER_NAME} is running normally / unit test"
   - until $(curl --output /dev/null --silent --head --fail http://localhost:2368); do

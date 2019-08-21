@@ -65,7 +65,7 @@ before_script:
   # - docker pull ${IMAGE_GHOST_BASE} || true;
   # - docker pull ${IMAGE_EDGE} || true;
 
-# docker hub log in
+# log in and Docker Hub 
   - echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin;
 
 script:

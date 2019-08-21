@@ -60,46 +60,53 @@ script:
   - uname -a && echo & echo && echo "BUILD OUR DOCKERFILE FROM HERE ==========>"
   - docker build --build-arg=MICROSCANNER_TOKEN=${MICROSCANNER_TOKEN} -t ${IMAGE_SHA_SHORT} .
   - docker run -d --name ${CONTAINER_NAME} -p 2368:2368 -e url=http://localhost:2368 -e NODE_ENV=production ${IMAGE_SHA_SHORT}
-  
-  - echo & echo && echo "Ensure ${CONTAINER_NAME} is starting ==========>"
+
+after_script:
+
+  - echo && echo "< = = = = = = = = = = = = = = = = = = = = = >"
+  - echo "A) Ensure ${CONTAINER_NAME} is running normally / unit test"
   - until $(curl --output /dev/null --silent --head --fail http://localhost:2368); do
       echo & echo && echo "Waiting for ${CONTAINER_NAME} container to run  ==========>";
       sleep 3;
     done
   - curl http://localhost:2368 | grep "The professional publishing platform"
 
-after_script:
+  - echo && echo "< = = = = = = = = = = = = = = = = = = = = = >"
+  - echo "B) Basic container inpection / unit test"
   - docker inspect ${CONTAINER_NAME};
+  - echo
   - docker images;
+  - echo
   - docker logs ${CONTAINER_NAME};
 
-  - echo && echo "Unit tests (and keeping them in Travis logs) ==========>"
-  - echo "CHECKPOINT"
-  - echo && echo "1) Official docker unit test on the image ==========>"
+  - echo && echo "< = = = = = = = = = = = = = = = = = = = = = >"
+  - echo "C) Official docker on the image / unit test"
   - ~/official-images/test/run.sh "$IMAGE_SHA_SHORT"
 
-  - echo "CHECKPOINT"
-  - echo && echo "2) Docker exec checkpoints ==========>"
+  - echo && echo "< = = = = = = = = = = = = = = = = = = = = = >"
+  - echo "D) Docker exec / unit test"
   - docker exec -it ${CONTAINER_NAME} uname -a;
   - docker exec -it ${CONTAINER_NAME} node --version;
   - docker exec -it ${CONTAINER_NAME} cat /var/lib/ghost/current/content/themes/casper/package.json | grep version;
   - docker exec -it ${CONTAINER_NAME} cat /var/lib/ghost/current/package.json | grep version;
   - docker exec -it ${CONTAINER_NAME} curl -Is --head "http://localhost:2368" | grep -F -o "HTTP/1.1 200 OK" || echo "Error --> http://localhost:2368";
 
-  - echo "CHECKPOINT"
-  - echo && echo "3) Trivy scanner for Containers ==========>"
+  - echo && echo "< = = = = = = = = = = = = = = = = = = = = = >"
+  - echo "E) Trivy scanner for Containers / unit test"
   - docker run --rm -v /var/run/docker.sock:/var/run/docker.sock knqyf263/trivy:latest -q -d --exit-code 1 ${IMAGE_SHA_SHORT}
 
-  - echo "CHECKPOINT"
-  - echo && echo "4) MicroScanner scanner from Aqua Security ==========>"
+  - echo && echo "< = = = = = = = = = = = = = = = = = = = = = >"
+  - echo "F) MicroScanner scanner from Aqua Security / unit test"
   - MICROSCANNER_TOKEN=${MICROSCANNER_TOKEN} ./scan.sh ${IMAGE_SHA_SHORT}
 
-  - echo && echo "Remove container ==========>"
-  - docker rm -f ${CONTAINER_NAME};
+  - echo && echo "< = = = = = = = = = = = = = = = = = = = = = >"
+  - echo "G) Confirm our TAGS / unit test"
+  - echo && echo GHOST_VERSION_DOCKERFILE=${GHOST_VERSION_DOCKERFILE} && echo GHOST_LATEST_RELEASE=${GHOST_LATEST_RELEASE} && echo GHOST_CLI_LATEST_RELEASE=${GHOST_CLI_LATEST_RELEASE} && echo GHOST_VERSION=${GHOST_VERSION} && echo && echo IMAGE_SHA_SHORT=${IMAGE_SHA_SHORT} && echo IMAGE_VERSION=${IMAGE_VERSION} && echo IMAGE_STABLE=${IMAGE_STABLE} && echo && echo "#IMAGE_SHA_SHORT=${IMAGE_SHA_SHORT}" && echo "#IMAGE_VERSION=${IMAGE_VERSION}" && echo "#IMAGE_STABLE=${IMAGE_STABLE}" && echo;
 
-  - echo "CHECKPOINT"
-  - echo && echo "Confirm our TAGS ==========>"
-  - echo & echo && echo GHOST_VERSION_DOCKERFILE=${GHOST_VERSION_DOCKERFILE} && echo GHOST_LATEST_RELEASE=${GHOST_LATEST_RELEASE} && echo GHOST_CLI_LATEST_RELEASE=${GHOST_CLI_LATEST_RELEASE} && echo GHOST_VERSION=${GHOST_VERSION} && echo && echo IMAGE_SHA_SHORT=${IMAGE_SHA_SHORT} && echo IMAGE_VERSION=${IMAGE_VERSION} && echo IMAGE_STABLE=${IMAGE_STABLE} && echo && echo "#IMAGE_SHA_SHORT=${IMAGE_SHA_SHORT}" && echo "#IMAGE_VERSION=${IMAGE_VERSION}" && echo "#IMAGE_STABLE=${IMAGE_STABLE}" && echo;
+  - echo && echo "< = = = = = = = = = = = = = = = = = = = = = >"
+  - echo "H) Remove container / unit test"
+  - docker rm -f ${CONTAINER_NAME};
+  - echo
 
 after_success:
   - if [ ${TRAVIS_BRANCH} == "master" ] && [ ${DOCKER_REPO_NAME} != "" ] && [ ${DOCKER_USERNAME} != "" ] && [ ${DOCKER_PASSWORD} != "" ]; then

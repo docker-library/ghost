@@ -58,7 +58,7 @@ before_script:
 
 script:
   - uname -a && echo & echo && echo "BUILD OUR DOCKERFILE FROM HERE ==========>"
-  - docker build --build-arg=MICROSCANNER_TOKEN=${MICROSCANNER_TOKEN} -t ${IMAGE_SHA_SHORT} .
+  - docker build -t ${IMAGE_SHA_SHORT} .
   - docker run -d --name ${CONTAINER_NAME} -p 2368:2368 -e url=http://localhost:2368 -e NODE_ENV=production ${IMAGE_SHA_SHORT}
 
 after_script:

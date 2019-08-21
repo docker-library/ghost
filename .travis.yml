@@ -29,13 +29,6 @@ before_install:
   - sudo apt-get install --no-install-recommends -qqy openssl parallel ca-certificates
   - docker --version
 
-  - echo "install microscanner Aquasec Scanner ==========>"
-  - wget --retry-connrefused --waitretry=1 --read-timeout=5 --timeout=5 --tries=10 https://raw.githubusercontent.com/lukebond/microscanner-wrapper/master/scan.sh && chmod +x scan.sh
-
-  - git clone https://github.com/docker-library/official-images.git ~/official-images
-  - echo "Bypass timezone'stest "utc" as we use America/New_York timezone in our image ==========>"
-  - sed -i "/utc/d" ~/official-images/test/config.sh
-
 before_script:
   - GHOST_VERSION_DOCKERFILE="$(cat Dockerfile | grep GHOST_VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g')"
   - GHOST_LATEST_RELEASE="$(git ls-remote --tags https://github.com/TryGhost/Ghost.git | cut -d$'\t' -f2 | grep -E '^refs/tags/[0-9]+\.[0-9]+' | cut -d/ -f3 | sort -rV | head -n1)"
@@ -53,78 +46,111 @@ before_script:
   - IMAGE_VERSION=${DOCKER_USERNAME}/${DOCKER_REPO_NAME}:${GHOST_VERSION}
   - IMAGE_STABLE=${DOCKER_USERNAME}/${DOCKER_REPO_NAME}:stable
 
-# Log in on Docker Hub 
-  - echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin;
+  - echo && echo && echo && echo "< = = = = = = = = = = = = = = = = = = = = = >"
+  - echo "Install microscanner Aquasec Scanner"
+  - wget --retry-connrefused --waitretry=1 --read-timeout=5 --timeout=5 --tries=10 https://raw.githubusercontent.com/lukebond/microscanner-wrapper/master/scan.sh && chmod +x scan.sh
+
+  - echo && echo && echo && echo "< = = = = = = = = = = = = = = = = = = = = = >"
+  - echo "Install officiel docker tests"
+  - git clone https://github.com/docker-library/official-images.git ~/official-images
+  - echo "Bypass timezone test "utc" as we use America/New_York timezone in our image"
+  - sed -i "/utc/d" ~/official-images/test/config.sh
 
 script:
-  - uname -a && echo & echo && echo "BUILD OUR DOCKERFILE FROM HERE ==========>"
+  - echo && echo && echo && echo "< = = = = = = = = = = = = = = = = = = = = = >"
+  - echo "CMD uname -a / unit test"
+  - uname -a
+
+  - echo && echo && echo && echo "< = = = = = = = = = = = = = = = = = = = = = >"
+  - echo "Build and run"
   - docker build -t ${IMAGE_SHA_SHORT} .
   - docker run -d --name ${CONTAINER_NAME} -p 2368:2368 -e url=http://localhost:2368 -e NODE_ENV=production ${IMAGE_SHA_SHORT}
 
+  - echo && echo && echo && echo "< = = = = = = = = = = = = = = = = = = = = = >"
+  - docker inspect ${CONTAINER_NAME};
+
+  - echo && echo && echo && echo "< = = = = = = = = = = = = = = = = = = = = = >"
+  - docker images;
+
+  - echo && echo && echo && echo "< = = = = = = = = = = = = = = = = = = = = = >"
+  - docker logs ${CONTAINER_NAME};
+
 after_script:
-  - echo && echo "< = = = = = = = = = = = = = = = = = = = = = >"
+  - echo && echo && echo && echo
+  - echo && echo && echo && echo "< = = = = = = = = = = = = = = = = = = = = = >"
+  - message_is="starting"
+  - docker run --rm devmtl/figlet:1.0 ${message_is} && echo;
+  - message_is="unit tests"
+  - docker run --rm devmtl/figlet:1.0 ${message_is} && echo;
+  - echo "< = = = = = = = = = = = = = = = = = = = = = >" && echo;
+
+  - echo && echo && echo && echo "< = = = = = = = = = = = = = = = = = = = = = >"
   - echo "A) Ensure ${CONTAINER_NAME} is running normally / unit test"
   - until $(curl --output /dev/null --silent --head --fail http://localhost:2368); do
       echo & echo && echo "Waiting for ${CONTAINER_NAME} container to run  ==========>";
-      sleep 3;
+      sleep 2;
     done
   - curl http://localhost:2368 | grep "The professional publishing platform"
 
-  - echo && echo "< = = = = = = = = = = = = = = = = = = = = = >"
-  - echo "B) Basic container inpection / unit test"
-  - docker inspect ${CONTAINER_NAME};
-  - echo
-  - docker images;
-  - echo
-  - docker logs ${CONTAINER_NAME};
-
-  - echo && echo "< = = = = = = = = = = = = = = = = = = = = = >"
-  - echo "C) Official docker on the image / unit test"
+  - echo && echo && echo && echo "< = = = = = = = = = = = = = = = = = = = = = >"
+  - echo "B) Official docker on the image / unit test"
   - ~/official-images/test/run.sh "$IMAGE_SHA_SHORT"
 
-  - echo && echo "< = = = = = = = = = = = = = = = = = = = = = >"
-  - echo "D) Docker exec / unit test"
+  - echo && echo && echo && echo "< = = = = = = = = = = = = = = = = = = = = = >"
+  - echo "C) Docker exec / unit test"
   - docker exec -it ${CONTAINER_NAME} uname -a;
   - docker exec -it ${CONTAINER_NAME} node --version;
   - docker exec -it ${CONTAINER_NAME} cat /var/lib/ghost/current/content/themes/casper/package.json | grep version;
   - docker exec -it ${CONTAINER_NAME} cat /var/lib/ghost/current/package.json | grep version;
   - docker exec -it ${CONTAINER_NAME} curl -Is --head "http://localhost:2368" | grep -F -o "HTTP/1.1 200 OK" || echo "Error --> http://localhost:2368";
 
-  - echo && echo "< = = = = = = = = = = = = = = = = = = = = = >"
-  - echo "E) Trivy scanner for Containers / unit test"
+  - echo && echo && echo && echo "< = = = = = = = = = = = = = = = = = = = = = >"
+  - echo "D) Trivy scanner for Containers / unit test"
   - docker run --rm -v /var/run/docker.sock:/var/run/docker.sock knqyf263/trivy:latest -q -d --exit-code 1 ${IMAGE_SHA_SHORT}
 
-  - echo && echo "< = = = = = = = = = = = = = = = = = = = = = >"
-  - echo "F) MicroScanner scanner from Aqua Security / unit test"
+  - echo && echo && echo && echo "< = = = = = = = = = = = = = = = = = = = = = >"
+  - echo "E) MicroScanner scanner from Aqua Security / unit test"
   - MICROSCANNER_TOKEN=${MICROSCANNER_TOKEN} ./scan.sh ${IMAGE_SHA_SHORT}
 
-  - echo && echo "< = = = = = = = = = = = = = = = = = = = = = >"
-  - echo "G) Confirm our TAGS / unit test"
-  - echo && echo GHOST_VERSION_DOCKERFILE=${GHOST_VERSION_DOCKERFILE} && echo GHOST_LATEST_RELEASE=${GHOST_LATEST_RELEASE} && echo GHOST_CLI_LATEST_RELEASE=${GHOST_CLI_LATEST_RELEASE} && echo GHOST_VERSION=${GHOST_VERSION} && echo && echo IMAGE_SHA_SHORT=${IMAGE_SHA_SHORT} && echo IMAGE_VERSION=${IMAGE_VERSION} && echo IMAGE_STABLE=${IMAGE_STABLE} && echo && echo "#IMAGE_SHA_SHORT=${IMAGE_SHA_SHORT}" && echo "#IMAGE_VERSION=${IMAGE_VERSION}" && echo "#IMAGE_STABLE=${IMAGE_STABLE}" && echo;
-
-  - echo && echo "< = = = = = = = = = = = = = = = = = = = = = >"
-  - echo "H) Remove container / unit test"
+  - echo && echo && echo && echo "< = = = = = = = = = = = = = = = = = = = = = >"
+  - echo "F) Remove container / unit test"
   - docker rm -f ${CONTAINER_NAME};
-  - echo
+
+  - echo && echo && echo && echo "< = = = = = = = = = = = = = = = = = = = = = >"
+  - message_is="ending"
+  - docker run --rm devmtl/figlet:1.0 ${message_is} && echo;
+  - message_is="unit tests"
+  - docker run --rm devmtl/figlet:1.0 ${message_is} && echo;
+  - echo "< = = = = = = = = = = = = = = = = = = = = = >" && echo;
 
 after_success:
   - if [ ${TRAVIS_BRANCH} == "master" ] && [ ${DOCKER_REPO_NAME} != "" ] && [ ${DOCKER_USERNAME} != "" ] && [ ${DOCKER_PASSWORD} != "" ]; then
+      echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin;
+
+      echo && echo && echo && echo "< = = = = = = = = = = = = = = = = = = = = = >"
+      message_is="push to docker hub"
+      docker run --rm devmtl/figlet:1.0 ${message_is} && echo;
+      echo "< = = = = = = = = = = = = = = = = = = = = = >" && echo
 
       docker push ${IMAGE_SHA_SHORT};
 
-      docker build --build-arg=MICROSCANNER_TOKEN=${MICROSCANNER_TOKEN} -t ${IMAGE_VERSION} . ;
+      docker build -t ${IMAGE_VERSION} . ;
       docker push ${IMAGE_VERSION};
 
-      docker build --build-arg=MICROSCANNER_TOKEN=${MICROSCANNER_TOKEN} -t ${IMAGE_STABLE} .;
+      docker build -t ${IMAGE_STABLE} .;
       docker push "$IMAGE_STABLE";
 
-      docker build --build-arg=MICROSCANNER_TOKEN=${MICROSCANNER_TOKEN} -t ${IMAGE_NODE_COMPRESS} --target node-compress . ;
+      docker build -t ${IMAGE_NODE_COMPRESS} --target node-compress . ;
       docker push "${IMAGE_NODE_COMPRESS}";
 
-      docker build --build-arg=MICROSCANNER_TOKEN=${MICROSCANNER_TOKEN} -t ${IMAGE_NODE_CORE} --target node-core . ;
+      docker build -t ${IMAGE_NODE_CORE} --target node-core . ;
       docker push "${IMAGE_NODE_CORE}";
 
-      docker build --build-arg=MICROSCANNER_TOKEN=${MICROSCANNER_TOKEN} -t ${IMAGE_GHOST_BASE} --target ghost-base . ;
+      docker build -t ${IMAGE_GHOST_BASE} --target ghost-base . ;
       docker push "${IMAGE_GHOST_BASE}";
-
     fi
+
+  - echo && echo && echo && echo "< = = = = = = = = = = = = = = = = = = = = = >"
+  - echo "Our Tags are "
+  - echo && echo GHOST_VERSION_DOCKERFILE=${GHOST_VERSION_DOCKERFILE} && echo GHOST_LATEST_RELEASE=${GHOST_LATEST_RELEASE} && echo GHOST_CLI_LATEST_RELEASE=${GHOST_CLI_LATEST_RELEASE} && echo GHOST_VERSION=${GHOST_VERSION} && echo && echo IMAGE_SHA_SHORT=${IMAGE_SHA_SHORT} && echo IMAGE_VERSION=${IMAGE_VERSION} && echo IMAGE_STABLE=${IMAGE_STABLE} && echo && echo "#IMAGE_SHA_SHORT=${IMAGE_SHA_SHORT}" && echo "#IMAGE_VERSION=${IMAGE_VERSION}" && echo "#IMAGE_STABLE=${IMAGE_STABLE}" && echo;
+

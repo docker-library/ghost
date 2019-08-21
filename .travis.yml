@@ -124,22 +124,3 @@ after_success:
       docker push "${IMAGE_GHOST_BASE}";
 
     fi
-
-
-# notifications:
-# webhooks: https://www.travisbuddy.com/
-#
-# Secret DOCKER_PASSWORD managed by Travis:
-# See https://docs.travis-ci.com/user/environment-variables/#Defining-Variables-in-Repository-Settings
-#
-# In a commit, by using [ci skip] it will skip Travis build
-#
-# THIS_SHA_LONG=$(git log -1 | head -1 | awk '{print $2}')
-#
-# In the master branch, the GHOST_VERSION is parsed from the Dockerfile https://github.com/firepress-org/ghostfire/blob/master/Dockerfile
-# WIP in the followrelease branch, the GHOST_VERSION is parsed from: https://github.com/TryGhost/Ghost/releases
-#
-# Flag output examples:
-# IMAGE_SHA_SHORT=devmtl/ghostfire:2.9.1-e04b5c6
-# IMAGE_VERSION=devmtl/ghostfire:2.9.1
-# IMAGE_STABLE=devmtl/ghostfire:stable

@@ -1,0 +1,14 @@
+name: CI / Dockerfile
+
+on: [push]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-18.04
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag devmtl/ghostfire:$(date +%s)

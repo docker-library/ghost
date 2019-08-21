@@ -29,7 +29,6 @@ before_install:
   - sudo apt-get install --no-install-recommends -qqy openssl parallel ca-certificates
   - docker --version
 
-# install:
   - echo "install microscanner Aquasec Scanner ==========>"
   - wget --retry-connrefused --waitretry=1 --read-timeout=5 --timeout=5 --tries=10 https://raw.githubusercontent.com/lukebond/microscanner-wrapper/master/scan.sh && chmod +x scan.sh
 
@@ -38,7 +37,6 @@ before_install:
   - sed -i "/utc/d" ~/official-images/test/config.sh
 
 before_script:
-# define our labels and tags
   - GHOST_VERSION_DOCKERFILE="$(cat Dockerfile | grep GHOST_VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g')"
   - GHOST_LATEST_RELEASE="$(git ls-remote --tags https://github.com/TryGhost/Ghost.git | cut -d$'\t' -f2 | grep -E '^refs/tags/[0-9]+\.[0-9]+' | cut -d/ -f3 | sort -rV | head -n1)"
   - GHOST_CLI_LATEST_RELEASE="$(git ls-remote --tags https://github.com/TryGhost/Ghost-CLI.git | cut -d$'\t' -f2 | grep -E '^refs/tags/[0-9]+\.[0-9]+' | cut -d/ -f3 | sort -rV | head -n1)"
@@ -55,7 +53,7 @@ before_script:
   - IMAGE_VERSION=${DOCKER_USERNAME}/${DOCKER_REPO_NAME}:${GHOST_VERSION}
   - IMAGE_STABLE=${DOCKER_USERNAME}/${DOCKER_REPO_NAME}:stable
 
-# log in and Docker Hub 
+# Log in on Docker Hub 
   - echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin;
 
 script:

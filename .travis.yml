@@ -78,9 +78,7 @@ script:
 after_script:
   - echo && echo && echo && echo
   - echo && echo && echo && echo "< = = = = = = = = = = = = = = = = = = = = = >"
-  - message_is="starting"
-  - docker run --rm devmtl/figlet:1.0 ${message_is} && echo;
-  - message_is="unit tests"
+  - message_is="starting unit tests"
   - docker run --rm devmtl/figlet:1.0 ${message_is} && echo;
   - echo "< = = = = = = = = = = = = = = = = = = = = = >" && echo;
 
@@ -117,20 +115,18 @@ after_script:
   - docker rm -f ${CONTAINER_NAME};
 
   - echo && echo && echo && echo "< = = = = = = = = = = = = = = = = = = = = = >"
-  - message_is="ending"
-  - docker run --rm devmtl/figlet:1.0 ${message_is} && echo;
-  - message_is="unit tests"
+  - message_is="ending unit tests"
   - docker run --rm devmtl/figlet:1.0 ${message_is} && echo;
   - echo "< = = = = = = = = = = = = = = = = = = = = = >" && echo;
+
+  - echo && echo && echo && echo "< = = = = = = = = = = = = = = = = = = = = = >"
+  - message_is="Tags"
+  - docker run --rm devmtl/figlet:1.0 ${message_is} && echo;
+  - echo && echo GHOST_VERSION_DOCKERFILE=${GHOST_VERSION_DOCKERFILE} && echo GHOST_LATEST_RELEASE=${GHOST_LATEST_RELEASE} && echo GHOST_CLI_LATEST_RELEASE=${GHOST_CLI_LATEST_RELEASE} && echo GHOST_VERSION=${GHOST_VERSION} && echo && echo IMAGE_SHA_SHORT=${IMAGE_SHA_SHORT} && echo IMAGE_VERSION=${IMAGE_VERSION} && echo IMAGE_STABLE=${IMAGE_STABLE} && echo && echo "#IMAGE_SHA_SHORT=${IMAGE_SHA_SHORT}" && echo "#IMAGE_VERSION=${IMAGE_VERSION}" && echo "#IMAGE_STABLE=${IMAGE_STABLE}" && echo;
 
 after_success:
   - if [ ${TRAVIS_BRANCH} == "master" ] && [ ${DOCKER_REPO_NAME} != "" ] && [ ${DOCKER_USERNAME} != "" ] && [ ${DOCKER_PASSWORD} != "" ]; then
       echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin;
-
-      echo && echo && echo && echo "< = = = = = = = = = = = = = = = = = = = = = >"
-      message_is="push to docker hub"
-      docker run --rm devmtl/figlet:1.0 ${message_is} && echo;
-      echo "< = = = = = = = = = = = = = = = = = = = = = >" && echo
 
       docker push ${IMAGE_SHA_SHORT};
 
@@ -149,8 +145,3 @@ after_success:
       docker build -t ${IMAGE_GHOST_BASE} --target ghost-base . ;
       docker push "${IMAGE_GHOST_BASE}";
     fi
-
-  - echo && echo && echo && echo "< = = = = = = = = = = = = = = = = = = = = = >"
-  - echo "Our Tags are "
-  - echo && echo GHOST_VERSION_DOCKERFILE=${GHOST_VERSION_DOCKERFILE} && echo GHOST_LATEST_RELEASE=${GHOST_LATEST_RELEASE} && echo GHOST_CLI_LATEST_RELEASE=${GHOST_CLI_LATEST_RELEASE} && echo GHOST_VERSION=${GHOST_VERSION} && echo && echo IMAGE_SHA_SHORT=${IMAGE_SHA_SHORT} && echo IMAGE_VERSION=${IMAGE_VERSION} && echo IMAGE_STABLE=${IMAGE_STABLE} && echo && echo "#IMAGE_SHA_SHORT=${IMAGE_SHA_SHORT}" && echo "#IMAGE_VERSION=${IMAGE_VERSION}" && echo "#IMAGE_STABLE=${IMAGE_STABLE}" && echo;
-

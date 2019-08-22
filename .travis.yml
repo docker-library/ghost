@@ -120,11 +120,9 @@ after_script:
   - echo "< = = = = = = = = = = = = = = = = = = = = = >" && echo;
 
   - echo && echo && echo && echo "< = = = = = = = = = = = = = = = = = = = = = >"
-  - message_is="Tags"
+  - message_is="Push to Docker Hub"
   - docker run --rm devmtl/figlet:1.0 ${message_is} && echo;
-  - echo && echo GHOST_VERSION_DOCKERFILE=${GHOST_VERSION_DOCKERFILE} && echo GHOST_LATEST_RELEASE=${GHOST_LATEST_RELEASE} && echo GHOST_CLI_LATEST_RELEASE=${GHOST_CLI_LATEST_RELEASE} && echo GHOST_VERSION=${GHOST_VERSION} && echo && echo IMAGE_SHA_SHORT=${IMAGE_SHA_SHORT} && echo IMAGE_VERSION=${IMAGE_VERSION} && echo IMAGE_STABLE=${IMAGE_STABLE} && echo && echo "#IMAGE_SHA_SHORT=${IMAGE_SHA_SHORT}" && echo "#IMAGE_VERSION=${IMAGE_VERSION}" && echo "#IMAGE_STABLE=${IMAGE_STABLE}" && echo;
-
-after_success:
+  - echo "< = = = = = = = = = = = = = = = = = = = = = >" && echo;
   - if [ ${TRAVIS_BRANCH} == "master" ] && [ ${DOCKER_REPO_NAME} != "" ] && [ ${DOCKER_USERNAME} != "" ] && [ ${DOCKER_PASSWORD} != "" ]; then
       echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin;
 
@@ -145,3 +143,11 @@ after_success:
       docker build -t ${IMAGE_GHOST_BASE} --target ghost-base . ;
       docker push "${IMAGE_GHOST_BASE}";
     fi
+
+  - echo && echo && echo && echo "< = = = = = = = = = = = = = = = = = = = = = >"
+  - message_is="Our Tags"
+  - docker run --rm devmtl/figlet:1.0 ${message_is} && echo;
+  - echo && echo GHOST_VERSION_DOCKERFILE=${GHOST_VERSION_DOCKERFILE} && echo GHOST_LATEST_RELEASE=${GHOST_LATEST_RELEASE} && echo GHOST_CLI_LATEST_RELEASE=${GHOST_CLI_LATEST_RELEASE} && echo GHOST_VERSION=${GHOST_VERSION} && echo && echo IMAGE_SHA_SHORT=${IMAGE_SHA_SHORT} && echo IMAGE_VERSION=${IMAGE_VERSION} && echo IMAGE_STABLE=${IMAGE_STABLE} && echo && echo "#IMAGE_SHA_SHORT=${IMAGE_SHA_SHORT}" && echo "#IMAGE_VERSION=${IMAGE_VERSION}" && echo "#IMAGE_STABLE=${IMAGE_STABLE}" && echo;
+
+after_success:
+  - echo "null"

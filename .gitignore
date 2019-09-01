@@ -6,7 +6,6 @@ dist
 node_modules
 npm-debug
 .env
-.git
 docker-compose*.yml
 
 # Directories

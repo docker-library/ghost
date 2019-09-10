@@ -12,6 +12,19 @@ Based on this [template](https://gist.github.com/pascalandy/af709db02d3fe132a3e6
 
 # Releases
 
+## 2.31.0
+### ⚡️ Updates
+- 2a88441 update .gitignore
+- e57564b update LICENSE's format
+- 07ad3a1 Update CHANGELOG format / squashed
+- ea3230c Remove runlint.sh / its part of utility.sh
+- 656a017 Remove renovate.json / no value
+- 39ce10e Remove runrelease.sh / its part of utility.sh
+- 98c8078 Remove runversion / its part of utility.sh
+- 88d4b03 Add utility.sh
+- ebe8588 Update variables
+- 27121a0 Add license GNU v3
+
 ## 2.28.1
 ### ⚡️ Updates
 - ff3e2ccb Ghost updated to 2.28.1 version
@@ -177,7 +190,6 @@ The scripts to update the tag + release on github was not clean. See MAINTAINERS
 - 138e660e Ghost updated to 2.22.3 version
 - d54d6281 copyproofing
 
-
 ## 2.22.2
 ### 🐛 Fix bug
 We had a nasty a bug. Our containers were running normally but under the hood there was a permission issue.
@@ -298,12 +310,10 @@ It should be all good now.
 - 5a4adc03 bump 2.14.2
 - 0f7c9086 bump to 2.14.1
 
-
 ## 2.14.0
 ### ⚡️ Updates
 - aa35cc36 bump to 2.14.0
 - 07387d3c bump 2.14.0
-
 
 ## 2.13.2
 ### ⚡️ Updates
@@ -321,7 +331,6 @@ It should be all good now.
 - 20643255 update before install
 - f11df635 update before install
 
-
 ## 2.12.0
 ### ⚡️ Updates
 - f24c1cfb bump to 2.12.0 / CLI 1.9.9 / node 10.15
@@ -337,7 +346,6 @@ It should be all good now.
 - 60ce6299 bump to 2.10.0 / node 10.5
 - 6959ec30 cleaning flag in travis
 
-
 ## 2.9.1
 ### ⚡️ Updates
 - 2f6496e0 bump to 2.9.1
@@ -352,7 +360,6 @@ It should be all good now.
 - 6671472c fix flag in travis
 - a20e0284 bump to 2.9.0
 - 52e3c698 Added MAINTAINERS.md
-
 
 ## 2.8.0
 ### ⚡️ Updates
@@ -394,7 +401,6 @@ It should be all good now.
 - 5748e17f rename _EDGE_BRANCH.md
 - a7a6613b remove healthcheck.js
 
-
 ## 2.6.2
 ### ⚡️ Updates
 - 512f66b0 bump to ghost 2.6.2 / node:10.14.0
@@ -403,7 +409,6 @@ It should be all good now.
 - 654f25ce rollback to 2.6.1 to test sheperd
 - f79c53a1 rollback to 2.6.0 to test sheperd
 - 15026c55 formatting only /b
-
 
 ## 2.6.1
 ### ⚡️ Updates
@@ -416,7 +421,6 @@ It should be all good now.
 - 3ccbca8b Added healthcheck / test is PASS
 - f72c9c1b Added healthcheck
 - b927ab0d Healthcheck.js test in progress
-
 
 ## older versions
 ### ⚡️ Updates

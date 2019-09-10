@@ -30,10 +30,10 @@ before_install:
   - docker --version
 
 before_script:
-  - GHOST_VERSION_DOCKERFILE="$(cat Dockerfile | grep GHOST_VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g')"
+  - GHOST_VERSION_DOCKERFILE="$(cat Dockerfile | grep VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g')"
   - GHOST_LATEST_RELEASE="$(git ls-remote --tags https://github.com/TryGhost/Ghost.git | cut -d$'\t' -f2 | grep -E '^refs/tags/[0-9]+\.[0-9]+' | cut -d/ -f3 | sort -rV | head -n1)"
   - GHOST_CLI_LATEST_RELEASE="$(git ls-remote --tags https://github.com/TryGhost/Ghost-CLI.git | cut -d$'\t' -f2 | grep -E '^refs/tags/[0-9]+\.[0-9]+' | cut -d/ -f3 | sort -rV | head -n1)"
-  - GHOST_VERSION=${GHOST_VERSION_DOCKERFILE}
+  - VERSION=${GHOST_VERSION_DOCKERFILE}
 
   - DOCKER_USERNAME="devmtl"
   - DOCKER_REPO_NAME="ghostfire"
@@ -42,8 +42,8 @@ before_script:
   - THIS_DATE=$(date +%Y-%m-%d)
   - THIS_SHA_SHORT=$(git rev-parse --short HEAD)
 
-  - IMAGE_SHA_SHORT=${DOCKER_USERNAME}/${DOCKER_REPO_NAME}:${GHOST_VERSION}-${THIS_SHA_SHORT}
-  - IMAGE_VERSION=${DOCKER_USERNAME}/${DOCKER_REPO_NAME}:${GHOST_VERSION}
+  - IMAGE_SHA_SHORT=${DOCKER_USERNAME}/${DOCKER_REPO_NAME}:${VERSION}-${THIS_SHA_SHORT}
+  - IMAGE_VERSION=${DOCKER_USERNAME}/${DOCKER_REPO_NAME}:${VERSION}
   - IMAGE_STABLE=${DOCKER_USERNAME}/${DOCKER_REPO_NAME}:stable
 
   - echo && echo && echo && echo "< = = = = = = = = = = = = = = = = = = = = = >"
@@ -147,7 +147,7 @@ after_script:
   - echo && echo && echo && echo "< = = = = = = = = = = = = = = = = = = = = = >"
   - message_is="Our Tags"
   - docker run --rm devmtl/figlet:1.0 ${message_is} && echo;
-  - echo && echo GHOST_VERSION_DOCKERFILE=${GHOST_VERSION_DOCKERFILE} && echo GHOST_LATEST_RELEASE=${GHOST_LATEST_RELEASE} && echo GHOST_CLI_LATEST_RELEASE=${GHOST_CLI_LATEST_RELEASE} && echo GHOST_VERSION=${GHOST_VERSION} && echo && echo IMAGE_SHA_SHORT=${IMAGE_SHA_SHORT} && echo IMAGE_VERSION=${IMAGE_VERSION} && echo IMAGE_STABLE=${IMAGE_STABLE} && echo && echo "#IMAGE_SHA_SHORT=${IMAGE_SHA_SHORT}" && echo "#IMAGE_VERSION=${IMAGE_VERSION}" && echo "#IMAGE_STABLE=${IMAGE_STABLE}" && echo;
+  - echo && echo GHOST_VERSION_DOCKERFILE=${GHOST_VERSION_DOCKERFILE} && echo GHOST_LATEST_RELEASE=${GHOST_LATEST_RELEASE} && echo GHOST_CLI_LATEST_RELEASE=${GHOST_CLI_LATEST_RELEASE} && echo GHOST=${GHOST} && echo && echo IMAGE_SHA_SHORT=${IMAGE_SHA_SHORT} && echo IMAGE_VERSION=${IMAGE_VERSION} && echo IMAGE_STABLE=${IMAGE_STABLE} && echo && echo "#IMAGE_SHA_SHORT=${IMAGE_SHA_SHORT}" && echo "#IMAGE_VERSION=${IMAGE_VERSION}" && echo "#IMAGE_STABLE=${IMAGE_STABLE}" && echo;
 
 after_success:
   - echo "null"

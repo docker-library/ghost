@@ -1,4 +1,5 @@
-ARG GHOST_VERSION="2.30.2"
+ARG VERSION="2.30.2"
+ARG APP_NAME="ghost"
 ARG GHOST_CLI_VERSION="1.11.0"
 ARG ALPINE_VERSION="3.9"
 ARG NODE_VERSION="10.16-alpine"
@@ -36,7 +37,7 @@ RUN set -eux && \
       apk del tzdata                                              && \
     rm -rf /var/cache/apk/* /tmp/*                                ;
 
-ARG GHOST_VERSION
+ARG VERSION
 ARG GHOST_CLI_VERSION
 ARG NODE_VERSION
 ARG ALPINE_VERSION
@@ -45,7 +46,7 @@ ENV GHOST_INSTALL="/var/lib/ghost"                                \
     GHOST_CONTENT="/var/lib/ghost/content"                        \
     NODE_ENV="production"                                         \
     GHOST_USER="node"                                             \
-    GHOST_VERSION="${GHOST_VERSION}"                              \
+    VERSION="${VERSION}"                              \
     GHOST_CLI_VERSION="${GHOST_CLI_VERSION}"
 
 # best practice credit: https://github.com/opencontainers/image-spec/blob/master/annotations.md
@@ -54,7 +55,7 @@ LABEL org.opencontainers.image.authors="Pascal Andy https://firepress.org/en/con
       org.opencontainers.image.created="${CREATED_DATE}"                                \
       org.opencontainers.image.revision="${SOURCE_COMMIT}"                              \
       org.opencontainers.image.title="Ghost V2"                                         \
-      org.opencontainers.image.description="Docker image for Ghost ${GHOST_VERSION}"    \
+      org.opencontainers.image.description="Docker image for Ghost ${VERSION}"    \
       org.opencontainers.image.url="https://hub.docker.com/r/devmtl/ghostfire/tags/"    \
       org.opencontainers.image.source="https://github.com/firepress-org/ghostfire"      \
       org.opencontainers.image.licenses="GNUv3 https://github.com/pascalandy/GNU-GENERAL-PUBLIC-LICENSE/blob/master/LICENSE.md" \
@@ -76,7 +77,7 @@ EXPOSE 2368
 # LAYER BUILDER — — — — — — — — — — — — — — — — — — — — — — — — — —
 FROM node:${NODE_VERSION} AS ghost-builder
 
-ARG GHOST_VERSION
+ARG VERSION
 ARG GHOST_CLI_VERSION
 ARG NODE_VERSION
 
@@ -84,7 +85,7 @@ ENV GHOST_INSTALL="/var/lib/ghost"                                \
     GHOST_CONTENT="/var/lib/ghost/content"                        \
     NODE_ENV="production"                                         \
     GHOST_USER="node"                                             \
-    GHOST_VERSION="${GHOST_VERSION}"                              \
+    VERSION="${VERSION}"                              \
     GHOST_CLI_VERSION="${GHOST_CLI_VERSION}"
 
 # installation process from the official Ghost image https://bit.ly/2JWOTam
@@ -102,7 +103,7 @@ RUN set -eux                                                      && \
     chown -R node:node "${GHOST_INSTALL}"                         && \
     \
 # install Ghost / optional: --verbose
-    su-exec node ghost install "${GHOST_VERSION}"                 \
+    su-exec node ghost install "${VERSION}"                 \
       --db sqlite3 --no-prompt --no-stack                         \
       --no-setup --dir "${GHOST_INSTALL}"                         && \
     \
@@ -152,9 +153,8 @@ RUN set -eux                                                      && \
 
 # LAYER upgrade — — — — — — — — — — — — — — — — — — — — — — — — — —
 # The point is to keep trace of logs in Travis CI
-FROM ghost-base AS ghost-upgrade
+FROM ghost-base AS ghost-what-to-upgrade
 COPY --from=ghost-builder --chown=node:node "${GHOST_INSTALL}" "${GHOST_INSTALL}"
-RUN echo "CHECKPOINT"
 RUN apk update
 RUN apk info
 RUN apk policy package

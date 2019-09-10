@@ -1,23 +1,16 @@
-# CHANGELOG.md - ghostfire
+### About this changelog
 
-All notable changes to this project will be documented in this file.
+Based on this [template](https://gist.github.com/pascalandy/af709db02d3fe132a3e6f1c11b934fe4). Release process at FirePress ([blog post](https://firepress.org/en/software-and-ghost-updates/)). Based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-- GitHub sources: https://github.com/firepress-org/ghostfire
-- FirePress Public Roadmap: https://trello.com/b/0fCwwzqc/firepress-public-roadmap
-- Based on this template: https://gist.github.com/pascalandy/af709db02d3fe132a3e6f1c11b934fe4
-- Release process at FirePress (blog post): https://firepress.org/en/software-and-ghost-updates/
-- Based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-- When reading `2.25.6-ff75200` the represents the docker's image hash (not the commit's hash)
+### Status template
 
-## Status template
+- ⚡️ Updates
+- 🚀 New feat.
+- 🐛 Fix bug
+- 🛑 Removed
+- 🔑 Security
 
-### ⚡️ Updates
-### 🚀 Added (new feat.)
-### 🐛 Fix bug
-### 🛑 Removed
-### 🔑 Security
-
----
+# Releases
 
 ## 2.28.1
 ### ⚡️ Updates

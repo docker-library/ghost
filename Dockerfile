@@ -33,7 +33,7 @@ COPY Dockerfile /usr/local/bin
 COPY README.md /usr/local/bin
 RUN set -eux && \
     apk --update --no-cache add \
-      'su-exec>=0.2' bash="4.4.19-r1" curl="7.64.0-r2" tini="0.18.0-r0" tzdata && \
+      'su-exec>=0.2' bash="4.4.19-r1" curl="7.64.0-r3" tini="0.18.0-r0" tzdata && \
       cp /usr/share/zoneinfo/America/New_York /etc/localtime      && \
       echo "America/New_York" > /etc/timezone                     && \
       apk del tzdata                                              && \

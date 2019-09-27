@@ -12,6 +12,12 @@ Based on this [template](https://gist.github.com/pascalandy/af709db02d3fe132a3e6
 
 # Releases
 
+## 2.31.1
+### ⚡️ Updates
+- final image is now running alpine 3.10
+- 7800579f Update to 2.31.1 / many Dockerifle optimizations
+- 8ed0b633 update utility.sh
+
 ## 2.31.0
 ### ⚡️ Updates
 - 2a88441 update .gitignore

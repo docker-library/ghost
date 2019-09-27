@@ -1,19 +1,15 @@
 #!/usr/bin/env bash
 
-# Find the latest version of this application: https://github.com/firepress-org/bash-script-template
-#
-### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ###
+# Find the latest version of this application:
+# https://github.com/firepress-org/bash-script-template
 #
 set -o errexit          # Exit on most errors (see the manual)
 set -o errtrace         # Make sure any error trap is inherited
 set -o pipefail         # Use last non-zero exit code in a pipeline
 #set -o xtrace          # Trace the execution of the script (debug)
-#
 #set -o nounset          # Disallow expansion of unset variables
 # --- Find bad variables by using `./utility.sh test two three`, else disable it
 # --- or remove $1, $2, $3 var defintions in @main
-#
-### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ###
 
 
 ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ###
@@ -21,7 +17,7 @@ set -o pipefail         # Use last non-zero exit code in a pipeline
 ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ###
 
 function push {
-# commit & push all changes
+# commit all & push all changes
   App_input2_rule
 
   git status && \
@@ -33,25 +29,26 @@ function push {
 function log {
   git --no-pager log --decorate=short --pretty=oneline -n25
 }
-function rbedge {
-# think rebase_edge_from_master
+function version {
+# update the Dockerfile
+# useful the upgrade an app on edge branch
 
-  if [[ $(git status | grep -c "nothing to commit") == "1" ]]; then
-    echo "good, nothing to commit" | 2>/dev/null
-    git checkout edge
-    git pull origin edge
-    git rebase master
-    git push
-    hash_edge_is=$(git rev-parse --short HEAD)
-    #
-    git checkout master
-    hash_master_is=$(git rev-parse --short HEAD)
-    git checkout edge
-    my_message="Diligence: ${hash_master_is} | ${hash_master_is} (master vs edge should be the same)" App_Blue
+  App_input2_rule
+  tag_version="${input_2}"
 
-  else
-    my_message="You must push your commit(s) before doing a rebase." App_Pink
-  fi
+  # update tag within the Dockerfile without "-r1" "-r2"
+  ver_in_dockerfile=$(echo $tag_version | sed 's/-r.*//g')
+  sed -i '' "s/^ARG VERSION=.*$/ARG VERSION=\"$ver_in_dockerfile\"/" Dockerfile 
+
+  git add . && \
+  git commit -m "Updated to version: $tag_version" && \
+  git push
+
+# what it does:
+  # update tag in Dockerfile
+  # save the commit
+  # tag on the latest commit
+  # push tag to remote
 }
 function sq {
 # squash
@@ -77,8 +74,77 @@ function sq {
     my_message="You must push your commit(s) before doing a rebase." App_Pink
   fi
 }
-function rbmaster {
-# think rebase_master_from_edge
+function help {
+cat << EOF > FORMATDOC.md
+
+## TO USE SCRIPTS:
+  ./utility.sh [my cmd]
+
+
+## USE CASE #1
+
+  This is core workflow.
+  We are developing in the 'edge' branch.
+
+  'push' all update
+   If needed, 'sq' them
+
+  Once our updates on branch edge looks good, rebase on master + version
+
+  'master' [version]
+
+  Manually update the CHANGELOG.md
+
+  'release' [version]
+
+  We are done and back on edge branch.
+
+
+## USE CASE #2
+
+This workflow is more granular. You need to understand it before using USE CASE #1.
+
+  - We commit some change on edge branch.
+  - Rebase on master from edge
+  - write a git history ofwhat happened with the CHANGELOG
+  - commit with a message
+  - tag 1.2.3-r4 this commit
+  - push tag 1.2.3-r4
+  - release on Github with the tag 1.2.3-r4 along a markdown description that points to our CHANGELOG.md
+
+That takes time! 
+
+  First method (2 steps):
+    'master 1.2.3-r4' (rebase master from edge).
+        Optionaly, manually edit CHANGELOG.md
+    'release 1.2.3-r4' (at this point, we are now to edge branch)
+
+  Second method (3 steps):
+    'master' (rebase master from edge)
+    'draft 1.2.3-r4' (it injects the latest commit(s) in CHANGELOG.md)
+        Optionaly, manually edit CHANGELOG.md
+    'release 1.2.3-r4' (at this point, we are now to edge branch)
+
+
+## USE CASE #3:
+
+  This text is used as a placeholder.
+
+EOF
+
+if [[ ! -z `command -v mdv` ]]; then
+  # shows well formatted markdown
+  mdv FORMATDOC.md
+else
+  cat FORMATDOC.md
+fi
+rm FORMATDOC.md
+}
+function -h {
+  help
+}
+function master {
+# think rebase master from edge
 
   if [[ $(git status | grep -c "nothing to commit") == "1" ]]; then
     echo "good, nothing to commit" | 2>/dev/null
@@ -91,12 +157,138 @@ function rbmaster {
     hash_edge_is=$(git rev-parse --short HEAD)
     my_message="Diligence: ${hash_master_is} | ${hash_master_is} (master vs edge should be the same)" App_Blue
 
+    # if a tag is provided
+    # it means we want to draft our CHANGELOG as well
+    if [[ ! -z "${input_2}" ]] && [[ "${input_2}" != not-set ]]; then
+      App_Draft
+    fi
+
   else
     my_message="You must push your commit(s) before doing a rebase." App_Pink
   fi
 }
-function cl_update {
-# update changelog
+function edge {
+# think rebase edge from master
+
+  if [[ $(git status | grep -c "nothing to commit") == "1" ]]; then
+    echo "good, nothing to commit" | 2>/dev/null
+    git checkout edge
+    git pull origin edge
+    git rebase master
+    git push
+    hash_edge_is=$(git rev-parse --short HEAD)
+    #
+    git checkout master
+    hash_master_is=$(git rev-parse --short HEAD)
+    git checkout edge
+    my_message="Diligence: ${hash_master_is} | ${hash_master_is} (master vs edge should be the same)" App_Blue
+
+  else
+    my_message="You must push your commit(s) before doing a rebase." App_Pink
+  fi
+}
+function release {
+# push changelog
+# powerfull as it combines: tag + release + edge
+# was called cl_push
+
+  # is expecting a version
+  App_input2_rule
+
+  # Prompt a warning
+  min=1 max=4 message="WARNING: is CHANGELOG.md is updated using /cl_update/"
+  for ACTION in $(seq ${min} ${max}); do
+    echo -e "${col_pink} ${message} ${col_pink}" && sleep 0.4 && clear && \
+    echo -e "${col_blue} ${message} ${col_blue}" && sleep 0.4 && clear
+  done
+
+  currentBranch=$(git rev-parse --abbrev-ref HEAD)
+  if [[ "${currentBranch}" == "master" ]]; then
+    tag_version="${input_2}"
+
+    tag
+    App_release
+    edge
+  else
+    my_message="You must be a master branch." App_Pink
+  fi
+}
+function tag {
+# is a sub fct of release
+# tag
+
+  App_input2_rule
+
+  tag_version="${input_2}"
+
+  # update tag within the Dockerfile without "-r1" "-r2"
+  ver_in_dockerfile=$(echo $tag_version | sed 's/-r.*//g')
+  sed -i '' "s/^ARG VERSION=.*$/ARG VERSION=\"$ver_in_dockerfile\"/" Dockerfile 
+
+  git add . && \
+  git commit -m "Updated to version: $tag_version" && \
+  git push && \
+  sleep 1 && \
+  # push tag
+  git tag ${tag_version} && \
+  git push --tags
+
+# what it does:
+  # update tag in Dockerfile
+  # save the commit
+  # tag on the latest commit
+  # push tag to remote
+}
+function App_release {
+# is a sub fct of release
+
+# ensure that 'version' has tag the latest commit
+# then, release on github
+
+  App_input2_rule
+
+  currentBranch=$(git rev-parse --abbrev-ref HEAD)
+  if [[ "${currentBranch}" == "master" ]]; then
+
+    first_name_author=$(git log | awk '/Author:/' | head -n1 | awk '{print $2}')
+    tag_version="${input_2}"
+    git_project_name=$(cat Dockerfile | grep GIT_PROJECT_NAME= | head -n 1 | grep -o '".*"' | sed 's/"//g')
+    github_org=$(cat Dockerfile | grep GITHUB_ORG= | head -n 1 | grep -o '".*"' | sed 's/"//g')
+    git_repo_url="https://github.com/${github_org}/${git_project_name}"
+    release_message1="Refer to [CHANGELOG.md](./CHANGELOG.md) for details about this release."
+    release_message2="This release was packaged and published by using cmd <./utility.sh release>."
+    release_message3="Enjoy!<br>${first_name_author}"
+
+    App_release_check_vars
+    
+    clear && echo && \
+    echo "Let's release version: ${tag_version}" && sleep 0.4 && \
+
+    hub release create -oc \
+      -m "${tag_version}" \
+      -m "${release_message1}" \
+      -m "${release_message2}" \
+      -m "${release_message3}" \
+      -t "$(git rev-parse HEAD)" \
+      "${tag_version}"
+
+    # https://hub.github.com/hub-release.1.html
+      # title
+      # description
+      # description
+      # description
+      # on which commits (use the latest)
+      # on which tag (use the latest)
+
+    echo "${git_repo_url}/releases/tag/${tag_version}"
+    
+  else
+    my_message="You must be a master branch." App_Pink
+  fi
+}
+function App_Draft {
+# think draft your release in the changelog
+# was called cl_update
 
   # is expecting a version
   App_input2_rule
@@ -128,104 +320,46 @@ function cl_update {
   rm ~/temp/tmpfile || true
   my_message="Done! Manually edit your CHANGELOG if needed" App_Blue
 }
-function cl_push {
-# push changelog
-# powerfull as it combines: tag + release + rbedge
-
-  # is expecting a version
-  App_input2_rule
-
-  # Prompt a warning
-  min=1 max=4 message="WARNING: is CHANGELOG.md is updated using /cl_update/"
-  for ACTION in $(seq ${min} ${max}); do
-    echo -e "${col_pink} ${message} ${col_pink}" && sleep 0.4 && clear && \
-    echo -e "${col_blue} ${message} ${col_blue}" && sleep 0.4 && clear
-  done
-
-  currentBranch=$(git rev-parse --abbrev-ref HEAD)
-  if [[ "${currentBranch}" == "master" ]]; then
-    tag_version="${input_2}"
-
-    tag
-    release
-    rbedge
-  else
-    my_message="You must be a master branch." App_Pink
-  fi
-
-# Use case: we just updated the CAHNGELOG.md file
-# Next, we want to:
-  #commit change on changelog.md
-  #tag the commit
-  #release on github
-  #rbedge
-}
-function tag {
-# is a sub fct of cl_push
-# tag
-
-  App_input2_rule
-
-  tag_version="${input_2}"
-
-  # update tag within the Dockerfile without "-r1" "-r2"
-  ver_in_dockerfile=$(echo $tag_version | sed 's/-r.*//g')
-  sed -i '' "s/^ARG VERSION=.*$/ARG VERSION=\"$ver_in_dockerfile\"/" Dockerfile 
-
-  git add . && \
-  git commit -m "Updated to version: $tag_version" && \
-  git push && \
-  sleep 1 && \
-  # push tag
-  git tag ${tag_version} && \
-  git push --tags
-
-# what it does:
-  # update tag in Dockerfile
-  # save the commit
-  # tag on the latest commit
-  # push tag to remote
-}
-function release {
-# is a sub fct of cl_push
-
-# ensure that 'version' has tag the latest commit
-# then, release on github
-
-  App_input2_rule
-
-  currentBranch=$(git rev-parse --abbrev-ref HEAD)
-  if [[ "${currentBranch}" == "master" ]]; then
-
-    first_name_author=$(git log | awk '/Author:/' | head -n1 | awk '{print $2}')
-    tag_version="${input_2}"
-    git_repo_url=$(cat Dockerfile | grep GIT_REPO_URL= | head -n 1 | grep -o '".*"' | sed 's/"//g')
-    release_message1="Refer to [CHANGELOG.md](./CHANGELOG.md) for details about this release."
-    release_message2="This release was packaged and published by using <./utility.sh release>."
-    release_message3="Enjoy!<br>${first_name_author}"
-
-    clear && echo && \
-    echo "Let's release version: ${tag_version}" && sleep 1 && \
-
-    hub release create -oc \
-      -m "${tag_version}" \
-      -m "${release_message1}" \
-      -m "${release_message2}" \
-      -m "${release_message3}" \
-      -t "$(git rev-parse HEAD)" \
-      "${tag_version}"
-    # https://hub.github.com/hub-release.1.html
-      # title
-      # description
-      # on which commits (use the latest)
-      # on which tag (use the latest)
-
-    echo "${git_repo_url}/releases/tag/${tag_version}"
-    
-  else
-    my_message="You must be a master branch." App_Pink
+function App_release_check_vars {
+  if [[ -z "${first_name_author}" ]]; then
+    my_message="ERROR: first_name_author is empty." App_Pink App_Stop
+  elif [[ -z "${tag_version}" ]]; then
+    my_message="ERROR: tag_version is empty." App_Pink App_Stop
+  elif [[ -z "${git_project_name}" ]]; then
+    my_message="ERROR: git_project_name is empty." App_Pink App_Stop
+  elif [[ -z "${github_org}" ]]; then
+    my_message="ERROR: github_org is empty." App_Pink App_Stop
+  elif [[ -z "${git_repo_url}" ]]; then
+    my_message="ERROR: git_repo_url is empty." App_Pink App_Stop
+  elif [[ -z "${release_message1}" ]]; then
+    my_message="ERROR: release_message1 is empty." App_Pink App_Stop
+  elif [[ -z "${release_message2}" ]]; then
+    my_message="ERROR: release_message2 is empty." App_Pink App_Stop
+  elif [[ -z "${release_message3}" ]]; then
+    my_message="ERROR: release_message3 is empty." App_Pink App_Stop
   fi
 }
+function release_find_the_latest {
+# find the latest release that was pushed on github
+
+  APP_NAME=$(cat Dockerfile | grep APP_NAME= | head -n 1 | grep -o '".*"' | sed 's/"//g')
+  GITHUB_ORG=$(cat Dockerfile | grep GITHUB_ORG= | head -n 1 | grep -o '".*"' | sed 's/"//g')
+
+  if [[ -z "${APP_NAME}" ]] && [[ -z "${GITHUB_ORG}" ]] ; then    #if empty
+    clear
+    my_message="Can't find APP_NAME and/or GITHUB_ORG in the Dockerfile." App_Pink
+    App_Stop
+  else
+
+    my_message=$(curl -s https://api.github.com/repos/${GITHUB_ORG}/${APP_NAME}/releases/latest | \
+      grep tag_name | \
+      awk -F ': "' '{ print $2 }' | \
+      awk -F '",' '{ print $1 }')
+
+    App_Blue
+  fi
+}
+
 function hash {
   git rev-parse --short HEAD
 }
@@ -245,18 +379,37 @@ function diff {
 function ci {
   hub ci-status -v $(git rev-parse HEAD)
 }
+function helpbash {
+cat << EOF
+Operator	Description
+! EXPRESSION	  The EXPRESSION is false.
+-n STRING	      The length of STRING is greater than zero.
+-z STRING	      The lengh of STRING is zero (ie it is empty).
+STRING1         = STRING2	STRING1 is equal to STRING2
+STRING1         != STRING2	STRING1 is not equal to STRING2
+INTEGER1        -eq INTEGER2	INTEGER1 is numerically equal to INTEGER2
+INTEGER1        -gt INTEGER2	INTEGER1 is numerically greater than INTEGER2
+INTEGER1        -lt INTEGER2	INTEGER1 is numerically less than INTEGER2
+    -d FILE	    FILE exists and is a directory.
+    -e FILE	    FILE exists.
+    -r FILE	    FILE exists and the read permission is granted.
+    -s FILE	    FILE exists and it's size is greater than zero (ie. it is not empty).
+    -w FILE	    FILE exists and the write permission is granted.
+    -x FILE	    FILE exists and the execute permission is granted.
 
+EOF
+}
 ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ###
 # DOCKER
 ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ###
 function lint {
-  docker_image="redcoolbeans/dockerlint"
+  docker_img="redcoolbeans/dockerlint"
 
   docker run -it --rm \
     -v $(pwd)/Dockerfile:/Dockerfile:ro \
-    ${docker_image}
+    ${docker_img}
 }
-function linthado {
+function lint_hado_wip {
 # ToDo
   docker run --rm hadolint/hadolint:v1.16.3-4-gc7f877d hadolint --version && echo;
 
@@ -279,6 +432,11 @@ function test {
   echo "\$2 is now ${input_2}"
   echo "\$3 is now ${input_3}"
   # Useful when trying to find bad variables along 'set -o nounset'
+
+  if [[ ! -z "${input_2}" ]] && [[ "${input_2}" != not-set ]]; then
+    my_message="input_2 is not empty" 
+    echo && App_Green 
+  fi
 
   # validate that hub is installed
   if [[ $(hub version | grep -c "hub version") == "1" ]]; then
@@ -310,14 +468,14 @@ function App_input2_rule {
 # ensure the second attribute is not empty to continue
   if [[ "${input_2}" == "not-set" ]]; then
     my_message="You must provide a valid attribute!" App_Pink
-    App_stop
+    App_Stop
   fi
 }
 function App_input3_rule {
 # ensure the third attribute is not empty to continue
   if [[ "${input_3}" == "not-set" ]]; then
     my_message="You must provide a valid attribute!" App_Pink
-    App_stop
+    App_Stop
   fi
 }
 
@@ -327,19 +485,6 @@ function example_array {
   for i in "${arr[@]}"; do
     echo ${i}
   done
-}
-function example_docs {
-cat << EOF
-  Utility's doc (documentation):
-
-  This text is used as a placeholder. Words that will follow won't
-  make any sense and this is fine. At the moment, the goal is to 
-  build a structure for our site.
-
-  Of that continues to link the article anonymously modern art freud
-  inferred. Eventually primitive brothel scene with a distinction. The
-  Enlightenment criticized from the history.
-EOF
 }
 function example_figlet {
   docker_image="devmtl/figlet:1.0"
@@ -396,9 +541,13 @@ Based on this [template](https://gist.github.com/pascalandy/af709db02d3fe132a3e6
 
 # Releases
 
+## 0.0.0
+### ⚡️ Updates
+- placeholder
+
 EOF
 }
-function add_dockerfile {
+function add_dockerignore {
 # add dockerignore
 
 cat << EOF > .dockerignore_template
@@ -419,18 +568,18 @@ cat << EOF > Dockerfile_template
 
 # Those vars are used broadly outside this very Dockerfile
 # Github Action CI and release script (./utility.sh) is consuming variables from here.
-ARG APP_NAME="placeholder"
-ARG VERSION="0.0"
+
+ARG VERSION="notset"
+ARG APP_NAME="notset"
+ARG GIT_PROJECT_NAME="notset-in-docker"
+#
+ARG ALPINE_VERSION="3.10"
+ARG USER="notset"
 #
 ARG DOCKERHUB_USER="devmtl"
 ARG GITHUB_USER="firepress"
 ARG GITHUB_ORG="firepress-org"
 ARG GITHUB_REGISTRY="registry"
-ARG GIT_REPO_URL="https://github.com/firepress-org/placeholder"
-#
-ARG GIT_REPO_SOURCE="none"
-ARG USER="none"
-ARG ALPINE_VERSION="none"
 
 EOF
 }
@@ -546,7 +695,8 @@ TheVolumeSettingsFolder
 EOF
 }
 
-function App_stop {
+function App_Stop {
+  my_message="Exit 1. Bye bye." App_Pink && sleep 1 && \
   echo && exit 1
 }
 
@@ -610,7 +760,7 @@ function main() {
   if [[ -z "$1" ]]; then    #if empty
     clear
     my_message="You must provide at least one attribute." App_Pink
-    App_stop
+    App_Stop
   else
     input_1=$1
   fi

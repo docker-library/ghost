@@ -1,12 +1,13 @@
-ARG VERSION="2.31.1"
+ARG VERSION="2.37.0"
 ARG APP_NAME="ghost"
 ARG GIT_PROJECT_NAME="ghostfire"
 #
 ARG ALPINE_VERSION="3.10"
-ARG USER="node"
 #
 ARG GHOST_CLI_VERSION="1.11.0"
 ARG NODE_VERSION="10.16-alpine"
+ARG USER="node"
+ARG GHOST_USER="node"
 ARG CREATED_DATE=not-set
 ARG SOURCE_COMMIT=not-set
 #
@@ -18,73 +19,70 @@ ARG GITHUB_REGISTRY="registry"
 ARG GIT_REPO_DOCKERFILE="https://github.com/firepress-org/ghostfire"
 ARG GIT_REPO_SOURCE="https://github.com/TryGhost/Ghost"
 
-
 # ----------------------------------------------
-# LAYER to manage base image(s) versioning
+# 1) LAYER to manage base image(s) versioning
 # credit to Tõnis Tiigi / https://bit.ly/2RoCmvG
 # ----------------------------------------------
 FROM alpine:${ALPINE_VERSION} AS myalpine
 FROM node:${NODE_VERSION} AS mynode
 
-
 # ----------------------------------------------
-# LAYER node-compress
-# Size before=39.8MO and after=14.2MO
-# ----------------------------------------------
-FROM mynode AS node-compress
-RUN set -eux                                                      && \
-    apk --update --no-cache add upx="3.95-r1"                     && \
-    upx /usr/local/bin/node                                       && \
-    upx -t /usr/local/bin/node;
-
-
-# ----------------------------------------------
-# LAYER node-core
-# create our node-core layer (no extra stuff like yarn, npm, npx, etc.)
-# ----------------------------------------------
-FROM myalpine AS node-core
-# set up node user and group
-RUN set -eux                                                      && \
-    addgroup -g 1000 node                                         \
-    && adduser -u 1000 -G node -s /bin/sh -D node;
-COPY --from=node-compress /usr/local/bin/node /usr/bin/
-COPY --from=node-compress /usr/lib/libgcc* /usr/lib/libstdc* /usr/lib/
-# credit to https://github.com/mhart/alpine-node/blob/master/slim/Dockerfile
-
-
-# ----------------------------------------------
-# LAYER app-version-debug
-# If a package crash on layer ghost-base, I don't know which one did crash. This layer make it easy to see this.
+# 2) LAYER app-version-debug
+# If a package crash on further layers, we don't know which one did crash. This layer make it easy to see.
 # ----------------------------------------------
 FROM myalpine AS app-version-debug
-RUN set -eux && apk update
-RUN set -eux && apk add --no-cache 'su-exec>=0.2'
-RUN set -eux && apk add --no-cache bash="5.0.0-r0"
-RUN set -eux && apk add --no-cache curl="7.66.0-r0"
-RUN set -eux && apk add --no-cache tini="0.18.0-r0"
-RUN set -eux && apk add --no-cache tzdata="2019b-r0"
-# See if package(s) can be upgraded. The point is to keep trace of logs in Travis CI
-RUN set -eux && apk update && apk upgrade
-
+RUN set -eux && apk update && apk add --no-cache \
+    'su-exec>=0.2' bash upx curl tini tzdata && \
+# Reveal package(s) versions and keep a trace in the CI's logs.
+    apk upgrade
 
 # ----------------------------------------------
-# LAYER ghost-base
+# 3) LAYER node-compress
+# before node=39.8MO / after node=14.2MO
+# We copy from node image as it's using alpine 3.9. It creates delta between app versions such upx. 
+# ----------------------------------------------
+FROM myalpine AS node-compress
+COPY --from=mynode /usr/local/bin/node /usr/local/bin/node
+RUN set -eux                                                      && \
+    apk --update add --no-cache                                   \
+      upx="3.95-r2"                                               && \
+    upx /usr/local/bin/node                                       && \
+    upx -t /usr/local/bin/node                                    ;
+
+# ----------------------------------------------
+# 4) LAYER node-core
+# Build our node-core layer (no extra stuff like yarn, npm, npx, etc.)
+# ----------------------------------------------
+FROM myalpine AS node-core
+ARG GHOST_USER
+ENV GHOST_USER="${GHOST_USER}"
+# set up node user and group
+RUN set -eux                                                      && \
+    addgroup -g 1000 "${GHOST_USER}"                              && \
+    adduser -u 1000 -G "${GHOST_USER}" -s /bin/sh -D node         ;
+COPY --from=node-compress --chown=node:node /usr/local/bin/node /usr/bin/
+COPY --from=mynode --chown=node:node /usr/lib/libgcc* /usr/lib/libstdc* /usr/lib/
+# credit to https://github.com/mhart/alpine-node/blob/master/slim/Dockerfile
+
+# ----------------------------------------------
+# 5) LAYER ghost-base
 # ----------------------------------------------
 FROM node-core AS ghost-base
-COPY docker-entrypoint.sh /usr/local/bin
-COPY Dockerfile /usr/local/bin
-COPY README.md /usr/local/bin
 RUN set -eux && apk add --no-cache \
       # grab su-exec for easy step-down from root
       'su-exec>=0.2' \
       bash="5.0.0-r0" \
       curl="7.66.0-r0" \
       tini="0.18.0-r0" \
-      tzdata="2019b-r0" && \
-    cp /usr/share/zoneinfo/America/New_York /etc/localtime      && \
-    echo "America/New_York" > /etc/timezone                     && \
-    apk del tzdata                                              && \
-    rm -rf /var/cache/apk/*                                     ;
+      tzdata="2019c-r0" && \
+    cp /usr/share/zoneinfo/America/New_York /etc/localtime        && \
+    echo "America/New_York" > /etc/timezone                       && \
+    apk del tzdata                                                && \
+    rm -rvf /var/cache/apk/* /tmp/*                               ;
+
+COPY --chown=node:node docker-entrypoint.sh /usr/local/bin
+COPY --chown=node:node Dockerfile /usr/local/bin
+COPY --chown=node:node README.md /usr/local/bin
 
 ARG VERSION
 ARG GHOST_CLI_VERSION
@@ -94,7 +92,7 @@ ARG ALPINE_VERSION
 ENV GHOST_INSTALL="/var/lib/ghost"                                \
     GHOST_CONTENT="/var/lib/ghost/content"                        \
     NODE_ENV="production"                                         \
-    GHOST_USER="node"                                             \
+    GHOST_USER="${GHOST_USER}"                                    \
     VERSION="${VERSION}"                                          \
     GHOST_CLI_VERSION="${GHOST_CLI_VERSION}"
 
@@ -102,13 +100,13 @@ ENV GHOST_INSTALL="/var/lib/ghost"                                \
 # we want these from the context of Ghost's "node_modules" directory (instead of doing "npm install -g knex-migrator") so they can share the DB driver modules
 ENV PATH $PATH:$GHOST_INSTALL/current/node_modules/knex-migrator/bin
 
-# best practice credit: https://github.com/opencontainers/image-spec/blob/master/annotations.md
+# credit to https://github.com/opencontainers/image-spec/blob/master/annotations.md
 LABEL org.opencontainers.image.authors="Pascal Andy https://firepress.org/en/contact/"  \
       org.opencontainers.image.vendors="https://firepress.org/"                         \
       org.opencontainers.image.created="${CREATED_DATE}"                                \
       org.opencontainers.image.revision="${SOURCE_COMMIT}"                              \
       org.opencontainers.image.title="Ghost V2"                                         \
-      org.opencontainers.image.description="Docker image for Ghost ${VERSION}"    \
+      org.opencontainers.image.description="Docker image for Ghost ${VERSION}"          \
       org.opencontainers.image.url="https://hub.docker.com/r/devmtl/ghostfire/tags/"    \
       org.opencontainers.image.source="https://github.com/firepress-org/ghostfire"      \
       org.opencontainers.image.licenses="GNUv3 https://github.com/pascalandy/GNU-GENERAL-PUBLIC-LICENSE/blob/master/LICENSE.md" \
@@ -121,44 +119,45 @@ LABEL org.opencontainers.image.authors="Pascal Andy https://firepress.org/en/con
 
 WORKDIR "${GHOST_INSTALL}"
 VOLUME "${GHOST_CONTENT}"
+USER "${GHOST_USER}"
 EXPOSE 2368
-# USER $GHOST_USER                                             // bypassed as it causes all kinds of permission issues
-# HEALTHCHECK CMD wget -q -s http://localhost:2368 || exit 1   // bypassed as attributes are passed during runtime <docker service create>
-# next, copy Ghost's app in the final layer
-
+  # HEALTHCHECK CMD wget -q -s http://localhost:2368 || exit 1   // bypassed as attributes are passed during runtime <docker service create>
+  # next, copy Ghost's app in the final layer
 
 # ----------------------------------------------
-# LAYER BUILDER
+# 6) LAYER BUILDER
 # ----------------------------------------------
 FROM mynode AS ghost-builder
 
 ARG VERSION
 ARG GHOST_CLI_VERSION
+ARG GHOST_USER
 ARG NODE_VERSION
 
 ENV GHOST_INSTALL="/var/lib/ghost"                                \
     GHOST_CONTENT="/var/lib/ghost/content"                        \
     NODE_ENV="production"                                         \
-    GHOST_USER="node"                                             \
-    VERSION="${VERSION}"                              \
+    GHOST_USER="${GHOST_USER}"                                    \
+    VERSION="${VERSION}"                                          \
     GHOST_CLI_VERSION="${GHOST_CLI_VERSION}"
 
 # installation process from the official Ghost image https://bit.ly/2JWOTam
-RUN set -eux                                                      && \
-    apk --update --no-cache add su-exec>="0.2" bash="4.4.19-r1"   \
+RUN set -eux && apk --update add --no-cache \
+      su-exec>="0.2" \
+      bash="4.4.19-r1" \
       ca-certificates="20190108-r0"                               && \
     update-ca-certificates                                        && \
-    rm -rf /var/cache/apk/*                                       && \
+    rm -rvf /var/cache/apk/*                                      && \
     \
 # install Ghost CLI
     npm install --production -g "ghost-cli@${GHOST_CLI_VERSION}"  && \
     npm cache clean --force                                       && \
     \
     mkdir -p "${GHOST_INSTALL}"                                   && \
-    chown -R node:node "${GHOST_INSTALL}"                         && \
+    chown -R "${GHOST_USER}":"${GHOST_USER}" "${GHOST_INSTALL}"   && \
     \
 # install Ghost / optional: --verbose
-    su-exec node ghost install "${VERSION}"                 \
+    su-exec node ghost install "${VERSION}"                       \
       --db sqlite3 --no-prompt --no-stack                         \
       --no-setup --dir "${GHOST_INSTALL}"                         && \
     \
@@ -179,7 +178,7 @@ RUN set -eux                                                      && \
 # need to save initial content for pre-seeding empty volumes
     mv "${GHOST_CONTENT}" "${GHOST_INSTALL}/content.orig"         && \
     mkdir -p "${GHOST_CONTENT}"                                   && \
-    chown -R node:node "$GHOST_CONTENT"                           && \
+    chown -R "${GHOST_USER}":"${GHOST_USER}" "$GHOST_CONTENT"     && \
     \
 # sanity check to ensure knex-migrator was installed
     "${GHOST_INSTALL}/current/node_modules/knex-migrator/bin/knex-migrator" --version && \
@@ -214,18 +213,8 @@ RUN set -eux                                                      && \
     npm cache clean --force                                       && \
     rm -rv /tmp/yarn* /tmp/v8*                                    ;
 
-
 # ----------------------------------------------
-# LAYER upgrade
-# ----------------------------------------------
-# See if package(s) can be upgraded. The point is to keep trace of logs in Travis CI
-FROM ghost-base AS ghost-what-to-upgrade
-COPY --from=ghost-builder --chown=node:node "${GHOST_INSTALL}" "${GHOST_INSTALL}"
-RUN set -eux && apk update && apk upgrade
-
-
-# ----------------------------------------------
-# LAYER final
+# 7) LAYER final
 # ----------------------------------------------
 FROM ghost-base AS ghost-final
 COPY --from=ghost-builder --chown=node:node "${GHOST_INSTALL}" "${GHOST_INSTALL}"

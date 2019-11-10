@@ -12,6 +12,14 @@ Based on this [template](https://gist.github.com/pascalandy/af709db02d3fe132a3e6
 
 # Releases
 
+
+
+## 2.37.0
+
+Ghost 2.37.0 is the latest version of Ghost V2. Ghost V3 is now offically released. 
+
+- 011c4ac9 MAJOR Dockerfile update / version 2.37.0
+
 ## 2.31.1
 ### ⚡️ Updates
 - final image is now running alpine 3.10

@@ -93,8 +93,8 @@ First, find the latest docker images tags 🐳.
 Find the latest tags here: 
 [https://hub.docker.com/r/devmtl/ghostfire/tags/](https://hub.docker.com/r/devmtl/ghostfire/tags/)
 
-#### Travis CI
-[https://travis-ci.org/firepress-org/ghostfire](https://travis-ci.org/firepress-org/ghostfire)
+#### Continous integration
+See[Github Actions sections](https://github.com/firepress-org/ghostfire/actions)
 
 At this point, this docker image has been pulled more than **11 millions of time**!
 

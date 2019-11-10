@@ -1,6 +1,7 @@
 # Files
 ############
-test
+.bashcheck.sh
+utility.sh
 .cache
 coverage
 dist

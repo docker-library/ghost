@@ -1,0 +1,296 @@
+#!/bin/bash
+set -e
+
+globalTests+=(
+	cve-2014--shellshock
+	no-hard-coded-passwords
+	override-cmd
+)
+
+# for "explicit" images, only run tests that are explicitly specified for that image/variant
+explicitTests+=(
+	[:onbuild]=1
+	[:nanoserver]=1
+	[:windowsservercore]=1
+)
+imageTests[:onbuild]+='
+	override-cmd
+'
+
+testAlias+=(
+	[amazoncorretto]='openjdk'
+	[adoptopenjdk]='openjdk'
+	[sapmachine]='openjdk'
+	[iojs]='node'
+	[jruby]='ruby'
+	[pypy]='python'
+
+	[ubuntu]='debian'
+	[ubuntu-debootstrap]='debian'
+
+	[mariadb]='mysql'
+	[percona]='mysql'
+	[percona:psmdb]='mongo'
+
+	[hola-mundo]='hello-world'
+	[hello-seattle]='hello-world'
+)
+
+imageTests+=(
+	[aerospike]='
+	'
+	[busybox]='
+	'
+	[cassandra]='
+		cassandra-basics
+	'
+	[celery]='
+	'
+	[clojure]='
+	'
+	[crate]='
+	'
+	[composer]='
+		composer
+	'
+	[convertigo]='
+		convertigo-hello-world
+	'
+	[debian]='
+		debian-apt-get
+	'
+	[docker:dind]='
+		docker-dind
+		docker-registry-push-pull
+	'
+	[django]='
+	'
+	[elasticsearch]='
+		elasticsearch-basics
+	'
+	[elixir]='
+		elixir-hello-world
+	'
+	[erlang]='
+		erlang-hello-world
+	'
+	[fsharp]='
+		fsharp-hello-world
+	'
+	[gcc]='
+		gcc-c-hello-world
+		gcc-cpp-hello-world
+		golang-hello-world
+	'
+	#[ghost]='
+  #	ghost-basics
+  #'
+	[golang]='
+		golang-hello-world
+	'
+	[haproxy]='
+		haproxy-basics
+	'
+	[haskell]='
+		haskell-cabal
+		haskell-stack
+		haskell-ghci
+		haskell-runhaskell
+	'
+	[haxe]='
+		haxe-hello-world
+		haxe-haxelib-install
+	'
+	[hylang]='
+		hylang-sh
+		hylang-hello-world
+	'
+	[jetty]='
+		jetty-hello-web
+	'
+	[julia]='
+		julia-hello-world
+		julia-downloads
+	'
+	[logstash]='
+		logstash-basics
+	'
+	[memcached]='
+		memcached-basics
+	'
+	[mongo]='
+		mongo-basics
+		mongo-auth-basics
+		mongo-tls-basics
+		mongo-tls-auth
+	'
+	[mono]='
+	'
+	[mysql]='
+		mysql-basics
+		mysql-initdb
+		mysql-log-bin
+	'
+	[nextcloud]='
+		nextcloud-cli-mysql
+		nextcloud-cli-postgres
+		nextcloud-cli-sqlite
+	'
+	[nextcloud:apache]='
+		nextcloud-apache-run
+	'
+	[nextcloud:fpm]='
+		nextcloud-fpm-run
+	'
+	[node]='
+		node-hello-world
+	'
+	[nuxeo]='
+		nuxeo-conf
+		nuxeo-basics
+	'
+	[openjdk]='
+		java-hello-world
+		java-uimanager-font
+		java-ca-certificates
+	'
+	[open-liberty]='
+		open-liberty-hello-world
+	'
+	[percona]='
+		percona-tokudb
+		percona-rocksdb
+	'
+	[perl]='
+		perl-hello-world
+	'
+	[php]='
+		php-ext-install
+		php-hello-world
+		php-argon2
+	'
+	[php:apache]='
+		php-apache-hello-web
+	'
+	[php:fpm]='
+		php-fpm-hello-web
+	'
+	[plone]='
+		plone-basics
+		plone-addons
+		plone-cors
+		plone-versions
+		plone-zeoclient
+	'
+	[postgres]='
+		postgres-basics
+		postgres-initdb
+	'
+	[python]='
+		python-hy
+		python-imports
+		python-pip-requests-ssl
+		python-sqlite3
+		python-stack-size
+	'
+	[rabbitmq]='
+		rabbitmq-basics
+		rabbitmq-tls
+	'
+	[r-base]='
+	'
+	[rails]='
+	'
+	[rapidoid]='
+		rapidoid-hello-world
+		rapidoid-load-balancer
+	'
+	[redis]='
+		redis-basics
+		redis-basics-config
+		redis-basics-persistent
+	'
+	[redmine]='
+		redmine-basics
+	'
+	[registry]='
+		docker-registry-push-pull
+	'
+	[rethinkdb]='
+	'
+	[ruby]='
+		ruby-hello-world
+		ruby-standard-libs
+		ruby-gems
+		ruby-bundler
+		ruby-nonroot
+	'
+	[rust]='
+		rust-hello-world
+	'
+	[silverpeas]='
+		silverpeas-basics
+	'
+	[swipl]='
+		swipl-modules
+	'
+	[swift]='
+		swift-hello-world
+	'
+	[tomcat]='
+		tomcat-hello-world
+	'
+	[wordpress:apache]='
+		wordpress-apache-run
+	'
+	[wordpress:fpm]='
+		wordpress-fpm-run
+	'
+	[znc]='
+		znc-basics
+	'
+	[zookeeper]='
+		zookeeper-basics
+	'
+# example onbuild
+#	[python:onbuild]='
+#		py-onbuild
+#	'
+)
+
+globalExcludeTests+=(
+	# single-binary images
+	[hello-world_utc]=1
+	[nats_utc]=1
+	[nats-streaming_utc]=1
+	[swarm_utc]=1
+	[traefik_utc]=1
+
+	[hello-world_no-hard-coded-passwords]=1
+	[nats_no-hard-coded-passwords]=1
+	[nats-streaming_no-hard-coded-passwords]=1
+	[swarm_no-hard-coded-passwords]=1
+	[traefik_no-hard-coded-passwords]=1
+
+	# clearlinux has no /etc/password
+	# https://github.com/docker-library/official-images/pull/1721#issuecomment-234128477
+	[clearlinux_no-hard-coded-passwords]=1
+
+	# alpine/slim openjdk images are headless and so can't do font stuff
+	[openjdk:alpine_java-uimanager-font]=1
+	[openjdk:slim_java-uimanager-font]=1
+	# and adoptopenjdk has opted not to
+	[adoptopenjdk_java-uimanager-font]=1
+
+	# no "native" dependencies
+	[ruby:alpine_ruby-bundler]=1
+	[ruby:alpine_ruby-gems]=1
+	[ruby:slim_ruby-bundler]=1
+	[ruby:slim_ruby-gems]=1
+	[percona:psmdb_percona-tokudb]=1
+	[percona:psmdb_percona-rocksdb]=1
+
+	# the Swift slim images are not expected to be able to run the swift-hello-world test because it involves compiling Swift code. The slim images are for running an already built binary.
+	# https://github.com/docker-library/official-images/pull/6302#issuecomment-512181863
+	[swift:slim_swift-hello-world]=1
+)

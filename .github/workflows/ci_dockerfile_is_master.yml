@@ -7,7 +7,7 @@
 # GNU v3 | Please credit the author if you are re-using some of it :-p
 # by Pascal Andy | https://pascalandy.com/blog/now/
 
-name: ci_dockerfile_not_master
+name: ci_dockerfile_master
 on:
   schedule:
     - cron: '0 8 * * *'

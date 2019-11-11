@@ -12,6 +12,10 @@ Based on this [template](https://gist.github.com/pascalandy/af709db02d3fe132a3e6
 
 # Releases
 
+## 2.37.0-r1
+### ⚡️ Updates
+- 9e559f8 update to node 10.17-alpine
+
 ## 2.37.0
 
 Ghost 2.37.0 is the latest version of Ghost V2. Ghost V3 is now offically released. 

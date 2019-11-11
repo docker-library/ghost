@@ -170,12 +170,16 @@ jobs:
 
       - name: Define variables
         run: |
+          # One hard coded variables
+          echo "stable" > BRANCH_TYPE
+          #
           echo "Dockerfile" > DOCKERFILE_NAME
           echo "devmtl/noti:stable" > IMG_NOTI
           cat $(cat DOCKERFILE_NAME) | grep DOCKERHUB_USER= | head -n 1 | grep -o '".*"' | sed 's/"//g' > DOCKERHUB_USER
           cat $(cat DOCKERFILE_NAME) | grep APP_NAME= | head -n 1 | grep -o '".*"' | sed 's/"//g' > APP_NAME
           cat $(cat DOCKERFILE_NAME) | grep VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g' > VERSION
           git rev-parse --short HEAD > SHORT_COMMIT_HASH
+          echo "$(cat APP_NAME):$(cat VERSION) / $(cat SHORT_COMMIT_HASH)" > NOTI_MESSAGE
           # Tags are logically defined (needed by Aquasec microscanner)
           echo "$(cat DOCKERHUB_USER)/$(cat APP_NAME)" > DKR_URL
           echo "$(cat DKR_URL):$(cat BRANCH_TYPE)" > TAG_SCANNER

@@ -1,31 +1,34 @@
 # The beauty of this CI setup is that it will build any valid DOCKERFILE by setting a few variables.
 # See how at https://github.com/firepress-org/rclone-in-docker/blob/master/README-CI.md
-# Requires secrets on github: DOCKERHUB_PASSWORD, TOKEN_SLACK
+# Requires secrets on github: DOCKERHUB_PASSWORD, TOKEN_SLACK, TOKEN_GPR
 # Update DOCKERFILE_NAME if you are using a special Dockerfile name
 # The way we define variables is a hack. See why: https://bit.ly/2ZEAt6u
 #
 # GNU v3 | Please credit the author if you are re-using some of it :-p
 # by Pascal Andy | https://pascalandy.com/blog/now/
 
-name: ci_dockerfile_is_master
+name: ci_dockerfile_not_master
 on:
   schedule:
     - cron: '0 8 * * *'
   push:
     branches:
       - master
+
 jobs:
 
   Job1:
-    name: Job 1 of 2
+    name: Job 1 of 3
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@master
 
       - name: Define variables
         run: |
-          # Hard coded variable
+          # Two hard coded variables. Don't forget to set line 135 in Job2
           echo "Dockerfile" > DOCKERFILE_NAME
+          # Does BRANCH_TYPE is for "stable" or "edge"?
+          echo "stable" > BRANCH_TYPE
           #
           # Logically defined variable from the Dockerfile
           cat $(cat DOCKERFILE_NAME) | grep DOCKERHUB_USER= | head -n 1 | grep -o '".*"' | sed 's/"//g' > DOCKERHUB_USER
@@ -33,58 +36,56 @@ jobs:
           cat $(cat DOCKERFILE_NAME) | grep VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g' > VERSION
           cat $(cat DOCKERFILE_NAME) | grep GITHUB_ORG= | head -n 1 | grep -o '".*"' | sed 's/"//g' > GITHUB_ORG
           cat $(cat DOCKERFILE_NAME) | grep GITHUB_REGISTRY= | head -n 1 | grep -o '".*"' | sed 's/"//g' > GITHUB_REGISTRY
-          echo "$(cat DOCKERHUB_USER)/$(cat APP_NAME)" > DKR_HUB_URL
-          echo "docker.pkg.github.com/$(cat GITHUB_ORG)/$(cat GITHUB_REGISTRY)/$(cat APP_NAME)" > GPR_URL
+          echo "$(cat DOCKERHUB_USER)/$(cat APP_NAME):$(cat BRANCH_TYPE)" > DKR_URL
+          echo "docker.pkg.github.com/$(cat GITHUB_ORG)/$(cat GITHUB_REGISTRY)/$(cat APP_NAME):$(cat BRANCH_TYPE)" > GPR_URL
           date -d "-4 hours" "+%Y-%m-%d_%HH%Ms%S" > DATE_TIME
           git rev-parse --short HEAD > SHORT_COMMIT_HASH
           #
-          # Four (stable) tags are logically defined
-          echo "$(cat DKR_HUB_URL):latest" > TAG_LATEST
-          echo "$(cat DKR_HUB_URL):stable" > TAG_STABLE
-          echo "$(cat DKR_HUB_URL):$(cat VERSION)" > TAG_VERSION
-          echo "$(cat DKR_HUB_URL):$(cat VERSION)_$(cat DATE_TIME)_$(cat SHORT_COMMIT_HASH)" > TAG_BEST_PRACTICE
-          # for Github Package Registry (GPR)
-          echo "$(cat GPR_URL):latest" > TAG_LATEST_GPR
-          echo "$(cat GPR_URL):stable" > TAG_STABLE_GPR
-          echo "$(cat GPR_URL):$(cat VERSION)" > TAG_VERSION_GPR
-          echo "$(cat GPR_URL):$(cat VERSION)_$(cat DATE_TIME)_$(cat SHORT_COMMIT_HASH)" > TAG_BEST_PRACTICE_GPR
+          # Define tags for Docker Hub
+          echo "$(cat DKR_URL)"                                                           > TAG_TYPE
+          echo "$(cat DKR_URL)_$(cat VERSION)"                                            > TAG_TYPE_VERSION
+          echo "$(cat DKR_URL)_$(cat VERSION)_$(cat SHORT_COMMIT_HASH)"                   > TAG_TYPE_VERSION_HASH
+          echo "$(cat DKR_URL)_$(cat VERSION)_$(cat SHORT_COMMIT_HASH)_$(cat DATE_TIME)"  > TAG_TYPE_VERSION_HASH_HOUR
+          #
+          # Define tags for GPR (Github Package Registry)
+          echo "$(cat GPR_URL)"                                                           > TAG_TYPE_GPR
+          echo "$(cat GPR_URL)_$(cat VERSION)"                                            > TAG_TYPE_VERSION_GPR
+          echo "$(cat GPR_URL)_$(cat VERSION)_$(cat SHORT_COMMIT_HASH)"                   > TAG_TYPE_VERSION_HASH_GPR
+          echo "$(cat GPR_URL)_$(cat VERSION)_$(cat SHORT_COMMIT_HASH)_$(cat DATE_TIME)"  > TAG_TYPE_VERSION_HASH_HOUR_GPR
 
       - name: Build
         run: |
-          # UAT is User Acceptance Testing
-          echo "$(cat APP_NAME):uat" > TAG_UAT
-          docker build --file $(cat DOCKERFILE_NAME) --tag $(cat TAG_UAT) .
           # for Docker hub
-          docker build --file $(cat DOCKERFILE_NAME) --tag $(cat TAG_BEST_PRACTICE) .
-          docker build --file $(cat DOCKERFILE_NAME) --tag $(cat TAG_VERSION) .
-          docker build --file $(cat DOCKERFILE_NAME) --tag $(cat TAG_STABLE) .
-          docker build --file $(cat DOCKERFILE_NAME) --tag $(cat TAG_LATEST) .
+          docker build --file $(cat DOCKERFILE_NAME) --tag $(cat TAG_TYPE) .
+          docker build --file $(cat DOCKERFILE_NAME) --tag $(cat TAG_TYPE_VERSION) .
+          docker build --file $(cat DOCKERFILE_NAME) --tag $(cat TAG_TYPE_VERSION_HASH) .
+          docker build --file $(cat DOCKERFILE_NAME) --tag $(cat TAG_TYPE_VERSION_HASH_HOUR) .
           # for GPR
-          docker build --file $(cat DOCKERFILE_NAME) --tag $(cat TAG_BEST_PRACTICE_GPR) .
-          docker build --file $(cat DOCKERFILE_NAME) --tag $(cat TAG_VERSION_GPR) .
-          docker build --file $(cat DOCKERFILE_NAME) --tag $(cat TAG_STABLE_GPR) .
-          docker build --file $(cat DOCKERFILE_NAME) --tag $(cat TAG_LATEST_GPR) .
+          docker build --file $(cat DOCKERFILE_NAME) --tag $(cat TAG_TYPE_GPR) .
+          docker build --file $(cat DOCKERFILE_NAME) --tag $(cat TAG_TYPE_VERSION_GPR) .
+          docker build --file $(cat DOCKERFILE_NAME) --tag $(cat TAG_TYPE_VERSION_HASH_GPR) .
+          docker build --file $(cat DOCKERFILE_NAME) --tag $(cat TAG_TYPE_VERSION_HASH_HOUR_GPR) .
 
       - name: Test image with docker-library
         run: |
           git clone --depth 1 https://github.com/docker-library/official-images.git official-images
           # override config.sh. Why: 1) UTC timezone 2) ghost-basic is configure to check the commit between the image of the official docker image of Ghost.
           cp ./test/config.sh official-images/test/config.sh
-          official-images/test/run.sh $(cat TAG_UAT)
+          official-images/test/run.sh $(cat TAG_TYPE)
 
       - name: Logs / All tags & variables
         run: |
-          echo "Check out https://hub.docker.com/r/$(cat DOCKERHUB_USER)/$(cat APP_NAME)/tags"
+          echo "Check out https://hub.docker.com/r/$(cat DOCKERHUB_USER)/$(cat APP_NAME)/tags?page=1&ordering=last_updated"
           echo " "
-          echo "$(cat TAG_BEST_PRACTICE) < TAG_BEST_PRACTICE"
-          echo "$(cat TAG_VERSION) < TAG_VERSION"
-          echo "$(cat TAG_STABLE) < TAG_STABLE"
-          echo "$(cat TAG_LATEST) < TAG_LATEST"
+          echo "$(cat TAG_TYPE_VERSION_HASH_HOUR) < TAG_TYPE_VERSION_HASH_HOUR"
+          echo "$(cat TAG_TYPE_VERSION_HASH) < TAG_TYPE_VERSION_HASH"
+          echo "$(cat TAG_TYPE_VERSION) < TAG_TYPE_VERSION"
+          echo "$(cat TAG_TYPE) < TAG_TYPE"
           echo " "
-          echo "$(cat TAG_BEST_PRACTICE_GPR) < TAG_BEST_PRACTICE_GPR"
-          echo "$(cat TAG_VERSION_GPR) < TAG_VERSION_GPR"
-          echo "$(cat TAG_STABLE_GPR) < TAG_STABLE_GPR"
-          echo "$(cat TAG_LATEST_GPR) < TAG_LATEST_GPR"
+          echo "$(cat TAG_TYPE_VERSION_HASH_HOUR_GPR) < TAG_TYPE_VERSION_HASH_HOUR_GPR"
+          echo "$(cat TAG_TYPE_VERSION_HASH_GPR) < TAG_TYPE_VERSION_HASH_GPR"
+          echo "$(cat TAG_TYPE_VERSION_GPR) < TAG_TYPE_VERSION_GPR"
+          echo "$(cat TAG_TYPE_GPR) < TAG_TYPE_GPR"
           echo " "
           echo "$(cat APP_NAME) < APP_NAME"
           echo "$(cat VERSION) < VERSION"
@@ -94,45 +95,48 @@ jobs:
           echo "$(cat SHORT_COMMIT_HASH) < SHORT_COMMIT_HASH"
           echo "$(cat DOCKERHUB_USER) < DOCKERHUB_USER"
           echo "$(cat GITHUB_ORG) < GITHUB_ORG"
-          echo "$(cat DKR_HUB_URL) < DKR_HUB_URL"
+          echo "$(cat DKR_URL) < DKR_URL"
           echo "$(cat GPR_URL) < GPR_URL"
           echo "$(cat GITHUB_REGISTRY) < GITHUB_REGISTRY"
 
       - name: Logs / docker (inspect, history, version, info), uname
         run: |
-          docker inspect $(cat TAG_UAT)
-          docker history $(cat TAG_UAT) --no-trunc
+          docker inspect $(cat TAG_TYPE)
+          docker history $(cat TAG_TYPE) --no-trunc
           docker version
           docker info
           uname -a
 
-      - name: Publish on Docker hub
+      - name: Publish to Dockerhub
         run: |
           echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login --username $(cat DOCKERHUB_USER) --password-stdin
-          docker push $(cat TAG_LATEST)
-          docker push $(cat TAG_STABLE)
-          docker push $(cat TAG_VERSION)
-          docker push $(cat TAG_BEST_PRACTICE)
+          docker push $(cat TAG_TYPE_VERSION_HASH_HOUR)
+          docker push $(cat TAG_TYPE)
+          docker push $(cat TAG_TYPE_VERSION)
+          docker push $(cat TAG_TYPE_VERSION_HASH)
 
       - name: Publish to GPR
         if: always()
-        # As GPR is in beta, it sometimes does not work as expected
         run: |
           echo ${{ secrets.TOKEN_GPR }} | docker login docker.pkg.github.com --username $(cat GITHUB_ORG) --password-stdin
-          docker push $(cat TAG_LATEST_GPR)
-          docker push $(cat TAG_STABLE_GPR)
-          docker push $(cat TAG_VERSION_GPR)
-          docker push $(cat TAG_BEST_PRACTICE_GPR)
+          docker push $(cat TAG_TYPE_VERSION_HASH_HOUR_GPR)
+          docker push $(cat TAG_TYPE_GPR)
+          docker push $(cat TAG_TYPE_VERSION_GPR)
+          docker push $(cat TAG_TYPE_VERSION_HASH_GPR)
 
+  # triggered for branches "edge" and "stable"
   Job2:
     needs: job1
-    name: Job 2 of 2
+    name: Job 2 of 3
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@master
 
       - name: Define variables
         run: |
+          # One hard coded variables
+          echo "stable" > BRANCH_TYPE
+          #
           echo "Dockerfile" > DOCKERFILE_NAME
           echo "devmtl/noti:stable" > IMG_NOTI
           cat $(cat DOCKERFILE_NAME) | grep DOCKERHUB_USER= | head -n 1 | grep -o '".*"' | sed 's/"//g' > DOCKERHUB_USER
@@ -141,18 +145,8 @@ jobs:
           git rev-parse --short HEAD > SHORT_COMMIT_HASH
           echo "$(cat APP_NAME):$(cat VERSION) / $(cat SHORT_COMMIT_HASH)" > NOTI_MESSAGE
           # Tags are logically defined (needed by Aquasec microscanner)
-          echo "$(cat DOCKERHUB_USER)/$(cat APP_NAME)" > DKR_HUB_URL
-          echo "$(cat DKR_HUB_URL):latest" > TAG_LATEST
-
-      - name: Push README to dockerhub description
-        run: |
-          docker run --rm \
-            -v $(pwd)/README.md:/data/README.md \
-            -e DOCKERHUB_USERNAME=$(cat DOCKERHUB_USER) \
-            -e DOCKERHUB_PASSWORD=${{ secrets.DOCKERHUB_PASSWORD }} \
-            -e DOCKERHUB_REPO_PREFIX=$(cat DOCKERHUB_USER) \
-            -e DOCKERHUB_REPO_NAME=$(cat APP_NAME) \
-            devmtl/readme-to-dockerhub:stable
+          echo "$(cat DOCKERHUB_USER)/$(cat APP_NAME)" > DKR_URL
+          echo "$(cat DKR_URL):$(cat BRANCH_TYPE)" > TAG_SCANNER
 
       - name: Notify on Slack
         run: |
@@ -166,12 +160,42 @@ jobs:
                 NOTI_SLACK_CHANNEL="$SLACK_CHANNEL" \
                 noti -k -m "$NOTI_MESSAGE" '
 
+  # triggered only for branch "stable"
+  Job3:
+    needs: job1
+    name: Job 3 of 3
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Define variables
+        run: |
+          echo "Dockerfile" > DOCKERFILE_NAME
+          echo "devmtl/noti:stable" > IMG_NOTI
+          cat $(cat DOCKERFILE_NAME) | grep DOCKERHUB_USER= | head -n 1 | grep -o '".*"' | sed 's/"//g' > DOCKERHUB_USER
+          cat $(cat DOCKERFILE_NAME) | grep APP_NAME= | head -n 1 | grep -o '".*"' | sed 's/"//g' > APP_NAME
+          cat $(cat DOCKERFILE_NAME) | grep VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g' > VERSION
+          git rev-parse --short HEAD > SHORT_COMMIT_HASH
+          # Tags are logically defined (needed by Aquasec microscanner)
+          echo "$(cat DOCKERHUB_USER)/$(cat APP_NAME)" > DKR_URL
+          echo "$(cat DKR_URL):$(cat BRANCH_TYPE)" > TAG_SCANNER
+
+      - name: Push README to Docker hub description
+        run: |
+          docker run --rm \
+            -v $(pwd)/README.md:/data/README.md \
+            -e DOCKERHUB_USERNAME=$(cat DOCKERHUB_USER) \
+            -e DOCKERHUB_PASSWORD=${{ secrets.DOCKERHUB_PASSWORD }} \
+            -e DOCKERHUB_REPO_PREFIX=$(cat DOCKERHUB_USER) \
+            -e DOCKERHUB_REPO_NAME=$(cat APP_NAME) \
+            devmtl/readme-to-dockerhub:stable
+
       - name: Test image with Aquasec microscanner
         run: |
-          wget --retry-connrefused --waitretry=1 --read-timeout=5 --timeout=5 --tries=10 https://raw.githubusercontent.com/lukebond/microscanner-wrapper/master/scan.sh && chmod +x scan.sh
-          #
+          wget --retry-connrefused --waitretry=1 --read-timeout=5 --timeout=5 --tries=10 \
+            https://raw.githubusercontent.com/lukebond/microscanner-wrapper/master/scan.sh && chmod +x scan.sh
           docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest \
-            --exit-code 0 $(cat TAG_LATEST)
+            --exit-code 0 $(cat TAG_SCANNER)
 
       #- name: Github Actions ideas to implements
       #  run: |

@@ -1,5 +1,5 @@
 
-ARG VERSION="3.0.3"
+ARG VERSION="3.0.4"
 ARG APP_NAME="ghostfire"
 ARG GIT_PROJECT_NAME="ghostfire"
 #

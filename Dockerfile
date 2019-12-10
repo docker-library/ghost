@@ -4,8 +4,8 @@ ARG APP_NAME="ghostfire"
 ARG GIT_PROJECT_NAME="ghostfire"
 #
 ARG OS="debian"
-#
 ARG GHOST_CLI_VERSION="1.13.1"
+ARG GOSU_VERSION="1.10"
 ARG NODE_VERSION="10.17-slim"
 ARG USER="node"
 ARG GHOST_USER="node"
@@ -20,19 +20,23 @@ ARG GITHUB_REGISTRY="registry"
 ARG GIT_REPO_DOCKERFILE="https://github.com/firepress-org/ghostfire"
 ARG GIT_REPO_SOURCE="https://github.com/TryGhost/Ghost"
 
-
 # https://docs.ghost.org/faq/node-versions/
 # https://github.com/nodejs/LTS
 FROM node:10.17-slim AS mynode
 
 # grab gosu for easy step-down from root
 
-ENV GHOST_VERSION 3.0.3
-ENV GHOST_CLI_VERSION 1.13.1
-ENV GHOST_INSTALL /var/lib/ghost
-ENV GHOST_CONTENT /var/lib/ghost/content
-ENV GOSU_VERSION 1.10
-ENV NODE_ENV production
+ARG VERSION
+ARG GHOST_CLI_VERSION
+ARG GOSU_VERSION
+
+ENV GHOST_VERSION="${VERSION}"
+ENV GHOST_CLI_VERSION="${GHOST_CLI_VERSION}"
+ENV GOSU_VERSION="${GOSU_VERSION}"
+
+ENV GHOST_INSTALL="/var/lib/ghost"
+ENV GHOST_CONTENT="/var/lib/ghost/content"
+ENV NODE_ENV="production"
 
 RUN set -x \
 	&& wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture)" \
@@ -96,9 +100,9 @@ RUN set -eux; \
 
 WORKDIR $GHOST_INSTALL
 VOLUME $GHOST_CONTENT
+EXPOSE 2368
 
 COPY docker-entrypoint.sh /usr/local/bin
-ENTRYPOINT ["docker-entrypoint.sh"]
 
-EXPOSE 2368
+ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["node", "current/index.js"]

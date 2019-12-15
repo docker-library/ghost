@@ -1,8 +1,22 @@
 
+###################################
+# REQUIRED BY OUR GITHUB ACTION CI
+###################################
 ARG VERSION="3.1.1"
 ARG APP_NAME="ghostfire"
 ARG GIT_PROJECT_NAME="ghostfire"
-#
+
+ARG DOCKERHUB_USER="devmtl"
+ARG GITHUB_USER="firepress"
+ARG GITHUB_ORG="firepress-org"
+ARG GITHUB_REGISTRY="registry"
+
+ARG GIT_REPO_DOCKERFILE="https://github.com/firepress-org/ghostfire"
+ARG GIT_REPO_SOURCE="https://github.com/TryGhost/Ghost"
+
+###################################
+# REQUIRED BY THIS SPECIFIC BUILD
+###################################
 ARG OS="debian"
 ARG GHOST_CLI_VERSION="1.13.1"
 ARG GOSU_VERSION="1.10"
@@ -12,14 +26,6 @@ ARG GHOST_USER="node"
 ARG CREATED_DATE=not-set
 ARG SOURCE_COMMIT=not-set
 #
-ARG DOCKERHUB_USER="devmtl"
-ARG GITHUB_USER="firepress"
-ARG GITHUB_ORG="firepress-org"
-ARG GITHUB_REGISTRY="registry"
-#
-ARG GIT_REPO_DOCKERFILE="https://github.com/firepress-org/ghostfire"
-ARG GIT_REPO_SOURCE="https://github.com/TryGhost/Ghost"
-
 # https://docs.ghost.org/faq/node-versions/
 # https://github.com/nodejs/LTS
 FROM node:10.17-slim AS mynode

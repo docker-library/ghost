@@ -12,6 +12,11 @@ Based on this [template](https://gist.github.com/pascalandy/af709db02d3fe132a3e6
 
 # Releases
 
+## 3.1.1
+### ⚡️ Updates
+1e6cc58 Add README to help CI configuration
+df7d00e re-structure VAR order in dockerfile
+
 ## 2.37.0-r1
 ### ⚡️ Updates
 - 9e559f8 update to node 10.17-alpine

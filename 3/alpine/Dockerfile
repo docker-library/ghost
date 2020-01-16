@@ -1,6 +1,7 @@
 # https://docs.ghost.org/faq/node-versions/
 # https://github.com/nodejs/LTS
-FROM node:10-alpine3.11
+# https://github.com/TryGhost/Ghost/blob/3.3.0/package.json#L38
+FROM node:12-alpine3.11
 
 # grab su-exec for easy step-down from root
 RUN apk add --no-cache 'su-exec>=0.2'
@@ -46,7 +47,7 @@ RUN set -eux; \
 # see https://github.com/TryGhost/Ghost/pull/7677 for more details
 	cd "$GHOST_INSTALL/current"; \
 # scrape the expected version of sqlite3 directly from Ghost itself
-	sqlite3Version="$(npm view . optionalDependencies.sqlite3)"; \
+	sqlite3Version="$(node -p 'require("./package.json").optionalDependencies.sqlite3')"; \
 	if ! su-exec node yarn add "sqlite3@$sqlite3Version" --force; then \
 # must be some non-amd64 architecture pre-built binaries aren't published for, so let's install some build deps and do-it-all-over-again
 		apk add --no-cache --virtual .build-deps python make gcc g++ libc-dev; \

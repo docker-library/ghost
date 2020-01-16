@@ -1,5 +1,6 @@
 # https://docs.ghost.org/faq/node-versions/
 # https://github.com/nodejs/LTS
+# https://github.com/TryGhost/Ghost/blob/2.38.0/package.json#L38
 FROM node:10-buster-slim
 
 # grab gosu for easy step-down from root
@@ -69,7 +70,7 @@ RUN set -eux; \
 # see https://github.com/TryGhost/Ghost/pull/7677 for more details
 	cd "$GHOST_INSTALL/current"; \
 # scrape the expected version of sqlite3 directly from Ghost itself
-	sqlite3Version="$(npm view . optionalDependencies.sqlite3)"; \
+	sqlite3Version="$(node -p 'require("./package.json").optionalDependencies.sqlite3')"; \
 	if ! gosu node yarn add "sqlite3@$sqlite3Version" --force; then \
 # must be some non-amd64 architecture pre-built binaries aren't published for, so let's install some build deps and do-it-all-over-again
 		savedAptMark="$(apt-mark showmanual)"; \

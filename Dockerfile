@@ -21,7 +21,7 @@ ARG OS="debian"
 ARG GHOST_CLI_VERSION="1.13.1"
 ARG GOSU_VERSION="1.11"
 # node version issue: https://github.com/docker-library/ghost/issues/208
-ARG NODE_VERSION="node:10.18.1-jessie-slim"
+ARG NODE_VERSION="node:10.17-slim"
 ARG USER="node"
 ARG GHOST_USER="node"
 ARG CREATED_DATE=not-set

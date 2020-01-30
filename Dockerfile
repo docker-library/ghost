@@ -2,7 +2,7 @@
 ###################################
 # REQUIRED BY OUR GITHUB ACTION CI
 ###################################
-ARG VERSION="3.4.0"
+ARG VERSION="3.3.0"
 ARG APP_NAME="ghostfire"
 ARG GIT_PROJECT_NAME="ghostfire"
 
@@ -20,7 +20,8 @@ ARG GIT_REPO_SOURCE="https://github.com/TryGhost/Ghost"
 ARG OS="debian"
 ARG GHOST_CLI_VERSION="1.13.1"
 ARG GOSU_VERSION="1.11"
-ARG NODE_VERSION="node:12-buster-slim"
+# node version issue: https://github.com/docker-library/ghost/issues/208
+ARG NODE_VERSION="node:10.18.1-jessie-slim"
 ARG USER="node"
 ARG GHOST_USER="node"
 ARG CREATED_DATE=not-set

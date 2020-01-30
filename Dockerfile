@@ -28,7 +28,7 @@ ARG SOURCE_COMMIT=not-set
 #
 # https://docs.ghost.org/faq/node-versions/
 # https://github.com/nodejs/LTS
-FROM node:${NODE_VERSION} AS mynode
+FROM ${NODE_VERSION} AS mynode
 
 # grab gosu for easy step-down from root
 

@@ -2,7 +2,7 @@
 ###################################
 # REQUIRED BY OUR GITHUB ACTION CI
 ###################################
-ARG VERSION="3.1.1"
+ARG VERSION="3.2.0"
 ARG APP_NAME="ghostfire"
 ARG GIT_PROJECT_NAME="ghostfire"
 

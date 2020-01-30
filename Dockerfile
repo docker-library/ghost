@@ -19,7 +19,7 @@ ARG GIT_REPO_SOURCE="https://github.com/TryGhost/Ghost"
 ###################################
 ARG OS="debian"
 ARG GHOST_CLI_VERSION="1.13.1"
-ARG GOSU_VERSION="1.10"
+ARG GOSU_VERSION="1.11"
 ARG NODE_VERSION="node:12-buster-slim"
 ARG USER="node"
 ARG GHOST_USER="node"

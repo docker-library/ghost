@@ -20,7 +20,7 @@ ARG GIT_REPO_SOURCE="https://github.com/TryGhost/Ghost"
 ARG OS="debian"
 ARG GHOST_CLI_VERSION="1.13.1"
 ARG GOSU_VERSION="1.10"
-ARG NODE_VERSION="10.17-slim"
+ARG NODE_VERSION="10.18.1-buster-slim"
 ARG USER="node"
 ARG GHOST_USER="node"
 ARG CREATED_DATE=not-set
@@ -28,7 +28,7 @@ ARG SOURCE_COMMIT=not-set
 #
 # https://docs.ghost.org/faq/node-versions/
 # https://github.com/nodejs/LTS
-FROM node:10.17-slim AS mynode
+FROM node:${NODE_VERSION} AS mynode
 
 # grab gosu for easy step-down from root
 

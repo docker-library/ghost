@@ -12,6 +12,13 @@ Based on this [template](https://gist.github.com/pascalandy/af709db02d3fe132a3e6
 
 # Releases
 
+## 3.2.0
+### ⚡️ Updates
+2a30721 Updated to version: 3.2.0
+eac61ff changelog update
+1e6cc58 Add README to help CI configuration
+df7d00e re-structure VAR order in dockerfile
+
 ## 3.1.1
 ### ⚡️ Updates
 1e6cc58 Add README to help CI configuration

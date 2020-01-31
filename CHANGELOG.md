@@ -12,32 +12,38 @@ Based on this [template](https://gist.github.com/pascalandy/af709db02d3fe132a3e6
 
 # Releases
 
+## 3.4.0
+### ⚡️ Updates
+- 644bba67 Updated to version: 3.4.0
+
 ## 3.3.0
 ### ⚡️ Updates
-7d951e0 Fix required packages
-b4d6dfc Fix var in Dockerfile
-0f82788 Fix sqlite3 version scraping
-24711d7 update GOSU to 1.11
-3598794 update node to node:12-buster-slim
-fb902e3 Updated to version: 3.3.0
-516bfec update node to 10.18.1-buster-slim
-8e1d7ff Updated to version: 3.2.0
-2a30721 Updated to version: 3.2.0
-eac61ff changelog update
-1e6cc58 Add README to help CI configuration
-df7d00e re-structure VAR order in dockerfile
+- 24711d7 update GOSU to 1.11
+- 3598794 update node to node:12-buster-slim
+- fb902e3 Updated to version: 3.3.0
+- 516bfec update node to 10.18.1-buster-slim
+- 8e1d7ff Updated to version: 3.2.0
+- 2a30721 Updated to version: 3.2.0
+- eac61ff changelog update
+- 1e6cc58 Add README to help CI configuration
+- df7d00e re-structure VAR order in dockerfile
+
+### ⚡️ 🐛 Fix bug
+- 7d951e0 🐛 Fix required packages
+- b4d6dfc 🐛 Fix var in Dockerfile
+- 0f82788 🐛 Fix sqlite3 version scraping
 
 ## 3.2.0
 ### ⚡️ Updates
-2a30721 Updated to version: 3.2.0
-eac61ff changelog update
-1e6cc58 Add README to help CI configuration
-df7d00e re-structure VAR order in dockerfile
+- 2a30721 Updated to version: 3.2.0
+- eac61ff changelog update
+- 1e6cc58 Add README to help CI configuration
+- df7d00e re-structure VAR order in dockerfile
 
 ## 3.1.1
 ### ⚡️ Updates
-1e6cc58 Add README to help CI configuration
-df7d00e re-structure VAR order in dockerfile
+- 1e6cc58 Add README to help CI configuration
+- df7d00e re-structure VAR order in dockerfile
 
 ## 2.37.0-r1
 ### ⚡️ Updates

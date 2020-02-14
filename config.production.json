@@ -26,11 +26,11 @@
   },
   "logging": {
       "path": "/var/lib/ghost/content/logs",
-      "level": "info",
+      "level": "error",
       "rotation": {
           "enabled": true,
           "count": 15,
-          "period": "7d"
+          "period": "5d"
       },
       "transports": ["stdout", "file"]
   },

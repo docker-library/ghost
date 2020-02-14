@@ -2,12 +2,12 @@
 ###################################
 # REQUIRED BY OUR GITHUB ACTION CI
 ###################################
-ARG VERSION="3.4.0"
+ARG VERSION="3.5.2"
 ARG APP_NAME="ghostfire"
 ARG GIT_PROJECT_NAME="ghostfire"
 
 ARG DOCKERHUB_USER="devmtl"
-ARG GITHUB_USER="firepress"
+ARG GITHUB_USER="firepress-org"
 ARG GITHUB_ORG="firepress-org"
 ARG GITHUB_REGISTRY="registry"
 

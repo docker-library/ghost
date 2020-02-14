@@ -12,6 +12,10 @@ Based on this [template](https://gist.github.com/pascalandy/af709db02d3fe132a3e6
 
 # Releases
 
+## 3.6.0
+### ⚡️ Updates
+- [3467964](https://github.com/firepress-org/ghostfire/commit/3467964) Update ghostfire to version 3.6.0
+
 ## 3.5.2
 ### ⚡️ Updates
 - [45f4c50](https://github.com/firepress-org/ghostfire/commit/45f4c50) Update to Ghost 3.5.2

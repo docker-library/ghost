@@ -15,15 +15,13 @@ Based on this [template](https://gist.github.com/pascalandy/af709db02d3fe132a3e6
 ## 3.9.0 (2020-03-09)
 ### ⚡️ Updates
 - [67e24f3](https://github.com/firepress-org/ghostfire/commit/67e24f3) Update to Ghost 3.9.0
-- [9b634d0](https://github.com/firepress-org/ghostfire/commit/9b634d0) Update to 3.7.0
-- [e8adca3](https://github.com/firepress-org/ghostfire/commit/e8adca3) Update ghostfire to version 3.7.0 /Dockerfile
-- [b4d3c6f](https://github.com/firepress-org/ghostfire/commit/b4d3c6f) ADD BACKLOG.md
 
 ### 🔍 Compare
 - ... with previous release: [3.7.0 <> 3.9.0](https://github.com/firepress-org/ghostfire/compare/3.7.0...3.9.0)
 
 ## 3.7.0 (2020-02-24)
 ### ⚡️ Updates
+- [9b634d0](https://github.com/firepress-org/ghostfire/commit/9b634d0) Update to 3.7.0
 - [e8adca3](https://github.com/firepress-org/ghostfire/commit/e8adca3) Update ghostfire to version 3.7.0 /Dockerfile
 - [b4d3c6f](https://github.com/firepress-org/ghostfire/commit/b4d3c6f) ADD BACKLOG.md
 

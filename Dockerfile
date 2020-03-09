@@ -1,13 +1,19 @@
+###################################
+# REQUIRED for bashLaVa https://github.com/firepress-org/bashlava
+# REQUIRED for Github Action CI template https://github.com/firepress-org/ghostfire/tree/master/.github/workflows
+###################################
+
+ARG APP_NAME="ghostfire"
+ARG VERSION="3.9.0"
+ARG RELEASE="3.9.0"
+ARG GITHUB_USER="firepress-org"
 
 ###################################
 # REQUIRED BY OUR GITHUB ACTION CI
 ###################################
-ARG VERSION="3.7.0"
-ARG APP_NAME="ghostfire"
-ARG GIT_PROJECT_NAME="ghostfire"
 
+ARG GIT_PROJECT_NAME="ghostfire"
 ARG DOCKERHUB_USER="devmtl"
-ARG GITHUB_USER="firepress-org"
 ARG GITHUB_ORG="firepress-org"
 ARG GITHUB_REGISTRY="registry"
 
@@ -15,7 +21,7 @@ ARG GIT_REPO_DOCKERFILE="https://github.com/firepress-org/ghostfire"
 ARG GIT_REPO_SOURCE="https://github.com/TryGhost/Ghost"
 
 ###################################
-# REQUIRED BY THIS SPECIFIC BUILD
+# Start you Dockerfile from here
 ###################################
 ARG OS="debian"
 ARG GHOST_CLI_VERSION="1.13.1"

@@ -12,6 +12,13 @@ Based on this [template](https://gist.github.com/pascalandy/af709db02d3fe132a3e6
 
 # Releases
 
+## 3.12.1 (2020-03-29)
+### ⚡️ Updates
+- [073645e](https://github.com/firepress-org/ghostfire/commit/073645e) Update ghostfire to version 3.12.1 /Dockerfile
+
+### 🔍 Compare
+- ... with previous release: [3.11.0 <> 3.12.1](https://github.com/firepress-org/ghostfire/compare/3.11.0...3.12.1)
+
 ## 3.11.0 (2020-03-22)
 ### ⚡️ Updates
 - [60a3b00](https://github.com/firepress-org/ghostfire/commit/60a3b00) Update ghostfire to version 3.11.0 /Dockerfile

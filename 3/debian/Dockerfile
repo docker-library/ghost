@@ -4,7 +4,8 @@
 FROM node:12-buster-slim
 
 # grab gosu for easy step-down from root
-ENV GOSU_VERSION 1.11
+# https://github.com/tianon/gosu/releases
+ENV GOSU_VERSION 1.12
 RUN set -eux; \
 # save list of currently installed packages for later so we can clean up
 	savedAptMark="$(apt-mark showmanual)"; \
@@ -25,7 +26,7 @@ RUN set -eux; \
 	\
 # clean up fetch dependencies
 	apt-mark auto '.*' > /dev/null; \
-	[ -z "$savedAptMark" ] || apt-mark manual $savedAptMark; \
+	[ -z "$savedAptMark" ] || apt-mark manual $savedAptMark > /dev/null; \
 	apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
 	\
 	chmod +x /usr/local/bin/gosu; \

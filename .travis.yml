@@ -6,8 +6,6 @@ env:
   - VERSION=3 VARIANT=alpine
   - VERSION=2 VARIANT=debian
   - VERSION=2 VARIANT=alpine
-  - VERSION=1 VARIANT=debian
-  - VERSION=1 VARIANT=alpine
 
 install:
   - git clone https://github.com/docker-library/official-images.git ~/official-images

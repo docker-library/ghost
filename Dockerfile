@@ -1,11 +1,13 @@
+# debian 
+
 ###################################
 # REQUIRED for bashLaVa https://github.com/firepress-org/bashlava
 # REQUIRED for Github Action CI template https://github.com/firepress-org/ghostfire/tree/master/.github/workflows
 ###################################
 
 ARG APP_NAME="ghostfire"
-ARG VERSION="3.12.1"
-ARG RELEASE="3.12.1"
+ARG VERSION="3.13.4"
+ARG RELEASE="3.13.4"
 ARG GITHUB_USER="firepress-org"
 
 ###################################
@@ -37,8 +39,6 @@ ARG SOURCE_COMMIT=not-set
 # https://github.com/nodejs/LTS
 FROM ${NODE_VERSION} AS mynode
 
-# grab gosu for easy step-down from root
-
 ARG VERSION
 ARG GHOST_CLI_VERSION
 ARG GOSU_VERSION
@@ -51,6 +51,10 @@ ENV GHOST_INSTALL="/var/lib/ghost"
 ENV GHOST_CONTENT="/var/lib/ghost/content"
 ENV NODE_ENV="production"
 
+
+###################################
+# single stage (not multi)
+###################################
 RUN set -eux; \
 # save list of currently installed packages for later so we can clean up
 	savedAptMark="$(apt-mark showmanual)"; \
@@ -59,6 +63,7 @@ RUN set -eux; \
 	rm -rf /var/lib/apt/lists/*; \
 	\
 	dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')"; \
+  # grab gosu for easy step-down from root
 	wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch"; \
 	wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch.asc"; \
 	\
@@ -77,14 +82,10 @@ RUN set -eux; \
 	chmod +x /usr/local/bin/gosu; \
 # verify that the binary works
 	gosu --version; \
-	gosu nobody true
-
-
-RUN set -eux; \
+	gosu nobody true; \
+	\
 	npm install -g "ghost-cli@$GHOST_CLI_VERSION"; \
-	npm cache clean --force
-
-RUN set -eux; \
+	\
 	mkdir -p "$GHOST_INSTALL"; \
 	chown node:node "$GHOST_INSTALL"; \
 	\

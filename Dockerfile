@@ -6,8 +6,8 @@
 ###################################
 
 ARG APP_NAME="ghostfire"
-ARG VERSION="3.13.4"
-ARG RELEASE="3.13.4"
+ARG VERSION="3.14.0"
+ARG RELEASE="3.14.0"
 ARG GITHUB_USER="firepress-org"
 
 ###################################

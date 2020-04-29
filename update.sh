@@ -29,7 +29,6 @@ cliVersion="$(
 		| head -n1
 )"
 
-travisEnv=
 for version in "${versions[@]}"; do
 	rcVersion="${version%-rc}"
 	rcGrepV='-v'
@@ -56,11 +55,4 @@ for version in "${versions[@]}"; do
 			-e 's/^(ENV GHOST_CLI_VERSION) .*/\1 '"$cliVersion"'/' \
 			"$version"/*/Dockerfile
 	)
-
-	for variant in alpine debian; do
-		travisEnv='\n  - VERSION='"$version"' VARIANT='"$variant$travisEnv"
-	done
 done
-
-travis="$(awk -v 'RS=\n\n' '$1 == "env:" { $0 = "env:'"$travisEnv"'" } { printf "%s%s", $0, RS }' .travis.yml)"
-echo "$travis" > .travis.yml

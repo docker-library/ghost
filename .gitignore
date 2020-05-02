@@ -9,6 +9,11 @@ npm-debug
 .env
 var-config.sh
 
+############
+# Gatsby stuff
+/public
+now.json
+
 # Directories
 ############
 /tmp
@@ -44,8 +49,7 @@ var-config.sh
 
 # OS generated files #
 ######################
-.DS_Store
-.DS_Store?
+.DS_Store*
 .vscode
 .Trashes
 ehthumbs.db

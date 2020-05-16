@@ -12,6 +12,16 @@ Based on this [template](https://gist.github.com/pascalandy/af709db02d3fe132a3e6
 
 # Releases
 
+## 3.15.3 (2020-05-16)
+### ⚡️ Updates
+- [15062de](https://github.com/firepress-org/ghostfire/commit/15062de) Update ghostfire to version 3.15.3 /Dockerfile
+- [faf4e02](https://github.com/firepress-org/ghostfire/commit/faf4e02) Update ghostfire to version 3.15.2 /Dockerfile
+- [e35b664](https://github.com/firepress-org/ghostfire/commit/e35b664) add gatsby template to gitignore
+- [afceaa6](https://github.com/firepress-org/ghostfire/commit/afceaa6) Update ghostfire to version 3.14.0 /Dockerfile
+
+### 🔍 Compare
+- ... with previous release: [3.13.4 <> 3.15.3](https://github.com/firepress-org/ghostfire/compare/3.13.4...3.15.3)
+
 ## 3.13.4 (2020-04-25)
 ### ⚡️ Updates
 - [98c069c](https://github.com/firepress-org/ghostfire/commit/98c069c) Update ghostfire to version 3.13.4

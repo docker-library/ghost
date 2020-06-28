@@ -12,6 +12,23 @@ Based on this [template](https://gist.github.com/pascalandy/af709db02d3fe132a3e6
 
 # Releases
 
+## 3.21.0 (2020-06-28)
+### ⚡️ Updates
+- [c36ea26](https://github.com/firepress-org/ghostfire/commit/c36ea26) Update ghostfire to version 3.21.0 /Dockerfile
+- [fb74534](https://github.com/firepress-org/ghostfire/commit/fb74534) Update ghostfire to version 3.20.3 /Dockerfile
+- [4a03e9e](https://github.com/firepress-org/ghostfire/commit/4a03e9e) Update ghostfire to version 3.20.1 /Dockerfile
+- [07ea995](https://github.com/firepress-org/ghostfire/commit/07ea995) Update ghostfire to version 3.20.0 /Dockerfile
+- [69bc50f](https://github.com/firepress-org/ghostfire/commit/69bc50f) Update ghostfire to version 3.19.2 /Dockerfile
+- [5cb1047](https://github.com/firepress-org/ghostfire/commit/5cb1047) Update ghostfire to version 3.19.1 /Dockerfile
+- [86f86bd](https://github.com/firepress-org/ghostfire/commit/86f86bd) Update ghostfire to version 3.19.0 /Dockerfile
+- [3172f53](https://github.com/firepress-org/ghostfire/commit/3172f53) Update ghostfire to version 3.18.1 /Dockerfile
+- [14641f3](https://github.com/firepress-org/ghostfire/commit/14641f3) Update ghostfire to version 3.18.0 /Dockerfile
+- [2797643](https://github.com/firepress-org/ghostfire/commit/2797643) Update ghostfire to version 3.17.1 /Dockerfile
+- [50240ea](https://github.com/firepress-org/ghostfire/commit/50240ea) Update ghostfire to version 3.17.0 /Dockerfile
+
+### 🔍 Compare
+- ... with previous release: [3.16.1 <> 3.21.0](https://github.com/firepress-org/ghostfire/compare/3.16.1...3.21.0)
+
 ## 3.16.1 (2020-05-26)
 ### ⚡️ Updates
 - [9adb2c7](https://github.com/firepress-org/ghostfire/commit/9adb2c7) Update ghostfire to version 3.16.1 /Dockerfile

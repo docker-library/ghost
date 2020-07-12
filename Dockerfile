@@ -26,7 +26,7 @@ ARG GIT_REPO_SOURCE="https://github.com/TryGhost/Ghost"
 # Start you Dockerfile from here
 ###################################
 ARG OS="debian"
-ARG GHOST_CLI_VERSION="1.13.1"
+ARG GHOST_CLI_VERSION="1.14.1"
 ARG GOSU_VERSION="1.11"
 # node version issue: https://github.com/docker-library/ghost/issues/208
 ARG NODE_VERSION="node:10.17-slim"

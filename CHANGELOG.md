@@ -12,6 +12,20 @@ Based on this [template](https://gist.github.com/pascalandy/af709db02d3fe132a3e6
 
 # Releases
 
+## 3.25.0 (2020-07-15)
+### ⚡️ Updates
+- [9125dc1](https://github.com/firepress-org/ghostfire/commit/9125dc1) Update ghostfire to version 3.25.0 /Dockerfile
+- [750a6ec](https://github.com/firepress-org/ghostfire/commit/750a6ec) ghost cli to 1.14.1
+- [0c02b2d](https://github.com/firepress-org/ghostfire/commit/0c02b2d) Update ghostfire to version 3.24.0 /Dockerfile
+- [184a381](https://github.com/firepress-org/ghostfire/commit/184a381) Update ghostfire to version 3.23.1 /Dockerfile
+- [0424b2c](https://github.com/firepress-org/ghostfire/commit/0424b2c) Update ghostfire to version 3.23.0 /Dockerfile
+- [6acf07f](https://github.com/firepress-org/ghostfire/commit/6acf07f) Update ghostfire to version 3.22.2 /Dockerfile
+- [d820800](https://github.com/firepress-org/ghostfire/commit/d820800) Update ghostfire to version 3.22.1 /Dockerfile
+- [87b805c](https://github.com/firepress-org/ghostfire/commit/87b805c) Update ghostfire to version 3.21.1 /Dockerfile
+
+### 🔍 Compare
+- ... with previous release: [3.21.0 <> 3.25.0](https://github.com/firepress-org/ghostfire/compare/3.21.0...3.25.0)
+
 ## 3.21.0 (2020-06-28)
 ### ⚡️ Updates
 - [c36ea26](https://github.com/firepress-org/ghostfire/commit/c36ea26) Update ghostfire to version 3.21.0 /Dockerfile

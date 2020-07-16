@@ -65,6 +65,8 @@ RUN set -eux; \
 WORKDIR $GHOST_INSTALL
 VOLUME $GHOST_CONTENT
 
+USER node
+
 COPY docker-entrypoint.sh /usr/local/bin
 ENTRYPOINT ["docker-entrypoint.sh"]
 

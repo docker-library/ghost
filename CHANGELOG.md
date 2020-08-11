@@ -13,15 +13,24 @@ Based on this [template](https://gist.github.com/pascalandy/af709db02d3fe132a3e6
 # Releases
 
 ## 3.29.1-r1 (2020-08-11)
+### 🐛 Fix bug
+- Minor, fix a duplicated section within our CI/CD
+
 ### ⚡️ Updates
-- [8194ee3](https://github.com/firepress-org/ghostfire/commit/8194ee3) ghost:3.29.1-r1, cli:1.14, node:12.18.3-stretch, gosu:1.12, debian:stretch
+- [8194ee3](https://github.com/firepress-org/ghostfire/commit/8194ee3) ghostfire:3.29.1-r1, cli:1.14, node:12.18.3-stretch, gosu:1.12, debian:stretch
 
 ### 🔍 Compare
 - ... with previous release: [3.29.1 <> 3.29.1-r1](https://github.com/firepress-org/ghostfire/compare/3.29.1...3.29.1-r1)
 
 ## 3.29.1 (2020-08-11)
+### 🚀 New feat.
+- Add unit test in our CI/CD to ensure the docker image runs normally.
+
 ### ⚡️ Updates
-- [c74ddee](https://github.com/firepress-org/ghostfire/commit/c74ddee) ghost:3.29.1, cli:1.14, node:12.18.3-stretch, gosu:1.12, debian:stretch
+- [c74ddee](https://github.com/firepress-org/ghostfire/commit/c74ddee) ghostfire:3.29.1, cli:1.14, node:12.18.3-stretch, gosu:1.12, debian:stretch
+
+### 🐛 Fix bug
+- Fix node image, slim is NOT working anymore. That's why version like 3.26, 3.27, 3.28 are not properly released.
 
 ### 🔍 Compare
 - ... with previous release: [3.25.0 <> 3.29.1](https://github.com/firepress-org/ghostfire/compare/3.25.0...3.29.1)

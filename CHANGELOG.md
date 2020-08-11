@@ -12,6 +12,13 @@ Based on this [template](https://gist.github.com/pascalandy/af709db02d3fe132a3e6
 
 # Releases
 
+## 3.29.1 (2020-08-11)
+### ⚡️ Updates
+- [c74ddee](https://github.com/firepress-org/ghostfire/commit/c74ddee) ghost:3.29.1, cli:1.14, node:12.18.3-stretch, gosu:1.12, debian:stretch
+
+### 🔍 Compare
+- ... with previous release: [3.25.0 <> 3.29.1](https://github.com/firepress-org/ghostfire/compare/3.25.0...3.29.1)
+
 ## 3.25.0 (2020-07-15)
 ### ⚡️ Updates
 - [9125dc1](https://github.com/firepress-org/ghostfire/commit/9125dc1) Update ghostfire to version 3.25.0 /Dockerfile

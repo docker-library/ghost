@@ -12,6 +12,13 @@ Based on this [template](https://gist.github.com/pascalandy/af709db02d3fe132a3e6
 
 # Releases
 
+## 3.29.1-r1 (2020-08-11)
+### ⚡️ Updates
+- [8194ee3](https://github.com/firepress-org/ghostfire/commit/8194ee3) ghost:3.29.1-r1, cli:1.14, node:12.18.3-stretch, gosu:1.12, debian:stretch
+
+### 🔍 Compare
+- ... with previous release: [3.29.1 <> 3.29.1-r1](https://github.com/firepress-org/ghostfire/compare/3.29.1...3.29.1-r1)
+
 ## 3.29.1 (2020-08-11)
 ### ⚡️ Updates
 - [c74ddee](https://github.com/firepress-org/ghostfire/commit/c74ddee) ghost:3.29.1, cli:1.14, node:12.18.3-stretch, gosu:1.12, debian:stretch

@@ -66,13 +66,6 @@ jobs:
           docker build --file $(cat DOCKERFILE_NAME) --tag $(cat TAG_TYPE_VERSION_HASH_GPR) .
           docker build --file $(cat DOCKERFILE_NAME) --tag $(cat TAG_TYPE_VERSION_HASH_HOUR_GPR) .
 
-      - name: Test image with docker-library
-        run: |
-          git clone --depth 1 https://github.com/docker-library/official-images.git official-images
-          # override config.sh. Why: 1) UTC timezone 2) ghost-basic is configure to check the commit between the image of the official docker image of Ghost.
-          cp ./test/config.sh official-images/test/config.sh
-          official-images/test/run.sh $(cat TAG_TYPE)
-
       - name: Start Ghost's container
         run: |
           docker run -d --name blogtest -p 2368:2368 -e WEB_URL=http://localhost:2368 -e NODE_ENV=production $(cat TAG_TYPE)
@@ -88,7 +81,7 @@ jobs:
         run: |
           curl http://localhost:2368 | grep "The professional publishing platform"
 
-      - name: Test image with docker-library
+      - name: Unit test docker image with docker-library
         run: |
           git clone --depth 1 https://github.com/docker-library/official-images.git official-images
           # override config.sh. Why: 1) UTC timezone 2) ghost-basic is configure to check the commit between the image of the official docker image of Ghost.

@@ -8,6 +8,7 @@ node_modules
 npm-debug
 .env
 var-config.sh
+bashlava_help.md
 
 ############
 # Gatsby stuff

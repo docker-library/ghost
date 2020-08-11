@@ -11,16 +11,24 @@ name: ci_dockerfile_not_master
 on:
   push:
     branches:
-      - edge*
-      - dev*
-      - tmp*
-      - temp*
-      - patch*
-      - pull*
-      - test*
-      - pascal*
-      - bug*
-      - pr*
+      - edge
+      - dev
+      - tmp
+      - tmp2
+      - tmp3
+      - temp
+      - temp2
+      - temp3
+      - patch
+      - patch2
+      - patch3
+      - pull
+      - test
+      - test2
+      - test3
+      - pascal
+      - bug
+      - pr
 jobs:
 
   Job1:
@@ -71,6 +79,21 @@ jobs:
           docker build --file $(cat DOCKERFILE_NAME) --tag $(cat TAG_TYPE_VERSION_GPR) .
           docker build --file $(cat DOCKERFILE_NAME) --tag $(cat TAG_TYPE_VERSION_HASH_GPR) .
           docker build --file $(cat DOCKERFILE_NAME) --tag $(cat TAG_TYPE_VERSION_HASH_HOUR_GPR) .
+
+      - name: Start Ghost's container
+        run: |
+          docker run -d --name blogtest -p 2368:2368 -e WEB_URL=http://localhost:2368 -e NODE_ENV=production $(cat TAG_TYPE)
+        
+      - name: Wait for container to run
+        run: |
+          until $(curl --output /dev/null --silent --head --fail http://localhost:2368); do
+            echo "waiting for ghostblog container...";
+            sleep 4;
+          done;
+
+      - name: Unit test container
+        run: |
+          curl http://localhost:2368 | grep "The professional publishing platform"
 
       - name: Test image with docker-library
         run: |

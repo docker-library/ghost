@@ -6,8 +6,8 @@
 ###################################
 
 ARG APP_NAME="ghostfire"
-ARG VERSION="3.25.0"
-ARG RELEASE="3.25.0"
+ARG VERSION="3.29.1"
+ARG RELEASE="3.29.1"
 ARG GITHUB_USER="firepress-org"
 
 ###################################
@@ -25,13 +25,15 @@ ARG GIT_REPO_SOURCE="https://github.com/TryGhost/Ghost"
 ###################################
 # Start you Dockerfile from here
 ###################################
+
 ARG OS="debian"
 ARG GHOST_CLI_VERSION="1.14.1"
-ARG GOSU_VERSION="1.11"
+ARG GOSU_VERSION="1.12"
 # node version issue: https://github.com/docker-library/ghost/issues/208
-ARG NODE_VERSION="node:10.17-slim"
+ARG NODE_VERSION="node:12.18.3-stretch"
 ARG USER="node"
 ARG GHOST_USER="node"
+
 ARG CREATED_DATE=not-set
 ARG SOURCE_COMMIT=not-set
 #
@@ -51,11 +53,12 @@ ENV GHOST_INSTALL="/var/lib/ghost"
 ENV GHOST_CONTENT="/var/lib/ghost/content"
 ENV NODE_ENV="production"
 
-
 ###################################
 # single stage (not multi)
 ###################################
+
 RUN set -eux; \
+# install gosu
 # save list of currently installed packages for later so we can clean up
 	savedAptMark="$(apt-mark showmanual)"; \
 	apt-get update; \
@@ -63,7 +66,6 @@ RUN set -eux; \
 	rm -rf /var/lib/apt/lists/*; \
 	\
 	dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')"; \
-  # grab gosu for easy step-down from root
 	wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch"; \
 	wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch.asc"; \
 	\
@@ -76,7 +78,7 @@ RUN set -eux; \
 	\
 # clean up fetch dependencies
 	apt-mark auto '.*' > /dev/null; \
-	[ -z "$savedAptMark" ] || apt-mark manual $savedAptMark; \
+	[ -z "$savedAptMark" ] || apt-mark manual $savedAptMark > /dev/null; \
 	apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
 	\
 	chmod +x /usr/local/bin/gosu; \
@@ -84,14 +86,15 @@ RUN set -eux; \
 	gosu --version; \
 	gosu nobody true; \
 	\
-	npm install -g "ghost-cli@$GHOST_CLI_VERSION"; \
-	\
+# install Ghost
+  \
+  npm install -g "ghost-cli@$GHOST_CLI_VERSION"; \
 	mkdir -p "$GHOST_INSTALL"; \
 	chown node:node "$GHOST_INSTALL"; \
 	\
 	gosu node ghost install "$GHOST_VERSION" --db sqlite3 --no-prompt --no-stack --no-setup --dir "$GHOST_INSTALL"; \
 	\
-# Tell Ghost to listen on all ips and not prompt for additional configuration
+# tell Ghost to listen on all ips and not prompt for additional configuration
 	cd "$GHOST_INSTALL"; \
 	gosu node ghost config --ip 0.0.0.0 --port 2368 --no-prompt --db sqlite3 --url http://localhost:2368 --dbpath "$GHOST_CONTENT/data/ghost.db"; \
 	gosu node ghost config paths.contentPath "$GHOST_CONTENT"; \

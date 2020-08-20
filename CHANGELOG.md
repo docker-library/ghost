@@ -12,6 +12,15 @@ Based on this [template](https://gist.github.com/pascalandy/af709db02d3fe132a3e6
 
 # Releases
 
+## 3.30.1 (2020-08-20)
+### ⚡️ Updates
+- [a9d6d32](https://github.com/firepress-org/ghostfire/commit/a9d6d32) Update ghostfire to version 3.30.1 /Dockerfile
+- [b56e48e](https://github.com/firepress-org/ghostfire/commit/b56e48e) ghost:3.29.1-r2, cli:1.14.1, node:12.18.3-alpine3.12, alpine:3.12
+- [44b5b72](https://github.com/firepress-org/ghostfire/commit/44b5b72) Update changelog
+
+### 🔍 Compare
+- ... with previous release: [3.29.1-r1 <> 3.30.1](https://github.com/firepress-org/ghostfire/compare/3.29.1-r1...3.30.1)
+
 ## 3.29.1-r1 (2020-08-11)
 ### 🐛 Fix bug
 - Minor, fix a duplicated section within our CI/CD

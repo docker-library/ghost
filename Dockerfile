@@ -99,7 +99,7 @@ RUN set -eux && apk add --no-cache \
       # grab su-exec for easy step-down from root
       'su-exec>=0.2-r1' \
       bash="5.0.17-r0" \
-      curl="7.69.1-r0" \
+      curl="7.69.1-r1" \
       tini="0.19.0-r0" \
       tzdata="2020a-r0" && \
     cp /usr/share/zoneinfo/America/New_York /etc/localtime        && \

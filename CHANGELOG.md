@@ -12,6 +12,13 @@ Based on this [template](https://gist.github.com/pascalandy/af709db02d3fe132a3e6
 
 # Releases
 
+## 3.34.0 (2020-09-23)
+### ⚡️ Updates
+- [7452431](https://github.com/firepress-org/ghostfire/commit/7452431) update to v3.34.0 /alpine
+
+### 🔍 Compare
+- ... with previous release: [3.33.0 <> 3.34.0](https://github.com/firepress-org/ghostfire/compare/3.33.0...3.34.0)
+
 ## 3.33.0 (2020-09-18)
 ### ⚡️ Updates
 - [a4982b0](https://github.com/firepress-org/ghostfire/commit/a4982b0) curl upgrade

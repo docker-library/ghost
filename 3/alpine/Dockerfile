@@ -1,7 +1,7 @@
 # https://docs.ghost.org/faq/node-versions/
 # https://github.com/nodejs/LTS
 # https://github.com/TryGhost/Ghost/blob/3.3.0/package.json#L38
-FROM node:12-alpine3.11
+FROM node:12-alpine3.12
 
 # grab su-exec for easy step-down from root
 RUN apk add --no-cache 'su-exec>=0.2'

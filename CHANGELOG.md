@@ -12,6 +12,16 @@ Based on this [template](https://gist.github.com/pascalandy/af709db02d3fe132a3e6
 
 # Releases
 
+## 3.35.4 (2020-10-07)
+### ⚡️ Updates
+- [480e12e](https://github.com/firepress-org/ghostfire/commit/480e12e) update to node 12.18.4-alpine3.12
+- [f853ba4](https://github.com/firepress-org/ghostfire/commit/f853ba4) Update ghostfire to version 3.35.4 /Dockerfile
+- [84f9d29](https://github.com/firepress-org/ghostfire/commit/84f9d29) Update ghostfire to version 3.35.3 /Dockerfile
+- [d63e7a2](https://github.com/firepress-org/ghostfire/commit/d63e7a2) Update ghostfire to version 3.34.1 /Dockerfile
+
+### 🔍 Compare
+- ... with previous release: [3.34.0 <> 3.35.4](https://github.com/firepress-org/ghostfire/compare/3.34.0...3.35.4)
+
 ## 3.34.0 (2020-09-23)
 ### ⚡️ Updates
 - [7452431](https://github.com/firepress-org/ghostfire/commit/7452431) update to v3.34.0 /alpine

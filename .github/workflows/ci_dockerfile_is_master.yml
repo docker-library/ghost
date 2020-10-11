@@ -9,11 +9,12 @@
 
 name: ci_dockerfile_master
 on:
-  schedule:
-    - cron: '0 8 * * *'
+  pull_request:
   push:
     branches:
       - master
+  schedule:
+    - cron: '0 8 * * *'
 
 jobs:
 

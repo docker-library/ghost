@@ -14,21 +14,10 @@ on:
       - edge
       - dev
       - tmp
-      - tmp2
-      - tmp3
       - temp
-      - temp2
-      - temp3
-      - patch
-      - patch2
-      - patch3
-      - pull
       - test
-      - test2
-      - test3
-      - pascal
       - bug
-      - pr
+
 jobs:
 
   Job1:

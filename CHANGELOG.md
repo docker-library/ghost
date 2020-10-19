@@ -12,6 +12,16 @@ Based on this [template](https://gist.github.com/pascalandy/af709db02d3fe132a3e6
 
 # Releases
 
+## 3.35.5 (2020-10-19)
+### ⚡️ Updates
+- [f9d4fe8](https://github.com/firepress-org/ghostfire/commit/f9d4fe8) update to tzdata=2020c-r0
+- [0271163](https://github.com/firepress-org/ghostfire/commit/0271163) add on pull_request:
+- [cba80e5](https://github.com/firepress-org/ghostfire/commit/cba80e5) remove unneeded branches
+- [03ad12b](https://github.com/firepress-org/ghostfire/commit/03ad12b) Add a basic Dockerfile to test ghost-cli
+
+### 🔍 Compare
+- ... with previous release: [3.35.5 <> 3.35.5](https://github.com/firepress-org/ghostfire/compare/3.35.5...3.35.5)
+
 ## 3.35.5 (2020-10-08)
 ### ⚡️ Updates
 - [6fb0204](https://github.com/firepress-org/ghostfire/commit/6fb0204) Update ghostfire to version 3.35.5 /Dockerfile

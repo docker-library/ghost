@@ -102,7 +102,7 @@ RUN set -eux && apk add --no-cache \
       bash="5.0.17-r0" \
       curl="7.69.1-r1" \
       tini="0.19.0-r0" \
-      tzdata="2020a-r0" && \
+      tzdata="2020c-r0" && \
     cp /usr/share/zoneinfo/America/New_York /etc/localtime        && \
     echo "America/New_York" > /etc/timezone                       && \
     apk del tzdata                                                && \

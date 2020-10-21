@@ -214,8 +214,9 @@ jobs:
         run: |
           wget --retry-connrefused --waitretry=1 --read-timeout=5 --timeout=5 --tries=10 \
             https://raw.githubusercontent.com/lukebond/microscanner-wrapper/master/scan.sh && chmod +x scan.sh
-          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest \
-            --exit-code 0 $(cat TAG_SCANNER)
+          docker pull quay.io/sighup/trivy-offline
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock quay.io/sighup/trivy-offline:latest \
+          --exit-code 0 $(cat TAG_SCANNER)
 
       #- name: Github Actions ideas to implements
       #  run: |

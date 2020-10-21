@@ -12,6 +12,15 @@ Based on this [template](https://gist.github.com/pascalandy/af709db02d3fe132a3e6
 
 # Releases
 
+## 3.36.0 (2020-10-21)
+### ⚡️ Updates
+- [8019184](https://github.com/firepress-org/ghostfire/commit/8019184) update RELEASE=3.36.0-r2
+- [51377e6](https://github.com/firepress-org/ghostfire/commit/51377e6) Update Trivy scanner docker image to offline version
+- [d372272](https://github.com/firepress-org/ghostfire/commit/d372272) Update ghostfire to version 3.36.0 /Dockerfile
+
+### 🔍 Compare
+- ... with previous release: [3.35.5-r3 <> 3.36.0-r2](https://github.com/firepress-org/ghostfire/compare/3.35.5-r3...3.36.0-r2)
+
 ## 3.35.5-r3 (2020-10-19)
 ### ⚡️ Updates
 - [972b0be](https://github.com/firepress-org/ghostfire/commit/972b0be) update to tzdata=2020c-r0

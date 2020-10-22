@@ -216,7 +216,10 @@ jobs:
 
       - name: Scan Git Repo /w Trivy
         run: |
-          docker run --rm quay.io/sighup/trivy-offline:latest --exit-code 0 repo https://github.com/firepress-org/ghostfire/
+          export VERSION_TRIVY=$(curl --silent "https://api.github.com/repos/aquasecurity/trivy/releases/latest" | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
+          wget https://github.com/aquasecurity/trivy/releases/download/v${VERSION_TRIVY}/trivy_${VERSION_TRIVY}_Linux-64bit.tar.gz
+          tar zxvf trivy_${VERSION_TRIVY}_Linux-64bit.tar.gz
+          ./trivy repo https://github.com/firepress-org/ghostfire/
 
       - name: Scan image /w Trivy
         run: |

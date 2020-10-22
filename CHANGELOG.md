@@ -16,18 +16,11 @@ Based on this [template](https://gist.github.com/pascalandy/af709db02d3fe132a3e6
 ### ⚡️ Updates
 - [2f7006e](https://github.com/firepress-org/ghostfire/commit/2f7006e) build ci on push: branch master only + split steps between microscanner and Trivy
 - [404f3a1](https://github.com/firepress-org/ghostfire/commit/404f3a1) Rename yaml to ci_dockerfile_is_edge AND build on edge only
-
-### 🔍 Compare
-- ... with previous release: [3.36.0 <> 3.36.0](https://github.com/firepress-org/ghostfire/compare/3.36.0...3.36.0)
-
-## 3.36.0 (2020-10-21)
-### ⚡️ Updates
-- [8019184](https://github.com/firepress-org/ghostfire/commit/8019184) update RELEASE=3.36.0-r2
 - [51377e6](https://github.com/firepress-org/ghostfire/commit/51377e6) Update Trivy scanner docker image to offline version
 - [d372272](https://github.com/firepress-org/ghostfire/commit/d372272) Update ghostfire to version 3.36.0 /Dockerfile
 
 ### 🔍 Compare
-- ... with previous release: [3.35.5-r3 <> 3.36.0-r2](https://github.com/firepress-org/ghostfire/compare/3.35.5-r3...3.36.0-r2)
+- ... with previous release: [3.35.5-r3 <> 3.36.0](https://github.com/firepress-org/ghostfire/compare/3.35.5-r3...3.36.0)
 
 ## 3.35.5-r3 (2020-10-19)
 ### ⚡️ Updates
@@ -42,12 +35,6 @@ Based on this [template](https://gist.github.com/pascalandy/af709db02d3fe132a3e6
 - [0271163](https://github.com/firepress-org/ghostfire/commit/0271163) add on pull_request:
 - [cba80e5](https://github.com/firepress-org/ghostfire/commit/cba80e5) remove unneeded branches
 - [03ad12b](https://github.com/firepress-org/ghostfire/commit/03ad12b) Add a basic Dockerfile to test ghost-cli
-
-### 🔍 Compare
-- ... with previous release: [3.35.5 <> 3.35.5](https://github.com/firepress-org/ghostfire/compare/3.35.5...3.35.5)
-
-## 3.35.5 (2020-10-08)
-### ⚡️ Updates
 - [6fb0204](https://github.com/firepress-org/ghostfire/commit/6fb0204) Update ghostfire to version 3.35.5 /Dockerfile
 
 ### 🔍 Compare

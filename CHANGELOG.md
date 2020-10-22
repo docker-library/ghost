@@ -14,6 +14,8 @@ Based on this [template](https://gist.github.com/pascalandy/af709db02d3fe132a3e6
 
 ## 3.36.0 (2020-10-21)
 ### ⚡️ Updates
+- [955e7b4](https://github.com/firepress-org/ghostfire/commit/955e7b4) CI / Bypass Scan image /w Trivy
+- [234d7b4](https://github.com/firepress-org/ghostfire/commit/234d7b4) update CHANGELOG
 - [be7e5ee](https://github.com/firepress-org/ghostfire/commit/be7e5ee) CI / update step / Scan Git Repo /w Trivy
 - [c42463e](https://github.com/firepress-org/ghostfire/commit/c42463e) CI / update comments
 - [6096b66](https://github.com/firepress-org/ghostfire/commit/6096b66) CI / Delete older yml file / travis, FUNDING, ci requirements

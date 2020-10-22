@@ -221,16 +221,13 @@ jobs:
       - name: Scan image /w Trivy
         run: |
           docker pull quay.io/sighup/trivy-offline
-          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock quay.io/sighup/trivy-offline:latest \
-            --exit-code 0 $(cat TAG_SCANNER)
+          docker run --rm quay.io/sighup/trivy-offline:latest --exit-code 0 $(cat TAG_SCANNER)
 
       - name: Scan image /w Trivy (stop if CRITICAL) 
         run: |
           docker pull quay.io/sighup/trivy-offline
-          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock quay.io/sighup/trivy-offline:latest \
-            --exit-code 1 --severity CRITICAL $(cat TAG_SCANNER)
+          docker run --rm quay.io/sighup/trivy-offline:latest --exit-code 1 --severity CRITICAL $(cat TAG_SCANNER)
 
       #- name: Github Actions ideas to implements
       #  run: |
       #    echo "see —> https://gist.github.com/pascalandy/4e499b7c42023836a7d207277923fc09"
-      

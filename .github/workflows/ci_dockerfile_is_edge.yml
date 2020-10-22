@@ -3,6 +3,7 @@
 # Requires secrets on github: DOCKERHUB_PASSWORD, TOKEN_SLACK, TOKEN_GPR
 # Update DOCKERFILE_NAME if you are using a special Dockerfile name
 # The way we define variables is a hack. See why: https://bit.ly/2ZEAt6u
+# All details: https://github.com/firepress-org/ghostfire/issues/23
 #
 # GNU v3 | Please credit the author if you are re-using some of it :-p
 # by Pascal Andy | https://pascalandy.com/blog/now/

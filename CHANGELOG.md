@@ -14,6 +14,12 @@ Based on this [template](https://gist.github.com/pascalandy/af709db02d3fe132a3e6
 
 ## 3.36.0 (2020-10-21)
 ### ⚡️ Updates
+- [6f2c193](https://github.com/firepress-org/ghostfire/commit/6f2c193) remove volume docker.sock as we use the public docker image
+- [e8d7686](https://github.com/firepress-org/ghostfire/commit/e8d7686) New step / Scan Dockerfile /w Dockle
+- [9e005c8](https://github.com/firepress-org/ghostfire/commit/9e005c8) Fix changelog
+- [fbf10a7](https://github.com/firepress-org/ghostfire/commit/fbf10a7) update changelog
+- [2f7006e](https://github.com/firepress-org/ghostfire/commit/2f7006e) build ci on push: branch master only + split steps between microscanner and Trivy
+- [404f3a1](https://github.com/firepress-org/ghostfire/commit/404f3a1) Rename yaml to ci_dockerfile_is_edge AND build on edge only
 - [2f7006e](https://github.com/firepress-org/ghostfire/commit/2f7006e) build ci on push: branch master only + split steps between microscanner and Trivy
 - [404f3a1](https://github.com/firepress-org/ghostfire/commit/404f3a1) Rename yaml to ci_dockerfile_is_edge AND build on edge only
 - [51377e6](https://github.com/firepress-org/ghostfire/commit/51377e6) Update Trivy scanner docker image to offline version

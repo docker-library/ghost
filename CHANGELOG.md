@@ -14,17 +14,19 @@ Based on this [template](https://gist.github.com/pascalandy/af709db02d3fe132a3e6
 
 ## 3.36.0 (2020-10-21)
 ### ⚡️ Updates
-- [4ce268f](https://github.com/firepress-org/ghostfire/commit/4ce268f) Use docker image instead of installing binary / Scan Git Repo /w Trivy
+- [be7e5ee](https://github.com/firepress-org/ghostfire/commit/be7e5ee) CI / update step / Scan Git Repo /w Trivy
+- [c42463e](https://github.com/firepress-org/ghostfire/commit/c42463e) CI / update comments
+- [6096b66](https://github.com/firepress-org/ghostfire/commit/6096b66) CI / Delete older yml file / travis, FUNDING, ci requirements
+- [21717d5](https://github.com/firepress-org/ghostfire/commit/21717d5) update changelog
+- [4ce268f](https://github.com/firepress-org/ghostfire/commit/4ce268f) CI / Use docker image instead of installing binary / Scan Git Repo /w Trivy
 - [cc12bb6](https://github.com/firepress-org/ghostfire/commit/cc12bb6) update changelog
-- [6f2c193](https://github.com/firepress-org/ghostfire/commit/6f2c193) remove volume docker.sock as we use the public docker image
-- [e8d7686](https://github.com/firepress-org/ghostfire/commit/e8d7686) New step / Scan Dockerfile /w Dockle
+- [6f2c193](https://github.com/firepress-org/ghostfire/commit/6f2c193) CI / remove volume docker.sock as we use the public docker image
+- [e8d7686](https://github.com/firepress-org/ghostfire/commit/e8d7686) CI / New step / Scan Dockerfile /w Dockle
 - [9e005c8](https://github.com/firepress-org/ghostfire/commit/9e005c8) Fix changelog
 - [fbf10a7](https://github.com/firepress-org/ghostfire/commit/fbf10a7) update changelog
-- [2f7006e](https://github.com/firepress-org/ghostfire/commit/2f7006e) build ci on push: branch master only + split steps between microscanner and Trivy
-- [404f3a1](https://github.com/firepress-org/ghostfire/commit/404f3a1) Rename yaml to ci_dockerfile_is_edge AND build on edge only
-- [2f7006e](https://github.com/firepress-org/ghostfire/commit/2f7006e) build ci on push: branch master only + split steps between microscanner and Trivy
-- [404f3a1](https://github.com/firepress-org/ghostfire/commit/404f3a1) Rename yaml to ci_dockerfile_is_edge AND build on edge only
-- [51377e6](https://github.com/firepress-org/ghostfire/commit/51377e6) Update Trivy scanner docker image to offline version
+- [404f3a1](https://github.com/firepress-org/ghostfire/commit/404f3a1) CI / Rename yaml to ci_dockerfile_is_edge AND build on edge only
+- [2f7006e](https://github.com/firepress-org/ghostfire/commit/2f7006e) CI / build ci on push: branch master only + split steps between microscanner and Trivy
+- [51377e6](https://github.com/firepress-org/ghostfire/commit/51377e6) CI / Update Trivy scanner docker image to offline version
 - [d372272](https://github.com/firepress-org/ghostfire/commit/d372272) Update ghostfire to version 3.36.0 /Dockerfile
 
 ### 🔍 Compare

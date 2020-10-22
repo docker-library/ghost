@@ -139,7 +139,7 @@ jobs:
 
   # triggered for branches "edge" and "stable"
   Job2:
-    needs: job1
+    needs: Job1
     name: Job 2 of 3
     runs-on: ubuntu-18.04
     steps:
@@ -175,7 +175,7 @@ jobs:
 
   # triggered only for branch "stable"
   Job3:
-    needs: job1
+    needs: Job2
     name: Job 3 of 3
     runs-on: ubuntu-18.04
     steps:
@@ -215,8 +215,7 @@ jobs:
 
       - name: Scan Git Repo /w Trivy
         run: |
-          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/master/contrib/install.sh | sh -s -- -b /usr/local/bin
-          trivy repo https://github.com/firepress-org/ghostfire/
+          docker run --rm quay.io/sighup/trivy-offline:latest --exit-code 0 repo https://github.com/firepress-org/ghostfire/
 
       - name: Scan image /w Trivy
         run: |

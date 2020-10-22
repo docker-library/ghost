@@ -207,18 +207,30 @@ jobs:
             -e DOCKERHUB_REPO_NAME=$(cat APP_NAME) \
             devmtl/readme-to-dockerhub:stable
 
-      - name: Scan image -> Aquasec microscanner
+      - name: Scan Dockerfile /w Dockle
         run: |
-          wget --retry-connrefused --waitretry=1 --read-timeout=5 --timeout=5 --tries=10 \
-            https://raw.githubusercontent.com/lukebond/microscanner-wrapper/master/scan.sh && chmod +x scan.sh
+          export DOCKLE_LATEST=$(curl --silent "https://api.github.com/repos/goodwithtech/dockle/releases/latest" | \
+          grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
+          docker run --rm goodwithtech/dockle:v${DOCKLE_LATEST} $(cat TAG_SCANNER)
 
+      - name: Scan Git Repo /w Trivy
+        run: |
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/master/contrib/install.sh | sh -s -- -b /usr/local/bin
+          trivy repo https://github.com/firepress-org/ghostfire/
 
-      - name: Scan image > Trivy (offline version)
+      - name: Scan image /w Trivy
         run: |
           docker pull quay.io/sighup/trivy-offline
           docker run --rm -v /var/run/docker.sock:/var/run/docker.sock quay.io/sighup/trivy-offline:latest \
-          --exit-code 0 $(cat TAG_SCANNER)
+            --exit-code 0 $(cat TAG_SCANNER)
+
+      - name: Scan image /w Trivy (stop if CRITICAL) 
+        run: |
+          docker pull quay.io/sighup/trivy-offline
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock quay.io/sighup/trivy-offline:latest \
+            --exit-code 1 --severity CRITICAL $(cat TAG_SCANNER)
 
       #- name: Github Actions ideas to implements
       #  run: |
       #    echo "see —> https://gist.github.com/pascalandy/4e499b7c42023836a7d207277923fc09"
+      

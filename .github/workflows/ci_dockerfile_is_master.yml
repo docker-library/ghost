@@ -7,12 +7,9 @@
 # GNU v3 | Please credit the author if you are re-using some of it :-p
 # by Pascal Andy | https://pascalandy.com/blog/now/
 
-name: ci_dockerfile_master
+name: ci_dockerfile_is_master
 on:
-  pull_request:
-  push:
-    branches:
-      - master
+  push: {branches: master}
   schedule:
     - cron: '0 8 * * *'
 
@@ -210,10 +207,14 @@ jobs:
             -e DOCKERHUB_REPO_NAME=$(cat APP_NAME) \
             devmtl/readme-to-dockerhub:stable
 
-      - name: Test image with Aquasec microscanner
+      - name: Scan image -> Aquasec microscanner
         run: |
           wget --retry-connrefused --waitretry=1 --read-timeout=5 --timeout=5 --tries=10 \
             https://raw.githubusercontent.com/lukebond/microscanner-wrapper/master/scan.sh && chmod +x scan.sh
+
+
+      - name: Scan image > Trivy (offline version)
+        run: |
           docker pull quay.io/sighup/trivy-offline
           docker run --rm -v /var/run/docker.sock:/var/run/docker.sock quay.io/sighup/trivy-offline:latest \
           --exit-code 0 $(cat TAG_SCANNER)

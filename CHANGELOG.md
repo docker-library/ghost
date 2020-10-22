@@ -14,6 +14,12 @@ Based on this [template](https://gist.github.com/pascalandy/af709db02d3fe132a3e6
 
 ## 3.36.0 (2020-10-21)
 ### ⚡️ Updates
+- [044a37a](https://github.com/firepress-org/ghostfire/commit/044a37a) CI / Init dependabot.yml
+- [bee6180](https://github.com/firepress-org/ghostfire/commit/bee6180) Update from original Dockerfile
+- [5a25aac](https://github.com/firepress-org/ghostfire/commit/5a25aac) Remove warning MAINTAINERS.md
+- [b67bc20](https://github.com/firepress-org/ghostfire/commit/b67bc20) update warnings in MAINTAINERS.md
+- [a077a76](https://github.com/firepress-org/ghostfire/commit/a077a76) cleaning the BACKLOG
+- [04706ea](https://github.com/firepress-org/ghostfire/commit/04706ea) update CHANGELOG
 - [955e7b4](https://github.com/firepress-org/ghostfire/commit/955e7b4) CI / Bypass Scan image /w Trivy
 - [234d7b4](https://github.com/firepress-org/ghostfire/commit/234d7b4) update CHANGELOG
 - [be7e5ee](https://github.com/firepress-org/ghostfire/commit/be7e5ee) CI / update step / Scan Git Repo /w Trivy

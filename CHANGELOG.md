@@ -14,6 +14,8 @@ Based on this [template](https://gist.github.com/pascalandy/af709db02d3fe132a3e6
 
 ## 3.36.0 (2020-10-21)
 ### ⚡️ Updates
+- [4ce268f](https://github.com/firepress-org/ghostfire/commit/4ce268f) Use docker image instead of installing binary / Scan Git Repo /w Trivy
+- [cc12bb6](https://github.com/firepress-org/ghostfire/commit/cc12bb6) update changelog
 - [6f2c193](https://github.com/firepress-org/ghostfire/commit/6f2c193) remove volume docker.sock as we use the public docker image
 - [e8d7686](https://github.com/firepress-org/ghostfire/commit/e8d7686) New step / Scan Dockerfile /w Dockle
 - [9e005c8](https://github.com/firepress-org/ghostfire/commit/9e005c8) Fix changelog

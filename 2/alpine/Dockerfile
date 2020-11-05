@@ -51,7 +51,7 @@ RUN set -eux; \
 	sqlite3Version="$(node -p 'require("./package.json").optionalDependencies.sqlite3')"; \
 	if ! su-exec node yarn add "sqlite3@$sqlite3Version" --force; then \
 # must be some non-amd64 architecture pre-built binaries aren't published for, so let's install some build deps and do-it-all-over-again
-		apk add --no-cache --virtual .build-deps python make gcc g++ libc-dev; \
+		apk add --no-cache --virtual .build-deps python3 make gcc g++ libc-dev; \
 		\
 		su-exec node yarn add "sqlite3@$sqlite3Version" --force --build-from-source; \
 		\

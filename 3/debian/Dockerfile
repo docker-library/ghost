@@ -77,7 +77,7 @@ RUN set -eux; \
 # must be some non-amd64 architecture pre-built binaries aren't published for, so let's install some build deps and do-it-all-over-again
 		savedAptMark="$(apt-mark showmanual)"; \
 		apt-get update; \
-		apt-get install -y --no-install-recommends python make gcc g++ libc-dev; \
+		apt-get install -y --no-install-recommends python3 make gcc g++ libc-dev; \
 		rm -rf /var/lib/apt/lists/*; \
 		\
 		gosu node yarn add "sqlite3@$sqlite3Version" --force --build-from-source; \

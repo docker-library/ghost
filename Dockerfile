@@ -26,10 +26,10 @@ ARG GIT_REPO_SOURCE="https://github.com/TryGhost/Ghost"
 # Start your Dockerfile from here
 ###################################
 ARG OS="alpine"
-ARG NODE_VERSION="12.18.4-alpine3.12"
+ARG NODE_VERSION="14.15.0-alpine3.12"
   # node version issue: https://github.com/docker-library/ghost/issues/208
   # https://hub.docker.com/_/node/
-ARG GHOST_CLI_VERSION="1.15.1"
+ARG GHOST_CLI_VERSION="1.15.2"
 ARG ALPINE_VERSION="3.12"
 ARG USER="node"
 ARG GHOST_USER="node"
@@ -58,7 +58,7 @@ FROM myalpine AS app-version-debug
 # grab su-exec for easy step-down from root
 # add "bash" for "[["
 RUN set -eux && apk update && apk add --no-cache \
-    'su-exec>=0.2' bash upx curl tini tzdata && \
+    'su-exec>=0.2' bash upx curl tini tzdata &&\
     apk upgrade
 
 # ----------------------------------------------
@@ -69,10 +69,10 @@ RUN set -eux && apk update && apk add --no-cache \
 # ----------------------------------------------
 FROM myalpine AS node-compress
 COPY --from=mynode /usr/local/bin/node /usr/local/bin/node
-RUN set -eux                                                      && \
+RUN set -eux                                                      &&\
     apk --update add --no-cache                                   \
-      upx="3.96-r0"                                               && \
-    upx /usr/local/bin/node                                       && \
+      upx="3.96-r0"                                               &&\
+    upx /usr/local/bin/node                                       &&\
     upx -t /usr/local/bin/node                                    ;
 
 # ----------------------------------------------
@@ -84,8 +84,8 @@ ARG GHOST_USER
 ENV GHOST_USER="${GHOST_USER}"
 
 # set up node user and group
-RUN set -eux                                                      && \
-    addgroup -g 1000 "${GHOST_USER}"                              && \
+RUN set -eux                                                      &&\
+    addgroup -g 1000 "${GHOST_USER}"                              &&\
     adduser -u 1000 -G "${GHOST_USER}" -s /bin/sh -D node         ;
 
 COPY --from=node-compress --chown=node:node /usr/local/bin/node /usr/bin/
@@ -102,10 +102,10 @@ RUN set -eux && apk add --no-cache \
       bash="5.0.17-r0" \
       curl="7.69.1-r1" \
       tini="0.19.0-r0" \
-      tzdata="2020c-r0" && \
-    cp /usr/share/zoneinfo/America/New_York /etc/localtime        && \
-    echo "America/New_York" > /etc/timezone                       && \
-    apk del tzdata                                                && \
+      tzdata="2020c-r0" &&\
+    cp /usr/share/zoneinfo/America/New_York /etc/localtime        &&\
+    echo "America/New_York" > /etc/timezone                       &&\
+    apk del tzdata                                                &&\
     rm -rvf /var/cache/apk/* /tmp/*                               ;
 
 COPY --chown=node:node docker-entrypoint.sh /usr/local/bin
@@ -173,74 +173,67 @@ ENV GHOST_INSTALL="/var/lib/ghost"                                \
 RUN set -eux && apk --update add --no-cache \
       su-exec>="0.2" \
       bash \
-      ca-certificates                                             && \
-    update-ca-certificates                                        && \
-    rm -rvf /var/cache/apk/*                                      && \
+      ca-certificates                                             &&\
+    update-ca-certificates                                        &&\
+    rm -rvf /var/cache/apk/*                                      &&\
     \
 # install Ghost CLI
-    npm install --production -g "ghost-cli@${GHOST_CLI_VERSION}"  && \
-    npm cache clean --force                                       && \
+    npm install --production -g "ghost-cli@${GHOST_CLI_VERSION}"  &&\
+    npm cache clean --force                                       &&\
     \
-    mkdir -p "${GHOST_INSTALL}"                                   && \
-    chown -R "${GHOST_USER}":"${GHOST_USER}" "${GHOST_INSTALL}"   && \
+    mkdir -p "${GHOST_INSTALL}"                                   &&\
+    chown -R "${GHOST_USER}":"${GHOST_USER}" "${GHOST_INSTALL}"   &&\
     \
 # install Ghost / optional: --verbose
     su-exec node ghost install "${VERSION}"                       \
       --db sqlite3 --no-prompt --no-stack                         \
-      --no-setup --dir "${GHOST_INSTALL}"                         && \
+      --no-setup --dir "${GHOST_INSTALL}"                         &&\
     \
 # tell Ghost to listen on all IPs and not prompt for additional configuration
-    cd "${GHOST_INSTALL}"                                         && \
+    cd "${GHOST_INSTALL}"                                         &&\
     su-exec node ghost config --ip 0.0.0.0                        \
       --port 2368 --no-prompt --db sqlite3                        \
       --url http://localhost:2368                                 \
-      --dbpath "${GHOST_CONTENT}/data/ghost.db"                   && \
+      --dbpath "${GHOST_CONTENT}/data/ghost.db"                   &&\
     su-exec node ghost config                                     \
-      paths.contentPath "${GHOST_CONTENT}"                        && \
+      paths.contentPath "${GHOST_CONTENT}"                        &&\
     \
 # make a config.json symlink for NODE_ENV=development (and sanity check that it's correct)
     su-exec node ln -s config.production.json \
-      "${GHOST_INSTALL}/config.development.json"                  && \
-    readlink -f "${GHOST_INSTALL}/config.development.json"        && \
+      "${GHOST_INSTALL}/config.development.json"                  &&\
+    readlink -f "${GHOST_INSTALL}/config.development.json"        &&\
     \
 # need to save initial content for pre-seeding empty volumes
-    mv "${GHOST_CONTENT}" "${GHOST_INSTALL}/content.orig"         && \
-    mkdir -p "${GHOST_CONTENT}"                                   && \
-    chown -R "${GHOST_USER}":"${GHOST_USER}" "$GHOST_CONTENT"     && \
+    mv "${GHOST_CONTENT}" "${GHOST_INSTALL}/content.orig"         &&\
+    mkdir -p "${GHOST_CONTENT}"                                   &&\
+    chown -R "${GHOST_USER}":"${GHOST_USER}" "$GHOST_CONTENT"     &&\
     \
 # sanity check to ensure knex-migrator was installed
-    "${GHOST_INSTALL}/current/node_modules/knex-migrator/bin/knex-migrator" --version && \
+    "${GHOST_INSTALL}/current/node_modules/knex-migrator/bin/knex-migrator" --version &&\
 # sanity check to list all packages
     npm config list                                               ;
 
 # force install "sqlite3" manually since it's an optional dependency of "ghost"
 # (which means that if it fails to install, like on ARM/ppc64le/s390x, the failure will be silently ignored and thus turn into a runtime error instead)
 # see https://github.com/TryGhost/Ghost/pull/7677 for more details
-RUN set -eux                                                      && \
-    cd "${GHOST_INSTALL}/current"                                 && \
+RUN set -eux                                                      &&\
+    cd "${GHOST_INSTALL}/current"                                 &&\
 # scrape the expected version of sqlite3 directly from Ghost itself
-    sqlite3Version="$(node -p 'require("./package.json").optionalDependencies.sqlite3')" && \
-    \
-    if ! su-exec node yarn add \
-      "sqlite3@$sqlite3Version" --force; then                     \
+	sqlite3Version="$(node -p 'require("./package.json").optionalDependencies.sqlite3')" &&\
+  \
+  if ! su-exec node yarn add "sqlite3@$sqlite3Version" --force; then \
 # must be some non-amd64 architecture pre-built binaries aren't published for, so let's install some build deps and do-it-all-over-again
-      apk add --no-cache --virtual                                \
-        .build-deps                                               \
-        python                                                    \
-        make                                                      \
-        gcc                                                       \
-        g++                                                       \
-        libc-dev                                                  && \
-      \
-      su-exec node yarn add "sqlite3@$sqlite3Version"             \
-        --force --build-from-source                               && \
-      \
-      apk del --no-network .build-deps                            ; \
-    fi                                                            && \
-    su-exec node yarn cache clean                                 && \
-    su-exec node npm cache clean --force                          && \
-    npm cache clean --force                                       && \
-    rm -rv /tmp/yarn* /tmp/v8*                                    ;
+		apk add --no-cache --virtual .build-deps g++                \
+      gcc libc-dev make python3 vips-dev                        &&\
+		npm_config_python='python3' su-exec node                    \
+      yarn add "sqlite3@$sqlite3Version" --force                \
+      --build-from-source && apk del --no-network .build-deps   ; \
+	fi &&\
+  \
+  su-exec node yarn cache clean                                 &&\
+  su-exec node npm cache clean --force                          &&\
+  npm cache clean --force                                       &&\
+  rm -rv /tmp/yarn* /tmp/v8*                                    ;
 
 # ----------------------------------------------
 # 7) LAYER final

@@ -94,6 +94,12 @@ for version in "${versions[@]}"; do
 		variantParent="$(awk 'toupper($1) == "FROM" { print $2 }' "$version/$variant/Dockerfile")"
 		variantArches="${parentRepoToArches[$variantParent]}"
 
+		if [ "$variant" = 'alpine' ]; then
+			# ERROR: unsatisfiable constraints:
+			#   vips-dev (missing):
+			variantArches="$(sed -e 's/ ppc64le / /g' -e 's/ s390x / /g' <<<" $variantArches ")"
+		fi
+
 		echo
 		cat <<-EOE
 			Tags: $(join ', ' "${variantAliases[@]}")

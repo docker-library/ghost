@@ -6,8 +6,8 @@
 ###################################
 
 ARG APP_NAME="ghostfire"
-ARG VERSION="3.38.0"
-ARG RELEASE="3.38.0"
+ARG VERSION="3.38.3"
+ARG RELEASE="3.38.3"
 ARG GITHUB_USER="firepress-org"
 
 ###################################
@@ -102,7 +102,7 @@ RUN set -eux && apk add --no-cache \
       bash="5.0.17-r0" \
       curl="7.69.1-r1" \
       tini="0.19.0-r0" \
-      tzdata="2020c-r0" &&\
+      tzdata="2020c-r1" &&\
     cp /usr/share/zoneinfo/America/New_York /etc/localtime        &&\
     echo "America/New_York" > /etc/timezone                       &&\
     apk del tzdata                                                &&\

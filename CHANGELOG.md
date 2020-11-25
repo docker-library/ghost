@@ -12,6 +12,29 @@ Based on this [template](https://gist.github.com/pascalandy/af709db02d3fe132a3e6
 
 # Releases
 
+## 3.38.3 (2020-11-25)
+### ⚡️ Major
+- Using node 14.15.0 (instead of Node 12)
+
+### ⚡️ Updates
+- [762348a](https://github.com/firepress-org/ghostfire/commit/762348a) Update ghostfire to version 3.38.3 /Dockerfile
+- [2517afe](https://github.com/firepress-org/ghostfire/commit/2517afe) update tzdata 2020c-r1
+- [89023c8](https://github.com/firepress-org/ghostfire/commit/89023c8) Update ghostfire to version 3.38.2 /Dockerfile
+- [038d108](https://github.com/firepress-org/ghostfire/commit/038d108) Update ghostfire to version 3.38.1 /Dockerfile
+- [ea33109](https://github.com/firepress-org/ghostfire/commit/ea33109) Update ghostfire to version 3.38.0 /Dockerfile
+- [d2325b4](https://github.com/firepress-org/ghostfire/commit/d2325b4) Update to Ghost cli 1.15.2, node 14.15.0 / Sort deps, add vips and npm_config_python variable for sqlite3
+- [d33fbd3](https://github.com/firepress-org/ghostfire/commit/d33fbd3) support node14 + GHOST_CLI=1.15.1
+- [a3d18e6](https://github.com/firepress-org/ghostfire/commit/a3d18e6) Update ghostfire to version 3.37.1 /Dockerfile
+- [bee6180](https://github.com/firepress-org/ghostfire/commit/bee6180) Update from original Dockerfile
+- [a077a76](https://github.com/firepress-org/ghostfire/commit/a077a76) cleaning the BACKLOG
+- [955e7b4](https://github.com/firepress-org/ghostfire/commit/955e7b4) CI / Bypass Scan image /w Trivy
+- [be7e5ee](https://github.com/firepress-org/ghostfire/commit/be7e5ee) CI update step / Scan Git Repo /w Trivy
+- [6096b66](https://github.com/firepress-org/ghostfire/commit/6096b66) Delete older yml file / travis, FUNDING, ci requirements
+- [6f2c193](https://github.com/firepress-org/ghostfire/commit/6f2c193) remove volume docker.sock as we use the public docker image
+
+### 🔍 Compare
+- ... with previous release: [3.36.0 <> 3.38.3](https://github.com/firepress-org/ghostfire/compare/3.36.0...3.38.3)
+
 ## 3.36.0 (2020-10-21)
 ### ⚡️ Updates
 - [044a37a](https://github.com/firepress-org/ghostfire/commit/044a37a) CI / Init dependabot.yml

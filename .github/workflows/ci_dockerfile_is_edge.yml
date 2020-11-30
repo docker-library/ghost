@@ -119,9 +119,15 @@ jobs:
           docker info
           uname -a
 
+        name: Login to DockerHub
+        #echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login --username $(cat DOCKERHUB_USER) --password-stdin
+        uses: docker/login-action@v1
+        with:
+          username: $(cat DOCKERHUB_USER)
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
       - name: Publish to Dockerhub
         run: |
-          echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login --username $(cat DOCKERHUB_USER) --password-stdin
           docker push $(cat TAG_TYPE_VERSION_HASH_HOUR)
           docker push $(cat TAG_TYPE)
           docker push $(cat TAG_TYPE_VERSION)

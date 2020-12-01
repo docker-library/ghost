@@ -120,23 +120,22 @@ jobs:
           uname -a
 
       - name: Login to DockerHub
-        #echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login --username $(cat DOCKERHUB_USER) --password-stdin
-        uses: docker/login-action@v1
-        with:
-          username: $(cat DOCKERHUB_USER)
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+        run: |
+          echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login --username $(cat DOCKERHUB_USER) --password-stdin
 
-      - name: Publish to Dockerhub
+      - name: Publish image to Dockerhub
         run: |
           docker push $(cat TAG_TYPE_VERSION_HASH_HOUR)
           docker push $(cat TAG_TYPE)
           docker push $(cat TAG_TYPE_VERSION)
           docker push $(cat TAG_TYPE_VERSION_HASH)
 
-      - name: Publish to GPR
-        if: always()
+      - name: Login to GitHub Packages registry
         run: |
           echo ${{ secrets.TOKEN_GPR }} | docker login docker.pkg.github.com --username $(cat GITHUB_ORG) --password-stdin
+
+      - name: Publish image to GitHub Packages registry
+        run: |
           docker push $(cat TAG_TYPE_VERSION_HASH_HOUR_GPR)
           docker push $(cat TAG_TYPE_GPR)
           docker push $(cat TAG_TYPE_VERSION_GPR)

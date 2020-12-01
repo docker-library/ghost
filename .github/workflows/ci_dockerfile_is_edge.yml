@@ -177,4 +177,4 @@ jobs:
                 noti -k -m "$NOTI_MESSAGE" '
 
   #Job3:
-  # triggered only for branch "stable"
+  # triggered only for master branch

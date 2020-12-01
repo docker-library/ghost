@@ -119,7 +119,7 @@ jobs:
           docker info
           uname -a
 
-        name: Login to DockerHub
+      - name: Login to DockerHub
         #echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login --username $(cat DOCKERHUB_USER) --password-stdin
         uses: docker/login-action@v1
         with:

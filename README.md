@@ -25,7 +25,7 @@
 
 **Docker image** — This is a Docker image to run Ghost V3 in a container 🐳. Fully compatible with a simple `docker run`, Docker Swarm or Kubernetes. Ensure you have Docker installed on your machine.
 
-**What is Ghost?** — Ghost is an open source software that lets you create your website with a blog. See the [FAQ section](https://play-with-ghost.com/ghost-themes/faq/#what-is-ghost) for more details. 
+**What is Ghost?** — Ghost is an open source software that lets you create your website with a blog. See the [FAQ section](https://play-with-ghost.com/ghost-themes/faq/#what-is-ghost) for more details.
 
 <br>
 

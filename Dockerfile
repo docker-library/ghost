@@ -29,7 +29,7 @@ ARG OS="alpine"
 ARG NODE_VERSION="14.15.0-alpine3.12"
   # node version issue: https://github.com/docker-library/ghost/issues/208
   # https://hub.docker.com/_/node/
-ARG GHOST_CLI_VERSION="1.15.2"
+ARG GHOST_CLI_VERSION="1.15.3"
 ARG ALPINE_VERSION="3.12"
 ARG USER="node"
 ARG GHOST_USER="node"

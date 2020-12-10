@@ -12,6 +12,24 @@ Based on this [template](https://gist.github.com/pascalandy/af709db02d3fe132a3e6
 
 # Releases
 
+## 3.39.3 (2020-12-10)
+### ⚡️ Updates
+- [44917a7](https://github.com/firepress-org/ghostfire/commit/44917a7) update to curl 7.69.1-r2
+- [9e07134](https://github.com/firepress-org/ghostfire/commit/9e07134) update to GHOST_CLI 1.15.3
+- [c07dad9](https://github.com/firepress-org/ghostfire/commit/c07dad9) Update ghostfire to version 3.39.3 /Dockerfile
+- [5e3599c](https://github.com/firepress-org/ghostfire/commit/5e3599c) empty commit / force CI
+- [f829765](https://github.com/firepress-org/ghostfire/commit/f829765) Update ghostfire to version 3.39.2 /Dockerfile
+- [e09e4ac](https://github.com/firepress-org/ghostfire/commit/e09e4ac) Update ghostfire to version 3.39.0 /Dockerfile
+- [4106476](https://github.com/firepress-org/ghostfire/commit/4106476) Improve README using Ghost V3
+- [613c210](https://github.com/firepress-org/ghostfire/commit/613c210) Github actions / best practices /d
+- [26402bb](https://github.com/firepress-org/ghostfire/commit/26402bb) Github actions / best practices /c
+- [06b1888](https://github.com/firepress-org/ghostfire/commit/06b1888) Github acitons / best practices /b
+- [40805f9](https://github.com/firepress-org/ghostfire/commit/40805f9) Github acitons / best practices /a
+- [8f7148b](https://github.com/firepress-org/ghostfire/commit/8f7148b) update Dockerfile_alpine_optimized
+
+### 🔍 Compare
+- ... with previous release: [3.38.3 <> 3.39.3](https://github.com/firepress-org/ghostfire/compare/3.38.3...3.39.3)
+
 ## 3.38.3 (2020-11-25)
 ### ⚡️ Major
 - Using node 14.15.0 (instead of Node 12)

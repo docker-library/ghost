@@ -6,8 +6,8 @@
 ###################################
 
 ARG APP_NAME="ghostfire"
-ARG VERSION="3.39.3"
-ARG RELEASE="3.39.3"
+ARG VERSION="3.40.1"
+ARG RELEASE="3.40.1"
 ARG GITHUB_USER="firepress-org"
 
 ###################################
@@ -26,7 +26,7 @@ ARG GIT_REPO_SOURCE="https://github.com/TryGhost/Ghost"
 # Start your Dockerfile from here
 ###################################
 ARG OS="alpine"
-ARG NODE_VERSION="14.15.0-alpine3.12"
+ARG NODE_VERSION="14.15-alpine3.12"
   # node version issue: https://github.com/docker-library/ghost/issues/208
   # https://hub.docker.com/_/node/
 ARG GHOST_CLI_VERSION="1.15.3"
@@ -99,8 +99,8 @@ FROM node-core AS ghost-base
 RUN set -eux && apk add --no-cache \
       # grab su-exec for easy step-down from root
       'su-exec>=0.2-r1' \
-      bash="5.0.17-r0" \
-      curl="7.69.1-r2" \
+      bash \
+      curl \
       tini="0.19.0-r0" \
       tzdata="2020c-r1" &&\
     cp /usr/share/zoneinfo/America/New_York /etc/localtime        &&\

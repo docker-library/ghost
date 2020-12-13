@@ -12,6 +12,15 @@ Based on this [template](https://gist.github.com/pascalandy/af709db02d3fe132a3e6
 
 # Releases
 
+## 3.40.1 (2020-12-13)
+### ⚡️ Updates
+- [6352c9c](https://github.com/firepress-org/ghostfire/commit/6352c9c) Update ghostfire to version 3.40.1 /Dockerfile
+- curl, bash is not pointing to specific version anymore
+- node docker image is now 14.15 (not 14.15.x)
+
+### 🔍 Compare
+- ... with previous release: [3.39.3 <> 3.40.1](https://github.com/firepress-org/ghostfire/compare/3.39.3...3.40.1)
+
 ## 3.39.3 (2020-12-10)
 ### ⚡️ Updates
 - [44917a7](https://github.com/firepress-org/ghostfire/commit/44917a7) update to curl 7.69.1-r2

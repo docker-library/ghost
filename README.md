@@ -12,7 +12,7 @@
     <a href="https://github.com/firepress-org/">GitHub</a> |
     <a href="https://twitter.com/askpascalandy">Twitter</a>
     <br /> <br />
-		[![Actions Status](https://github.com/firepress-org/ghostfire/workflows/ci_dockerfile_is_master/badge.svg)](https://github.com/firepress-org/ghostfire/actions)
+		![build](https://github.com/firepress-org/ghostfire/workflows/build/badge.svg?branch=master)
 </p>
 
 &nbsp;

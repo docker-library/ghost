@@ -1,0 +1,9 @@
+# Since Dependabot has native GitHub Actions support, to enable it on your GitHub repo all you need to do is add the .github/dependabot.yml file:
+# https://docs.github.com/en/free-pro-team@latest/github/administering-a-repository/keeping-your-actions-up-to-date-with-dependabot
+
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"

@@ -41,20 +41,18 @@ ARG SOURCE_COMMIT=not-set
 
 
 # ----------------------------------------------
-# 1) LAYER to manage base image(s) versioning
-#   credit to Tõnis Tiigi / https://bit.ly/2RoCmvG
+# 1) LAYER to manage base image(s) versioning. Credit to Tõnis Tiigi / https://bit.ly/2RoCmvG
 # ----------------------------------------------
 FROM alpine:${ALPINE_VERSION} AS myalpine
 FROM node:${NODE_VERSION} AS mynode
 
 # ----------------------------------------------
-# 2) LAYER app-version-debug
+# 2) LAYER version-debug
 #   If a package crash on further layers, we don't know
 #   which one did crash. This layer reveal package(s)
 #   versions and keep a trace in the CI's logs.
 # ----------------------------------------------
-FROM myalpine AS app-version-debug
-
+FROM myalpine AS version-debug
 # grab su-exec for easy step-down from root
 # add "bash" for "[["
 RUN set -eux && apk update && apk add --no-cache \
@@ -66,36 +64,38 @@ RUN set -eux && apk update && apk add --no-cache \
 #   before node=39.8MO / after node=14.2MO
 #   We copy from node image as it's using alpine.
 #   It creates delta between app versions such upx.
+#   Since 2020-12-29, we bypass UPX because it crash in some multi-arch builds using Docker Buildx
 # ----------------------------------------------
 FROM myalpine AS node-compress
-COPY --from=mynode /usr/local/bin/node /usr/local/bin/node
-RUN set -eux                                                      &&\
-    apk --update add --no-cache                                   \
-      upx="3.96-r0"                                               &&\
-    upx /usr/local/bin/node                                       &&\
-    upx -t /usr/local/bin/node                                    ;
+#COPY --from=mynode /usr/local/bin/node /usr/local/bin/node
+#RUN set -eux                                                      &&\
+#    apk --update add --no-cache                                   \
+#      upx="3.96-r0"                                               &&\
+#    upx /usr/local/bin/node                                       &&\
+#    upx -t /usr/local/bin/node                                    ;
 
 # ----------------------------------------------
 # 4) LAYER node-core
 # Build our node-core layer (no extra stuff like yarn, npm, npx, etc.)
+# credit to https://github.com/mhart/alpine-node/blob/master/slim/Dockerfile
 # ----------------------------------------------
 FROM myalpine AS node-core
 ARG GHOST_USER
 ENV GHOST_USER="${GHOST_USER}"
 
-# set up node user and group
-RUN set -eux                                                      &&\
+RUN set -eux && \
+    # set up node user and group
     addgroup -g 1000 "${GHOST_USER}"                              &&\
     adduser -u 1000 -G "${GHOST_USER}" -s /bin/sh -D node         ;
 
-COPY --from=node-compress --chown=node:node /usr/local/bin/node /usr/bin/
+COPY --from=mynode --chown=node:node /usr/local/bin/node /usr/bin/
 COPY --from=mynode --chown=node:node /usr/lib/libgcc* /usr/lib/libstdc* /usr/lib/
-# credit to https://github.com/mhart/alpine-node/blob/master/slim/Dockerfile
 
 # ----------------------------------------------
 # 5) LAYER ghost-base
 # ----------------------------------------------
 FROM node-core AS ghost-base
+
 RUN set -eux && apk add --no-cache \
       # grab su-exec for easy step-down from root
       'su-exec>=0.2-r1' \
@@ -103,6 +103,7 @@ RUN set -eux && apk add --no-cache \
       curl \
       tini="0.19.0-r0" \
       tzdata="2020c-r1" &&\
+    # set up timezone
     cp /usr/share/zoneinfo/America/New_York /etc/localtime        &&\
     echo "America/New_York" > /etc/timezone                       &&\
     apk del tzdata                                                &&\

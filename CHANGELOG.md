@@ -14,6 +14,14 @@ Based on this [template](https://gist.github.com/pascalandy/af709db02d3fe132a3e6
 
 ## 3.40.2 (2020-12-30)
 ### ⚡️ Updates
+- [f72f4bc](https://github.com/firepress-org/ghostfire/commit/f72f4bc) CI / move noti to post_build
+- [f4520a4](https://github.com/firepress-org/ghostfire/commit/f4520a4) CI / Fix logic for post_build_cache
+- [3b92938](https://github.com/firepress-org/ghostfire/commit/3b92938) CI / determine on which push conditions
+- [fbb9cdc](https://github.com/firepress-org/ghostfire/commit/fbb9cdc) Fix missiong env.VERSION_HASH_ONLY on master branch
+- [26fc1a9](https://github.com/firepress-org/ghostfire/commit/26fc1a9) CI / add job `build_cache` to make faster builds on `master branch`
+- [0f07c0b](https://github.com/firepress-org/ghostfire/commit/0f07c0b) Fix typo
+- [3df9d00](https://github.com/firepress-org/ghostfire/commit/3df9d00) remove older Dockerfile
+- [d3ce4d8](https://github.com/firepress-org/ghostfire/commit/d3ce4d8) update template / config.production.json
 - [666dd91](https://github.com/firepress-org/ghostfire/commit/666dd91) MJR refactoring on CI (squash)
 - Major CI refactoring / now using a single build.yml file
 - Dockerfile: Bypass UPX / Minor syntax optimizations

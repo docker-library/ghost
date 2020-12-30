@@ -14,6 +14,9 @@ Based on this [template](https://gist.github.com/pascalandy/af709db02d3fe132a3e6
 
 ## 3.40.2 (2020-12-30)
 ### ⚡️ Updates
+- [05ff682](https://github.com/firepress-org/ghostfire/commit/05ff682) CI / Fix tag version logic
+- [c0356e8](https://github.com/firepress-org/ghostfire/commit/c0356e8) CI / now pushing a tag VERSION_CI | various comments updates
+- [55aa874](https://github.com/firepress-org/ghostfire/commit/55aa874) CHANGELOG updates
 - [9f109e0](https://github.com/firepress-org/ghostfire/commit/9f109e0) Update tests scripts from source without UTC test
 - [a9925f3](https://github.com/firepress-org/ghostfire/commit/a9925f3) config.production.json / level is set to error
 - [b9104a5](https://github.com/firepress-org/ghostfire/commit/b9104a5) Remove post_build_cache jobs as the cache hit the limit

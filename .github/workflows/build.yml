@@ -171,18 +171,6 @@ jobs:
             ghcr.io/${{ env.GPR_PREFIX }}:${{ env.BRANCH_NAME }},ghcr.io/${{ env.GPR_PREFIX }}:${{ env.VERSION }},ghcr.io/${{ env.GPR_PREFIX }}:${{ env.VERSION_HASH_ONLY }},ghcr.io/${{ env.GPR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
-      -
-        name: Notify on Slack
-        run: |
-          docker run --rm \
-            --name noti \
-            -e NOTI_MESSAGE='${{ env._NOTI_MESSAGE }}' \
-            -e SLACK_CHANNEL="github-actions" \
-            -e SLACK_TOKEN_CRON="${{ secrets.TOKEN_SLACK }}" \
-            ${{ env.IMG_NOTI }} sh -c \
-              ' NOTI_SLACK_TOKEN="$SLACK_TOKEN_CRON" \
-                NOTI_SLACK_CHANNEL="$SLACK_CHANNEL" \
-                noti -k -m "$NOTI_MESSAGE" '
       - 
         name: logs | multi-platform images, docker inspect, history, version, info, uname
         run: |
@@ -250,6 +238,18 @@ jobs:
           echo "${{ env.APP_NAME }} < APP_NAME"
           echo "${{ env.GITHUB_ORG }} < GITHUB_ORG"
           echo "${{ env.GITHUB_REGISTRY }} < GITHUB_REGISTRY"
+      -
+        name: Notify on Slack
+        run: |
+          docker run --rm \
+            --name noti \
+            -e NOTI_MESSAGE='${{ env._NOTI_MESSAGE }}' \
+            -e SLACK_CHANNEL="github-actions" \
+            -e SLACK_TOKEN_CRON="${{ secrets.TOKEN_SLACK }}" \
+            ${{ env.IMG_NOTI }} sh -c \
+              ' NOTI_SLACK_TOKEN="$SLACK_TOKEN_CRON" \
+                NOTI_SLACK_CHANNEL="$SLACK_CHANNEL" \
+                noti -k -m "$NOTI_MESSAGE" '
       -
         name: Push README to Dockerhub
         run: |
@@ -374,7 +374,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
       -
-        name: buildx and push all tags | branch master with multi-platform
+        name: buildx (no push) | branch master with multi-platform
         if: github.ref == 'refs/heads/edge'
         uses: docker/build-push-action@v2
         with:

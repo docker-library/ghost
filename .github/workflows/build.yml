@@ -139,7 +139,7 @@ jobs:
           cp ./test/config.sh official-images/test/config.sh
           official-images/test/run.sh ${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
       -
-        name: buildx and push all tags | branch edge on linux/amd64
+        name: buildx and push all tags | branch edge (limited to linux/amd64)
         if: github.ref == 'refs/heads/edge'
         uses: docker/build-push-action@v2
         with:
@@ -153,7 +153,7 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
       -
-        name: buildx and push all tags | branch master with multi-platform
+        name: buildx and push all tags | branch master (using multi-platform)
         if: github.ref == 'refs/heads/master'
         uses: docker/build-push-action@v2
         with:
@@ -163,8 +163,8 @@ jobs:
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           push: true
           tags: |
-            ${{ env.DKR_PREFIX }}:${{ env.BRANCH_NAME }},${{ env.DKR_PREFIX }}:${{ env.VERSION }},${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
-            ghcr.io/${{ env.GPR_PREFIX }}:${{ env.BRANCH_NAME }},ghcr.io/${{ env.GPR_PREFIX }}:${{ env.VERSION }},ghcr.io/${{ env.GPR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
+            ${{ env.DKR_PREFIX }}:${{ env.BRANCH_NAME }},${{ env.DKR_PREFIX }}:${{ env.VERSION }},${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_ONLY }},${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
+            ghcr.io/${{ env.GPR_PREFIX }}:${{ env.BRANCH_NAME }},ghcr.io/${{ env.GPR_PREFIX }}:${{ env.VERSION }},ghcr.io/${{ env.GPR_PREFIX }}:${{ env.VERSION_HASH_ONLY }},ghcr.io/${{ env.GPR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
       -

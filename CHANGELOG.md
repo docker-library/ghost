@@ -14,7 +14,7 @@ Based on this [template](https://gist.github.com/pascalandy/af709db02d3fe132a3e6
 
 ## 3.40.2 (2020-12-30)
 ### ⚡️ Updates
-- [666dd91](https://github.com/firepress-org/ghostfire/commit/666dd91) 
+- [666dd91](https://github.com/firepress-org/ghostfire/commit/666dd91) MJR refactoring on CI (squash)
 - Major CI refactoring / now using a single build.yml file
 - Dockerfile: Bypass UPX / Minor syntax optimizations
 - Init dependabot.yml

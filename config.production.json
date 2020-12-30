@@ -24,7 +24,7 @@
   },
   "logging": {
       "path": "/var/lib/ghost/content/logs",
-      "level": "info",
+      "level": "error",
       "rotation": {
           "enabled": true,
           "count": 7,

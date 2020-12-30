@@ -299,7 +299,7 @@ jobs:
         # uses: brpaz/hadolint-action@master
         # https://github.com/brpaz/hadolint-action/issues/17
 
-  build_cache:
+  post_build_cache:
     needs: build
     runs-on: ubuntu-20.04
     steps:
@@ -375,7 +375,7 @@ jobs:
             ${{ runner.os }}-buildx-
       -
         name: buildx and push all tags | branch master with multi-platform
-        if: github.ref == 'refs/heads/master'
+        if: github.ref == 'refs/heads/edge'
         uses: docker/build-push-action@v2
         with:
           context: .

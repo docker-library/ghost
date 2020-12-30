@@ -138,8 +138,9 @@ jobs:
           done;
           curl http://localhost:2368 | grep "The professional publishing platform"
           #
-          # override config.sh. Why: 1) UTC timezone 2) ghost-basic is configured to check the commit between the image of the official docker image of Ghost.
           git clone --depth 1 https://github.com/docker-library/official-images.git official-images
+          #
+          # override config.sh Why: 1) UTC timezone 2) ghost-basic is configured to check the commit between the image of the official docker image of Ghost.
           cp ./test/config.sh official-images/test/config.sh
           official-images/test/run.sh ${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
       -

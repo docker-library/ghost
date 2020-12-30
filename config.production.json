@@ -11,32 +11,30 @@
       }
   },
   "mail": {
-      "from": "'Acme Team' example@acmeteam.com",
+      "from": "'Our Company Team' <thisisus@companyteam.com>",
       "transport": "SMTP",
       "options": {
           "service": "Mailgun",
           "host": "smtp.mailgun.org",
-          "port": 465,
-          "secureConnection": true,
           "auth": {
-              "user": "example@acmeteam.com",
-              "pass": "98rstns9r8tnchangeme8t1ns9r8tn1"
+              "user": "postmaster@thisisus.com",
+              "pass": "6546545466254456654-4566544-654456654"
           }
       }
   },
   "logging": {
       "path": "/var/lib/ghost/content/logs",
-      "level": "error",
+      "level": "info",
       "rotation": {
           "enabled": true,
-          "count": 15,
+          "count": 7,
           "period": "5d"
       },
       "transports": ["stdout", "file"]
   },
   "caching": {
       "frontend": {
-          "maxAge": 2
+          "maxAge": 1
       }
   },
   "process": "local",

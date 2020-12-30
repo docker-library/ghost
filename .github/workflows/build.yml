@@ -63,17 +63,20 @@ jobs:
       -
         name: Set variables | dynamically part#2
         run: |
-          echo "DKR_PREFIX=${{ env.DOCKERHUB_USER }}/${{ env.APP_NAME }}" >> $GITHUB_ENV
-          echo "GPR_PREFIX=${{ env.GITHUB_ORG }}/${{ env.GITHUB_REGISTRY }}/${{ env.APP_NAME }}" >> $GITHUB_ENV
           echo "VERSION_CI=${{ env.BRANCH_NAME }}_${{ env.VERSION }}_ci_${{ env.SHORT_HASH_COMMIT }}" >> $GITHUB_ENV
+          echo "VERSION_BRANCH=${{ env.BRANCH_NAME }}_${{ env.VERSION }}" >> $GITHUB_ENV
           echo "VERSION_HASH_ONLY=${{ env.BRANCH_NAME }}_${{ env.VERSION }}_${{ env.SHORT_HASH_COMMIT }}" >> $GITHUB_ENV
           echo "VERSION_HASH_DATE=${{ env.BRANCH_NAME }}_${{ env.VERSION }}_${{ env.SHORT_HASH_COMMIT }}_${{ env.DATE }}" >> $GITHUB_ENV
+          echo "DKR_PREFIX=${{ env.DOCKERHUB_USER }}/${{ env.APP_NAME }}" >> $GITHUB_ENV
+          echo "GPR_PREFIX=${{ env.GITHUB_ORG }}/${{ env.GITHUB_REGISTRY }}/${{ env.APP_NAME }}" >> $GITHUB_ENV
           echo "_NOTI_MESSAGE=${{ env.APP_NAME }}:${{ env.BRANCH_NAME }}_${{ env.VERSION }}_${{ env.SHORT_HASH_COMMIT }}" >> $GITHUB_ENV
       - 
         name: Show variables
         run: |
           echo "${{ env.VERSION_HASH_DATE }} < VERSION_HASH_DATE"
           echo "${{ env.VERSION_HASH_ONLY }} < VERSION_HASH_ONLY"
+          echo "${{ env.VERSION_BRANCH }} < VERSION_BRANCH"
+          echo "${{ env.VERSION_CI }} < VERSION_CI"
           echo "${{ env.VERSION }} < VERSION"
           echo "${{ env.BRANCH_NAME }} < BRANCH_NAME"
           echo "${{ env._NOTI_MESSAGE }} < _NOTI_MESSAGE"
@@ -154,8 +157,14 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: |
-            ${{ env.DKR_PREFIX }}:${{ env.BRANCH_NAME }},${{ env.DKR_PREFIX }}:${{ env.VERSION }},${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_ONLY }},${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
-            ghcr.io/${{ env.GPR_PREFIX }}:${{ env.BRANCH_NAME }},ghcr.io/${{ env.GPR_PREFIX }}:${{ env.VERSION }},ghcr.io/${{ env.GPR_PREFIX }}:${{ env.VERSION_HASH_ONLY }},ghcr.io/${{ env.GPR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
+            ${{ env.DKR_PREFIX }}:${{ env.BRANCH_NAME }}
+            ${{ env.DKR_PREFIX }}:${{ env.VERSION_BRANCH }}
+            ${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_ONLY }}
+            ${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
+            ghcr.io/${{ env.GPR_PREFIX }}:${{ env.BRANCH_NAME }}
+            ghcr.io/${{ env.GPR_PREFIX }}:${{ env.VERSION_BRANCH }}
+            ghcr.io/${{ env.GPR_PREFIX }}:${{ env.VERSION_HASH_ONLY }}
+            ghcr.io/${{ env.GPR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
       -
@@ -169,16 +178,22 @@ jobs:
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           push: true
           tags: |
-            ${{ env.DKR_PREFIX }}:${{ env.BRANCH_NAME }},${{ env.DKR_PREFIX }}:${{ env.VERSION }},${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_ONLY }},${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
-            ghcr.io/${{ env.GPR_PREFIX }}:${{ env.BRANCH_NAME }},ghcr.io/${{ env.GPR_PREFIX }}:${{ env.VERSION }},ghcr.io/${{ env.GPR_PREFIX }}:${{ env.VERSION_HASH_ONLY }},ghcr.io/${{ env.GPR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
+            ${{ env.DKR_PREFIX }}:${{ env.BRANCH_NAME }}
+            ${{ env.DKR_PREFIX }}:${{ env.VERSION_BRANCH }}
+            ${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_ONLY }}
+            ${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
+            ghcr.io/${{ env.GPR_PREFIX }}:${{ env.BRANCH_NAME }}
+            ghcr.io/${{ env.GPR_PREFIX }}:${{ env.VERSION_BRANCH }}
+            ghcr.io/${{ env.GPR_PREFIX }}:${{ env.VERSION_HASH_ONLY }}
+            ghcr.io/${{ env.GPR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
       - 
         name: logs | multi-platform images, docker inspect, history, version, info, uname
         run: |
-          docker run --rm mplatform/mquery ${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
-          docker inspect ${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
-          docker history ${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_DATE }} --no-trunc
+          docker run --rm mplatform/mquery ${{ env.DKR_PREFIX }}:${{ env.VERSION_CI }}
+          docker inspect ${{ env.DKR_PREFIX }}:${{ env.VERSION_CI }}
+          docker history ${{ env.DKR_PREFIX }}:${{ env.VERSION_CI }} --no-trunc
           docker version
           docker info
           uname -a
@@ -219,16 +234,20 @@ jobs:
       -
         name: Set variables | dynamically part#2
         run: |
-          echo "DKR_PREFIX=${{ env.DOCKERHUB_USER }}/${{ env.APP_NAME }}" >> $GITHUB_ENV
-          echo "GPR_PREFIX=${{ env.GITHUB_ORG }}/${{ env.GITHUB_REGISTRY }}/${{ env.APP_NAME }}" >> $GITHUB_ENV
+          echo "VERSION_CI=${{ env.BRANCH_NAME }}_${{ env.VERSION }}_ci_${{ env.SHORT_HASH_COMMIT }}" >> $GITHUB_ENV
+          echo "VERSION_BRANCH=${{ env.BRANCH_NAME }}_${{ env.VERSION }}" >> $GITHUB_ENV
           echo "VERSION_HASH_ONLY=${{ env.BRANCH_NAME }}_${{ env.VERSION }}_${{ env.SHORT_HASH_COMMIT }}" >> $GITHUB_ENV
           echo "VERSION_HASH_DATE=${{ env.BRANCH_NAME }}_${{ env.VERSION }}_${{ env.SHORT_HASH_COMMIT }}_${{ env.DATE }}" >> $GITHUB_ENV
+          echo "DKR_PREFIX=${{ env.DOCKERHUB_USER }}/${{ env.APP_NAME }}" >> $GITHUB_ENV
+          echo "GPR_PREFIX=${{ env.GITHUB_ORG }}/${{ env.GITHUB_REGISTRY }}/${{ env.APP_NAME }}" >> $GITHUB_ENV
           echo "_NOTI_MESSAGE=${{ env.APP_NAME }}:${{ env.BRANCH_NAME }}_${{ env.VERSION }}_${{ env.SHORT_HASH_COMMIT }}" >> $GITHUB_ENV
       - 
         name: Show variables
         run: |
           echo "${{ env.VERSION_HASH_DATE }} < VERSION_HASH_DATE"
           echo "${{ env.VERSION_HASH_ONLY }} < VERSION_HASH_ONLY"
+          echo "${{ env.VERSION_BRANCH }} < VERSION_BRANCH"
+          echo "${{ env.VERSION_CI }} < VERSION_CI"
           echo "${{ env.VERSION }} < VERSION"
           echo "${{ env.BRANCH_NAME }} < BRANCH_NAME"
           echo "${{ env._NOTI_MESSAGE }} < _NOTI_MESSAGE"

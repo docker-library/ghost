@@ -65,6 +65,7 @@ jobs:
         run: |
           echo "DKR_PREFIX=${{ env.DOCKERHUB_USER }}/${{ env.APP_NAME }}" >> $GITHUB_ENV
           echo "GPR_PREFIX=${{ env.GITHUB_ORG }}/${{ env.GITHUB_REGISTRY }}/${{ env.APP_NAME }}" >> $GITHUB_ENV
+          echo "VERSION_CI=${{ env.BRANCH_NAME }}_${{ env.VERSION }}_ci_${{ env.SHORT_HASH_COMMIT }}" >> $GITHUB_ENV
           echo "VERSION_HASH_ONLY=${{ env.BRANCH_NAME }}_${{ env.VERSION }}_${{ env.SHORT_HASH_COMMIT }}" >> $GITHUB_ENV
           echo "VERSION_HASH_DATE=${{ env.BRANCH_NAME }}_${{ env.VERSION }}_${{ env.SHORT_HASH_COMMIT }}_${{ env.DATE }}" >> $GITHUB_ENV
           echo "_NOTI_MESSAGE=${{ env.APP_NAME }}:${{ env.BRANCH_NAME }}_${{ env.VERSION }}_${{ env.SHORT_HASH_COMMIT }}" >> $GITHUB_ENV
@@ -125,13 +126,13 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: |
-            ${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
+            ${{ env.DKR_PREFIX }}:${{ env.VERSION_CI }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
       - 
         name: Unit test Ghost
         run: |
-          docker run -d --name blogtest -p 2368:2368 -e WEB_URL=http://localhost:2368 -e NODE_ENV=production ${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
+          docker run -d --name blogtest -p 2368:2368 -e WEB_URL=http://localhost:2368 -e NODE_ENV=production ${{ env.DKR_PREFIX }}:${{ env.VERSION_CI }}
           until $(curl --output /dev/null --silent --head --fail http://localhost:2368); do
             echo "waiting for ghostblog container...";
             sleep 4;
@@ -140,11 +141,11 @@ jobs:
           #
           git clone --depth 1 https://github.com/docker-library/official-images.git official-images
           #
-          # override config.sh Why: 1) UTC timezone 2) ghost-basic is configured to check the commit between the image of the official docker image of Ghost.
+          # override config.sh We must bypass UTC timezone test
           cp ./test/config.sh official-images/test/config.sh
-          official-images/test/run.sh ${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
+          official-images/test/run.sh ${{ env.DKR_PREFIX }}:${{ env.VERSION_CI }}
       -
-        name: buildx and push all tags | branch edge (limited to linux/amd64)
+        name: EDGE | buildx and push all tags (limited to linux/amd64)
         if: github.ref == 'refs/heads/edge'
         uses: docker/build-push-action@v2
         with:
@@ -158,7 +159,7 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
       -
-        name: buildx and push all tags | branch master (using multi-platform)
+        name: MASTER | buildx and push all tags (using multi-platform)
         if: github.ref == 'refs/heads/master'
         uses: docker/build-push-action@v2
         with:
@@ -240,7 +241,7 @@ jobs:
           echo "${{ env.GITHUB_ORG }} < GITHUB_ORG"
           echo "${{ env.GITHUB_REGISTRY }} < GITHUB_REGISTRY"
       -
-        name: Notify on Slack
+        name: Send a slack notification
         run: |
           docker run --rm \
             --name noti \
@@ -252,7 +253,7 @@ jobs:
                 NOTI_SLACK_CHANNEL="$SLACK_CHANNEL" \
                 noti -k -m "$NOTI_MESSAGE" '
       -
-        name: Push README to Dockerhub
+        name: Update README on Dockerhub
         run: |
           docker run --rm \
             -v $(pwd)/README.md:/data/README.md \
@@ -267,7 +268,7 @@ jobs:
           export DOCKLE_LATEST=$(curl --silent "https://api.github.com/repos/goodwithtech/dockle/releases/latest" | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
           docker run --rm goodwithtech/dockle:v${DOCKLE_LATEST} ${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_ONLY }}
       - 
-        name: security-audit Trivy on docker image
+        name: security-audit | Trivy on docker image
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: '${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_ONLY }}'
@@ -276,7 +277,7 @@ jobs:
           ignore-unfixed: true
           severity: 'LOW,MEDIUM,HIGH,CRITICAL'
       - 
-        name: security-audit Trivy on Git repo
+        name: security-audit | Trivy on Git repo
         run: |
           export VERSION_TRIVY=$(curl --silent "https://api.github.com/repos/aquasecurity/trivy/releases/latest" | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
           wget https://github.com/aquasecurity/trivy/releases/download/v${VERSION_TRIVY}/trivy_${VERSION_TRIVY}_Linux-64bit.tar.gz
@@ -289,16 +290,22 @@ jobs:
           image: "${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_ONLY }}"
           acs-report-enable: true
       - 
-        name: security-audit Anchore report
+        name: security-audit | Anchore report
         uses: github/codeql-action/upload-sarif@v1
         with:
           sarif_file: results.sarif
 
         # uses: actions/upload-artifact@master
+        # wip
         # https://github.com/justinribeiro/lighthouse-action/issues/8
 
         # uses: brpaz/hadolint-action@master
+        # wip
         # https://github.com/brpaz/hadolint-action/issues/17
 
+        # Send Github action logs to a PR or commits them
+        # I have no idea how to do this at the moment 2020-12-30_11h26
+
   # post_build_cache:
-  # Cache hit occurred on the primary key Linux-buildx-2f94a386b0106b66be4adacf39febfd8eac9dde5, not saving cache.
+  # The strategy to save build time on master branch does not work at this point.
+  # That's because cache hit occurred on the primary key Linux-buildx-2f94a386b0106b66be4adacf39febfd8eac9dde5, not saving cache.

@@ -12,6 +12,18 @@ Based on this [template](https://gist.github.com/pascalandy/af709db02d3fe132a3e6
 
 # Releases
 
+## 3.40.2 (2020-12-30)
+### ⚡️ Updates
+- [666dd91](https://github.com/firepress-org/ghostfire/commit/666dd91) 
+- Major CI refactoring / now using a single build.yml file
+- Dockerfile: Bypass UPX / Minor syntax optimizations
+- Init dependabot.yml
+- Add badge in README
+- [ecd5f94](https://github.com/firepress-org/ghostfire/commit/ecd5f94) Update ghostfire to version 3.40.2 /Dockerfile
+
+### 🔍 Compare
+- ... with previous release: [3.40.1 <> 3.40.2](https://github.com/firepress-org/ghostfire/compare/3.40.1...3.40.2)
+
 ## 3.40.1 (2020-12-13)
 ### ⚡️ Updates
 - [6352c9c](https://github.com/firepress-org/ghostfire/commit/6352c9c) Update ghostfire to version 3.40.1 /Dockerfile

@@ -271,16 +271,14 @@ jobs:
               ' NOTI_SLACK_TOKEN="$SLACK_TOKEN_CRON" \
                 NOTI_SLACK_CHANNEL="$SLACK_CHANNEL" \
                 noti -k -m "$NOTI_MESSAGE" '
-      -
+      - 
         name: Update README on Dockerhub
-        run: |
-          docker run --rm \
-            -v $(pwd)/README.md:/data/README.md \
-            -e DOCKERHUB_USERNAME=${{ env.DOCKERHUB_USER }} \
-            -e DOCKERHUB_PASSWORD=${{ secrets.DOCKERHUB_PASSWORD }} \
-            -e DOCKERHUB_REPO_PREFIX=${{ env.DOCKERHUB_USER }} \
-            -e DOCKERHUB_REPO_NAME=${{ env.APP_NAME }} \
-            devmtl/readme-to-dockerhub:stable
+        if: github.ref == 'refs/heads/master'
+        uses: peter-evans/dockerhub-description@v2
+        with:
+          username: ${{ env.DOCKERHUB_USER }} 
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          repository: peterevans/dockerhub-description
       - 
         name: security-audit | Dockle
         run: |

@@ -273,7 +273,7 @@ jobs:
                 noti -k -m "$NOTI_MESSAGE" '
       - 
         name: Update README on Dockerhub
-        if: github.ref == 'refs/heads/master'
+        #if: github.ref == 'refs/heads/master'
         uses: peter-evans/dockerhub-description@v2
         with:
           username: ${{ env.DOCKERHUB_USER }} 

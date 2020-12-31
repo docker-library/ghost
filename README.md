@@ -178,7 +178,7 @@ I open sourced [my setup here](https://github.com/firepress-org/ghost-local-dev-
 
 **SQLite Database**
 
-This Docker image for Ghost uses SQLite. There is nothing special to configure.
+This Docker image for Ghost uses SQLite. There is nothing special to configure!
 
 **What is the Node.js version?**
 
@@ -188,7 +188,7 @@ We follow the latest Node supported version. See this in the Dockerfile.
 docker exec <container-id> node --version
 ```
 
-You can also see this information in the CI logs.
+You can also see this information in the CI logs. 
 
 <br>
 

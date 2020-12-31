@@ -121,7 +121,7 @@ jobs:
           username: ${{ env.GITHUB_ORG }}
           password: ${{ secrets.TOKEN_GPR }}
       -
-        name: buildx and push | tag <VERSION_HASH_DATE> on linux/amd64
+        name: EDGE or MASTER | buildx and push tag CI (limited to linux/amd64)
         uses: docker/build-push-action@v2
         with:
           context: .

@@ -300,17 +300,6 @@ jobs:
           wget https://github.com/aquasecurity/trivy/releases/download/v${VERSION_TRIVY}/trivy_${VERSION_TRIVY}_Linux-64bit.tar.gz
           tar zxvf trivy_${VERSION_TRIVY}_Linux-64bit.tar.gz
           ./trivy repo https://github.com/firepress-org/ghostfire/
-      - 
-        name: security-audit Anchore GitHub Advanced Security
-        uses: anchore/scan-action@main
-        with:
-          image: "${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_ONLY }}"
-          acs-report-enable: true
-      - 
-        name: security-audit | Anchore report
-        uses: github/codeql-action/upload-sarif@v1
-        with:
-          sarif_file: results.sarif
 
         # uses: actions/upload-artifact@master
         # wip

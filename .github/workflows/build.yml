@@ -273,7 +273,7 @@ jobs:
                 noti -k -m "$NOTI_MESSAGE" '
       - 
         name: Update README on Dockerhub
-        #if: github.ref == 'refs/heads/master'
+        if: github.ref == 'refs/heads/master'
         run: |
           docker run --rm \
             -v $(pwd)/README.md:/data/README.md \
@@ -304,12 +304,8 @@ jobs:
           tar zxvf trivy_${VERSION_TRIVY}_Linux-64bit.tar.gz
           ./trivy repo https://github.com/firepress-org/ghostfire/
 
-        # uses: actions/upload-artifact@master
-        # wip
-        # https://github.com/justinribeiro/lighthouse-action/issues/8
-
         # uses: brpaz/hadolint-action@master
-        # wip
+        # warning crash the ci
         # https://github.com/brpaz/hadolint-action/issues/17
 
         # Send Github action logs to a PR or commits them

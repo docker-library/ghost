@@ -11,11 +11,14 @@ name: build
 
 on:
   push:
-  pull_request:
     branches:
       - 'master'
       - 'edge'
-
+    paths-ignore:
+      - '**.md'
+  pull_request:
+    paths-ignore:
+      - '**.md'
   schedule:
     - cron: '0 8 * * *'
 

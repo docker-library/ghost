@@ -12,9 +12,10 @@ Based on this [template](https://gist.github.com/pascalandy/af709db02d3fe132a3e6
 
 # Releases
 
-## 3.40.2 (2020-12-30)
+## 3.40.2 (2021-01-01)
+### ⚡️ Updates
 
-Since few a days, I’m doing massive Github Actions updates in the way we build Ghost. The highlights are:
+Since the last few a days, I’m doing massive Github Actions updates in the way we build Ghost. The highlights are:
 
 - Multi-arch build (linux/amd64, linux/arm64, linux/arm/v7)
 - Build uses cache it’s much faster now
@@ -27,7 +28,9 @@ Since few a days, I’m doing massive Github Actions updates in the way we build
 - Security audit (Dockle, Trivy)
 - and more :-p
 
-### ⚡️ Updates
+### ⚡️ Updates to our CI
+- [83fb6e2](https://github.com/firepress-org/ghostfire/commit/83fb6e2) CI / on push, use paths-ignore
+- [f55fa10](https://github.com/firepress-org/ghostfire/commit/f55fa10) CI / Set variable as artifacts
 - [887b8a7](https://github.com/firepress-org/ghostfire/commit/887b8a7) CI / Add 3 steps: ssh-action, Lighthouse, Artillery
 - [7a792d1](https://github.com/firepress-org/ghostfire/commit/7a792d1) CI / Add step: Check GitHub Status
 - [3ad4161](https://github.com/firepress-org/ghostfire/commit/3ad4161) CI / Update README on Dockerhub runs on master only
@@ -48,6 +51,9 @@ Since few a days, I’m doing massive Github Actions updates in the way we build
 - [666dd91](https://github.com/firepress-org/ghostfire/commit/666dd91) Bypass UPX in Dockerfile / Minor syntax optimizations
 - [666dd91](https://github.com/firepress-org/ghostfire/commit/666dd91) CI / Init dependabot.yml
 - [666dd91](https://github.com/firepress-org/ghostfire/commit/666dd91) Add badge in README
+
+### ⚡️ Updates
+
 - [ecd5f94](https://github.com/firepress-org/ghostfire/commit/ecd5f94) Update ghostfire to version 3.40.2 /Dockerfile
 
 ### 🔍 Compare

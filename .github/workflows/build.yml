@@ -119,7 +119,7 @@ jobs:
           path: ~/varz
 
   build:
-    needs: pre_build
+    needs: [pre_build]
     runs-on: ubuntu-20.04
     steps:
       -
@@ -261,7 +261,7 @@ jobs:
           cache-to: type=local,dest=/tmp/.buildx-cache
 
   post_build:
-    needs: [ pre_build,build ]
+    needs: [build]
     runs-on: ubuntu-20.04
     steps:
       -
@@ -288,18 +288,6 @@ jobs:
           echo "GITHUB_ORG=$(cat ~/varz/GITHUB_ORG)" >> $GITHUB_ENV
           echo "APP_NAME=$(cat ~/varz/APP_NAME)" >> $GITHUB_ENV
           echo "_NOTI_MESSAGE=$(cat ~/varz/_NOTI_MESSAGE)" >> $GITHUB_ENV
-      -
-        name: Send a slack notification
-        run: |
-          docker run --rm \
-            --name noti \
-            -e NOTI_MESSAGE='${{ env._NOTI_MESSAGE }}' \
-            -e SLACK_CHANNEL="github-actions" \
-            -e SLACK_TOKEN_CRON="${{ secrets.TOKEN_SLACK }}" \
-            devmtl/noti:stable sh -c \
-              ' NOTI_SLACK_TOKEN="$SLACK_TOKEN_CRON" \
-                NOTI_SLACK_CHANNEL="$SLACK_CHANNEL" \
-                noti -k -m "$NOTI_MESSAGE" '
       - 
         name: Execute commands on cluster via SSH
         uses: appleboy/ssh-action@v0.1.4
@@ -325,8 +313,49 @@ jobs:
             -e DOCKERHUB_REPO_PREFIX=${{ env.DOCKERHUB_USER }} \
             -e DOCKERHUB_REPO_NAME=${{ env.APP_NAME }} \
             devmtl/readme-to-dockerhub:stable
+      -
+        name: Notify slack
+        run: |
+          docker run --rm \
+            --name noti \
+            -e NOTI_MESSAGE='${{ env._NOTI_MESSAGE }}' \
+            -e SLACK_CHANNEL="github-actions" \
+            -e SLACK_TOKEN_CRON="${{ secrets.TOKEN_SLACK }}" \
+            devmtl/noti:stable sh -c \
+              ' NOTI_SLACK_TOKEN="$SLACK_TOKEN_CRON" \
+                NOTI_SLACK_CHANNEL="$SLACK_CHANNEL" \
+                noti -k -m "$NOTI_MESSAGE" '
+
+  audits:
+    needs: [build]
+    runs-on: ubuntu-20.04
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
       - 
-        name: Checkpoint | Lighthouse Audit
+        name: Download variables from artifact
+        uses: actions/download-artifact@master
+        with:
+          name: variables_on_disk
+          path: ~/varz
+      - 
+        name: Set variables for this job | à la sauce GitHub Actions
+        run: |
+          echo "VERSION_HASH_DATE=$(cat ~/varz/VERSION_HASH_DATE)" >> $GITHUB_ENV
+          echo "VERSION_HASH_ONLY=$(cat ~/varz/VERSION_HASH_ONLY)" >> $GITHUB_ENV
+          echo "VERSION_BRANCH=$(cat ~/varz/VERSION_BRANCH)" >> $GITHUB_ENV
+          echo "BRANCH_NAME=$(cat ~/varz/BRANCH_NAME)" >> $GITHUB_ENV
+          echo "VERSION_CI=$(cat ~/varz/VERSION_CI)" >> $GITHUB_ENV
+          echo "DKR_PREFIX=$(cat ~/varz/DKR_PREFIX)" >> $GITHUB_ENV
+          echo "GPR_PREFIX=$(cat ~/varz/GPR_PREFIX)" >> $GITHUB_ENV
+          echo "DOCKERFILE=$(cat ~/varz/DOCKERFILE)" >> $GITHUB_ENV
+          echo "DOCKERHUB_USER=$(cat ~/varz/DOCKERHUB_USER)" >> $GITHUB_ENV
+          echo "GITHUB_ORG=$(cat ~/varz/GITHUB_ORG)" >> $GITHUB_ENV
+          echo "APP_NAME=$(cat ~/varz/APP_NAME)" >> $GITHUB_ENV
+          echo "_NOTI_MESSAGE=$(cat ~/varz/_NOTI_MESSAGE)" >> $GITHUB_ENV
+      - 
+        name: Audit | Lighthouse
         uses: treosh/lighthouse-ci-action@v3
         with:
           urls: |
@@ -336,18 +365,18 @@ jobs:
           uploadArtifacts: true # save results as an action artifacts
           temporaryPublicStorage: true # upload lighthouse report to the temporary storage
       - 
-        name: Checkpoint | Artillery Audit
+        name: Audit | Artillery
         id: load-test
         uses: kenju/github-actions-artillery@master
         with:
           filepath: ./.github/load-test.yml
       - 
-        name: Security audit | Dockle
+        name: Audit | scanner by Dockle
         run: |
           export DOCKLE_LATEST=$(curl --silent "https://api.github.com/repos/goodwithtech/dockle/releases/latest" | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
           docker run --rm goodwithtech/dockle:v${DOCKLE_LATEST} ${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
       - 
-        name: Security audit| Trivy on docker image
+        name: Checkpoint | scanner by Trivy
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: '${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_DATE }}'
@@ -355,6 +384,7 @@ jobs:
           exit-code: '0'
           ignore-unfixed: true
           severity: 'LOW,MEDIUM,HIGH,CRITICAL'
+
 
         # uses: brpaz/hadolint-action@master
         # warning crash the ci

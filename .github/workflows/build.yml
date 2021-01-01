@@ -31,6 +31,10 @@ jobs:
   pre_build:
     runs-on: ubuntu-20.04
     steps:
+      - name: Setup timezone
+        uses: zcong1993/setup-timezone@v1.1.1
+        with:
+          timezone: America/Montreal
       -
         name: Checkpoint | GitHub Status
         uses: crazy-max/ghaction-github-status@v2
@@ -67,7 +71,7 @@ jobs:
           echo "ghcr.io/$(cat ~/varz/GITHUB_ORG)/$(cat ~/varz/GITHUB_REGISTRY)/$(cat ~/varz/APP_NAME)" > ~/varz/GPR_PREFIX
           cat $(cat ~/varz/DOCKERFILE) | grep VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g' > ~/varz/VERSION
           git rev-parse --short HEAD > ~/varz/SHORT_HASH_COMMIT
-          date -d "-4 hours" "+%Y-%m-%d_%HH%Ms%S" > ~/varz/DATE
+          date "+%Y-%m-%d_%HH%Ms%S" > ~/varz/DATE
           echo "$(cat ~/varz/BRANCH_NAME)_$(cat ~/varz/VERSION)_ci_$(cat ~/varz/SHORT_HASH_COMMIT)" > ~/varz/VERSION_CI
           echo "$(cat ~/varz/BRANCH_NAME)_$(cat ~/varz/VERSION)" > ~/varz/VERSION_BRANCH
           echo "$(cat ~/varz/BRANCH_NAME)_$(cat ~/varz/VERSION)_$(cat ~/varz/SHORT_HASH_COMMIT)" > ~/varz/VERSION_HASH_ONLY
@@ -122,6 +126,10 @@ jobs:
     needs: [pre_build]
     runs-on: ubuntu-20.04
     steps:
+      - name: Setup timezone
+        uses: zcong1993/setup-timezone@v1.1.1
+        with:
+          timezone: America/Montreal
       -
         name: Checkout
         uses: actions/checkout@v2
@@ -264,6 +272,10 @@ jobs:
     needs: [build]
     runs-on: ubuntu-20.04
     steps:
+      - name: Setup timezone
+        uses: zcong1993/setup-timezone@v1.1.1
+        with:
+          timezone: America/Montreal
       -
         name: Checkout
         uses: actions/checkout@v2
@@ -330,6 +342,10 @@ jobs:
     needs: [build]
     runs-on: ubuntu-20.04
     steps:
+      - name: Setup timezone
+        uses: zcong1993/setup-timezone@v1.1.1
+        with:
+          timezone: America/Montreal
       -
         name: Checkout
         uses: actions/checkout@v2

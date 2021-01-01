@@ -13,26 +13,37 @@ Based on this [template](https://gist.github.com/pascalandy/af709db02d3fe132a3e6
 # Releases
 
 ## 3.40.2 (2020-12-30)
+
+**Major updates to Github Actions CI**. Highlights are:
+- build cache
+- multi-arch
+- better env var handling
+- a single yml instead of two
+- conditions depending on branch edge/master
+- better logic between: pre-build / build / post-build
+- Ready to execute commands on cluster via SSH
+- and more!
+
 ### ⚡️ Updates
+- [887b8a7](https://github.com/firepress-org/ghostfire/commit/887b8a7) CI / Add 3 steps: ssh-action, Lighthouse, Artillery
+- [7a792d1](https://github.com/firepress-org/ghostfire/commit/7a792d1) CI / Add step: Check GitHub Status
+- [3ad4161](https://github.com/firepress-org/ghostfire/commit/3ad4161) CI / Update README on Dockerhub runs on master only
+- [4681317](https://github.com/firepress-org/ghostfire/commit/4681317) CI / Rollback: README on Dockerhub using a pre-build action
 - [05ff682](https://github.com/firepress-org/ghostfire/commit/05ff682) CI / Fix tag version logic
 - [c0356e8](https://github.com/firepress-org/ghostfire/commit/c0356e8) CI / now pushing a tag VERSION_CI | various comments updates
-- [55aa874](https://github.com/firepress-org/ghostfire/commit/55aa874) CHANGELOG updates
 - [9f109e0](https://github.com/firepress-org/ghostfire/commit/9f109e0) Update tests scripts from source without UTC test
 - [a9925f3](https://github.com/firepress-org/ghostfire/commit/a9925f3) config.production.json / level is set to error
-- [b9104a5](https://github.com/firepress-org/ghostfire/commit/b9104a5) Remove post_build_cache jobs as the cache hit the limit
-- [2f94a38](https://github.com/firepress-org/ghostfire/commit/2f94a38) CHANGELOG updates
+- [b9104a5](https://github.com/firepress-org/ghostfire/commit/b9104a5) CI / Remove post_build_cache jobs as the cache hit the limit
 - [f72f4bc](https://github.com/firepress-org/ghostfire/commit/f72f4bc) CI / move noti to post_build
 - [f4520a4](https://github.com/firepress-org/ghostfire/commit/f4520a4) CI / Fix logic for post_build_cache
 - [3b92938](https://github.com/firepress-org/ghostfire/commit/3b92938) CI / determine on which push conditions
-- [fbb9cdc](https://github.com/firepress-org/ghostfire/commit/fbb9cdc) Fix missing env.VERSION_HASH_ONLY on master branch
+- [fbb9cdc](https://github.com/firepress-org/ghostfire/commit/fbb9cdc) CI / Fix missing env.VERSION_HASH_ONLY on master branch
 - [26fc1a9](https://github.com/firepress-org/ghostfire/commit/26fc1a9) CI / add job `build_cache` to make faster builds on `master branch`
-- [0f07c0b](https://github.com/firepress-org/ghostfire/commit/0f07c0b) Fix typo
-- [3df9d00](https://github.com/firepress-org/ghostfire/commit/3df9d00) Remove older Dockerfile
-- [d3ce4d8](https://github.com/firepress-org/ghostfire/commit/d3ce4d8) Update template / config.production.json
-- [666dd91](https://github.com/firepress-org/ghostfire/commit/666dd91) MJR refactoring on CI (squash)
-- [666dd91](https://github.com/firepress-org/ghostfire/commit/666dd91) Major CI refactoring / now using a single build.yml file
-- [666dd91](https://github.com/firepress-org/ghostfire/commit/666dd91) Dockerfile: Bypass UPX / Minor syntax optimizations
-- [666dd91](https://github.com/firepress-org/ghostfire/commit/666dd91) Init dependabot.yml
+- [3df9d00](https://github.com/firepress-org/ghostfire/commit/3df9d00) Remove older Dockerfiles
+- [666dd91](https://github.com/firepress-org/ghostfire/commit/666dd91) CI / refactoring on CI (squash)
+- [666dd91](https://github.com/firepress-org/ghostfire/commit/666dd91) CI / Major CI refactoring / now using a single build.yml file
+- [666dd91](https://github.com/firepress-org/ghostfire/commit/666dd91) Bypass UPX in Dockerfile / Minor syntax optimizations
+- [666dd91](https://github.com/firepress-org/ghostfire/commit/666dd91) CI / Init dependabot.yml
 - [666dd91](https://github.com/firepress-org/ghostfire/commit/666dd91) Add badge in README
 - [ecd5f94](https://github.com/firepress-org/ghostfire/commit/ecd5f94) Update ghostfire to version 3.40.2 /Dockerfile
 
@@ -42,8 +53,8 @@ Based on this [template](https://gist.github.com/pascalandy/af709db02d3fe132a3e6
 ## 3.40.1 (2020-12-13)
 ### ⚡️ Updates
 - [6352c9c](https://github.com/firepress-org/ghostfire/commit/6352c9c) Update ghostfire to version 3.40.1 /Dockerfile
-- curl, bash is not pointing to specific version anymore
-- node docker image is now 14.15 (not 14.15.x)
+- [6352c9c](https://github.com/firepress-org/ghostfire/commit/6352c9c) curl, bash is not pointing to specific version anymore
+- [6352c9c](https://github.com/firepress-org/ghostfire/commit/6352c9c) Node docker image is now 14.15 (not 14.15.x)
 
 ### 🔍 Compare
 - ... with previous release: [3.39.3 <> 3.40.1](https://github.com/firepress-org/ghostfire/compare/3.39.3...3.40.1)
@@ -53,14 +64,10 @@ Based on this [template](https://gist.github.com/pascalandy/af709db02d3fe132a3e6
 - [44917a7](https://github.com/firepress-org/ghostfire/commit/44917a7) update to curl 7.69.1-r2
 - [9e07134](https://github.com/firepress-org/ghostfire/commit/9e07134) update to GHOST_CLI 1.15.3
 - [c07dad9](https://github.com/firepress-org/ghostfire/commit/c07dad9) Update ghostfire to version 3.39.3 /Dockerfile
-- [5e3599c](https://github.com/firepress-org/ghostfire/commit/5e3599c) empty commit / force CI
 - [f829765](https://github.com/firepress-org/ghostfire/commit/f829765) Update ghostfire to version 3.39.2 /Dockerfile
 - [e09e4ac](https://github.com/firepress-org/ghostfire/commit/e09e4ac) Update ghostfire to version 3.39.0 /Dockerfile
 - [4106476](https://github.com/firepress-org/ghostfire/commit/4106476) Improve README using Ghost V3
 - [613c210](https://github.com/firepress-org/ghostfire/commit/613c210) Github actions / best practices /d
-- [26402bb](https://github.com/firepress-org/ghostfire/commit/26402bb) Github actions / best practices /c
-- [06b1888](https://github.com/firepress-org/ghostfire/commit/06b1888) Github acitons / best practices /b
-- [40805f9](https://github.com/firepress-org/ghostfire/commit/40805f9) Github acitons / best practices /a
 - [8f7148b](https://github.com/firepress-org/ghostfire/commit/8f7148b) update Dockerfile_alpine_optimized
 
 ### 🔍 Compare

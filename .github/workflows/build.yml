@@ -268,7 +268,7 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
 
-  post_build:
+  post_build_actions:
     needs: [build]
     runs-on: ubuntu-20.04
     steps:
@@ -338,7 +338,7 @@ jobs:
                 NOTI_SLACK_CHANNEL="$SLACK_CHANNEL" \
                 noti -k -m "$NOTI_MESSAGE" '
 
-  audits:
+  post_build_audits:
     needs: [build]
     runs-on: ubuntu-20.04
     steps:

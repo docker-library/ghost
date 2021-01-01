@@ -29,6 +29,10 @@ Since the last few a days, I’m doing massive Github Actions updates in the way
 - and more :-p
 
 ### ⚡️ Updates to our CI
+- [e92df60](https://github.com/firepress-org/ghostfire/commit/e92df60) CI / Rename jobs after the build
+- [4a3e4c9](https://github.com/firepress-org/ghostfire/commit/4a3e4c9) CI / Add step: timezone
+- [2b338d0](https://github.com/firepress-org/ghostfire/commit/2b338d0) CI / Add a new job: audits
+- [ccec9be](https://github.com/firepress-org/ghostfire/commit/ccec9be) CI / Fix variable _NOTI_MESSAGE
 - [83fb6e2](https://github.com/firepress-org/ghostfire/commit/83fb6e2) CI / on push, use paths-ignore
 - [f55fa10](https://github.com/firepress-org/ghostfire/commit/f55fa10) CI / Set variable as artifacts
 - [887b8a7](https://github.com/firepress-org/ghostfire/commit/887b8a7) CI / Add 3 steps: ssh-action, Lighthouse, Artillery

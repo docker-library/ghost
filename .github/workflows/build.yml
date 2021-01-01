@@ -63,7 +63,6 @@ jobs:
           cat $(cat ~/varz/DOCKERFILE) | grep DOCKERHUB_USER= | head -n 1 | grep -o '".*"' | sed 's/"//g' > ~/varz/DOCKERHUB_USER
           cat $(cat ~/varz/DOCKERFILE) | grep GITHUB_ORG= | head -n 1 | grep -o '".*"' | sed 's/"//g' > ~/varz/GITHUB_ORG
           cat $(cat ~/varz/DOCKERFILE) | grep GITHUB_REGISTRY= | head -n 1 | grep -o '".*"' | sed 's/"//g' > ~/varz/GITHUB_REGISTRY
-          echo "$(cat ~/varz/APP_NAME):$(cat ~/varz/BRANCH_NAME)_$(cat ~/varz/VERSION)_$(cat ~/varz/SHORT_HASH_COMMIT)" > ~/varz/_NOTI_MESSAGE
           echo "$(cat ~/varz/DOCKERHUB_USER)/$(cat ~/varz/APP_NAME)" > ~/varz/DKR_PREFIX
           echo "ghcr.io/$(cat ~/varz/GITHUB_ORG)/$(cat ~/varz/GITHUB_REGISTRY)/$(cat ~/varz/APP_NAME)" > ~/varz/GPR_PREFIX
           cat $(cat ~/varz/DOCKERFILE) | grep VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g' > ~/varz/VERSION
@@ -73,6 +72,7 @@ jobs:
           echo "$(cat ~/varz/BRANCH_NAME)_$(cat ~/varz/VERSION)" > ~/varz/VERSION_BRANCH
           echo "$(cat ~/varz/BRANCH_NAME)_$(cat ~/varz/VERSION)_$(cat ~/varz/SHORT_HASH_COMMIT)" > ~/varz/VERSION_HASH_ONLY
           echo "$(cat ~/varz/BRANCH_NAME)_$(cat ~/varz/VERSION)_$(cat ~/varz/SHORT_HASH_COMMIT)_$(cat ~/varz/DATE)" > ~/varz/VERSION_HASH_DATE
+          echo "$(cat ~/varz/APP_NAME):$(cat ~/varz/BRANCH_NAME)_$(cat ~/varz/VERSION)_$(cat ~/varz/SHORT_HASH_COMMIT)" > ~/varz/_NOTI_MESSAGE
       - 
         name: Set ALL variables for this job | à la sauce GitHub Actions
         run: |
@@ -95,14 +95,22 @@ jobs:
       -
         name: Show variables
         run: |
-          echo "${{ env.VERSION_HASH_DATE }} < VERSION_HASH_DATE" && echo "${{ env.VERSION_HASH_ONLY }} < VERSION_HASH_ONLY"
-          echo "${{ env.VERSION_CI }} < VERSION_CI" && echo "${{ env.VERSION_BRANCH }} < VERSION_BRANCH"
-          echo "${{ env.BRANCH_NAME }} < BRANCH_NAME" && echo "${{ env.VERSION }} < VERSION"
-          echo "${{ env.DKR_PREFIX }} < DKR_PREFIX" && echo "${{ env.GPR_PREFIX }} < GPR_PREFIX"
-          echo "${{ env.SHORT_HASH_COMMIT }} < SHORT_HASH_COMMIT" && echo "${{ env.DATE }} < DATE"
-          echo "${{ env.DOCKERFILE }} < DOCKERFILE" && echo "${{ env.DOCKERHUB_USER }} < DOCKERHUB_USER"
-          echo "${{ env.APP_NAME }} < APP_NAME" && echo "${{ env.GITHUB_ORG }} < GITHUB_ORG"
-          echo "${{ env.GITHUB_REGISTRY }} < GITHUB_REGISTRY" && echo "${{ env._NOTI_MESSAGE }} < _NOTI_MESSAGE"
+          echo "${{ env.VERSION_HASH_DATE }} < VERSION_HASH_DATE"
+          echo "${{ env.VERSION_HASH_ONLY }} < VERSION_HASH_ONLY"
+          echo "${{ env.VERSION_CI }} < VERSION_CI"
+          echo "${{ env.VERSION_BRANCH }} < VERSION_BRANCH"
+          echo "${{ env.BRANCH_NAME }} < BRANCH_NAME"
+          echo "${{ env.VERSION }} < VERSION"
+          echo "${{ env.DKR_PREFIX }} < DKR_PREFIX"
+          echo "${{ env.GPR_PREFIX }} < GPR_PREFIX"
+          echo "${{ env.SHORT_HASH_COMMIT }} < SHORT_HASH_COMMIT"
+          echo "${{ env.DATE }} < DATE"
+          echo "${{ env.DOCKERFILE }} < DOCKERFILE"
+          echo "${{ env.DOCKERHUB_USER }} < DOCKERHUB_USER"
+          echo "${{ env.APP_NAME }} < APP_NAME"
+          echo "${{ env.GITHUB_ORG }} < GITHUB_ORG"
+          echo "${{ env.GITHUB_REGISTRY }} < GITHUB_REGISTRY"
+          echo "${{ env._NOTI_MESSAGE }} < _NOTI_MESSAGE"
       - 
         name: Upload variables as artifact
         uses: actions/upload-artifact@master

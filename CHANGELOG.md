@@ -14,15 +14,18 @@ Based on this [template](https://gist.github.com/pascalandy/af709db02d3fe132a3e6
 
 ## 3.40.2 (2020-12-30)
 
-**Major updates to Github Actions CI**. Highlights are:
-- build cache
-- multi-arch
-- better env var handling
-- a single yml instead of two
-- conditions depending on branch edge/master
-- better logic between: pre-build / build / post-build
-- Ready to execute commands on cluster via SSH
-- and more!
+Since few a days, I’m doing massive Github Actions updates in the way we build Ghost. The highlights are:
+
+- Multi-arch build (linux/amd64, linux/arm64, linux/arm/v7)
+- Build uses cache it’s much faster now
+- Execute CI using a single build.yml file with conditions for branch edge/master
+- Better logic between jobs (pre-build / build / post-build)
+- Share variables between jobs
+- Execute commands on the cluster (via SSH)
+- Slack notifications when build is successful
+- Lighthouse audit (localhost and online)
+- Security audit (Dockle, Trivy)
+- and more :-p
 
 ### ⚡️ Updates
 - [887b8a7](https://github.com/firepress-org/ghostfire/commit/887b8a7) CI / Add 3 steps: ssh-action, Lighthouse, Artillery

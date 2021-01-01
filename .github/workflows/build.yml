@@ -3,7 +3,7 @@
 #
 # Requires secrets on github: secrets.DOCKERHUB_PASSWORD, secrets.TOKEN_SLACK, secrets.TOKEN_GPR
 # All details: https://github.com/firepress-org/ghostfire/issues/23
-#
+# 
 # GNU v3 | Please credit the author if you are re-using some of it :-p
 # by Pascal Andy | https://pascalandy.com/blog/now/
 
@@ -25,80 +25,117 @@ defaults:
 
 jobs:
 
-  github_status:
+  pre_build:
     runs-on: ubuntu-20.04
     steps:
       -
-        name: Get GitHub Status
+        name: Checkpoint | GitHub Status
         uses: crazy-max/ghaction-github-status@v2
         with:
           overall_threshold: minor
           git_threshold: degraded_performance
           actions_threshold: operational
-
-  build:
-    needs: github_status
-    runs-on: ubuntu-20.04
-    steps:
       -
         name: Checkout
         uses: actions/checkout@v2
       -
         name: Set variables | hardcoded
         run: |
-          echo "DOCKERFILE_NAME=Dockerfile" >> $GITHUB_ENV
-          echo "IMG_NOTI=devmtl/noti:stable" >> $GITHUB_ENV
+          mkdir -pv ~/varz
+          echo "Dockerfile" > ~/varz/DOCKERFILE
       -
-        name: Set variables | dynamically part#1
-        if: github.ref == 'refs/heads/master'
-        run: |
-          echo "BRANCH_NAME=stable" >> $GITHUB_ENV
-      -
-        name: Set variables | dynamically part#2
+        name: Set variables if branch is EDGE
         if: github.ref == 'refs/heads/edge'
         run: |
-          echo "BRANCH_NAME=edge" >> $GITHUB_ENV
+          echo "edge" > ~/varz/BRANCH_NAME
       -
-        name: Set variables | dynamically part#3
+        name: Set variables if branchis MASTER
+        if: github.ref == 'refs/heads/master'
         run: |
-          echo "APP_NAME=$(cat ${{ env.DOCKERFILE_NAME }} | grep APP_NAME= | head -n 1 | grep -o '".*"' | sed 's/"//g')" >> $GITHUB_ENV
-          echo "DOCKERHUB_USER=$(cat ${{ env.DOCKERFILE_NAME }} | grep DOCKERHUB_USER= | head -n 1 | grep -o '".*"' | sed 's/"//g')" >> $GITHUB_ENV
-          echo "GITHUB_ORG=$(cat ${{ env.DOCKERFILE_NAME }} | grep GITHUB_ORG= | head -n 1 | grep -o '".*"' | sed 's/"//g')" >> $GITHUB_ENV
-          echo "GITHUB_REGISTRY=$(cat ${{ env.DOCKERFILE_NAME }} | grep GITHUB_REGISTRY= | head -n 1 | grep -o '".*"' | sed 's/"//g')" >> $GITHUB_ENV
-          #
-          echo "VERSION=$(cat ${{ env.DOCKERFILE_NAME }} | grep VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g')" >> $GITHUB_ENV
-          echo "SHORT_HASH_COMMIT=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-          echo "DATE=$(date -d "-4 hours" "+%Y-%m-%d_%HH%Ms%S")" >> $GITHUB_ENV
+          echo "master" > ~/varz/BRANCH_NAME
       -
-        name: Set variables | dynamically part#4
+        name: Set variables to disk
         run: |
-          echo "VERSION_CI=${{ env.BRANCH_NAME }}_${{ env.VERSION }}_ci_${{ env.SHORT_HASH_COMMIT }}" >> $GITHUB_ENV
-          echo "VERSION_BRANCH=${{ env.BRANCH_NAME }}_${{ env.VERSION }}" >> $GITHUB_ENV
-          echo "VERSION_HASH_ONLY=${{ env.BRANCH_NAME }}_${{ env.VERSION }}_${{ env.SHORT_HASH_COMMIT }}" >> $GITHUB_ENV
-          echo "VERSION_HASH_DATE=${{ env.BRANCH_NAME }}_${{ env.VERSION }}_${{ env.SHORT_HASH_COMMIT }}_${{ env.DATE }}" >> $GITHUB_ENV
-          echo "DKR_PREFIX=${{ env.DOCKERHUB_USER }}/${{ env.APP_NAME }}" >> $GITHUB_ENV
-          echo "GPR_PREFIX=${{ env.GITHUB_ORG }}/${{ env.GITHUB_REGISTRY }}/${{ env.APP_NAME }}" >> $GITHUB_ENV
-          echo "_NOTI_MESSAGE=${{ env.APP_NAME }}:${{ env.BRANCH_NAME }}_${{ env.VERSION }}_${{ env.SHORT_HASH_COMMIT }}" >> $GITHUB_ENV
+          cat $(cat ~/varz/DOCKERFILE) | grep APP_NAME= | head -n 1 | grep -o '".*"' | sed 's/"//g' > ~/varz/APP_NAME
+          cat $(cat ~/varz/DOCKERFILE) | grep DOCKERHUB_USER= | head -n 1 | grep -o '".*"' | sed 's/"//g' > ~/varz/DOCKERHUB_USER
+          cat $(cat ~/varz/DOCKERFILE) | grep GITHUB_ORG= | head -n 1 | grep -o '".*"' | sed 's/"//g' > ~/varz/GITHUB_ORG
+          cat $(cat ~/varz/DOCKERFILE) | grep GITHUB_REGISTRY= | head -n 1 | grep -o '".*"' | sed 's/"//g' > ~/varz/GITHUB_REGISTRY
+          echo "$(cat ~/varz/APP_NAME):$(cat ~/varz/BRANCH_NAME)_$(cat ~/varz/VERSION)_$(cat ~/varz/SHORT_HASH_COMMIT)" > ~/varz/_NOTI_MESSAGE
+          echo "$(cat ~/varz/DOCKERHUB_USER)/$(cat ~/varz/APP_NAME)" > ~/varz/DKR_PREFIX
+          echo "ghcr.io/$(cat ~/varz/GITHUB_ORG)/$(cat ~/varz/GITHUB_REGISTRY)/$(cat ~/varz/APP_NAME)" > ~/varz/GPR_PREFIX
+          cat $(cat ~/varz/DOCKERFILE) | grep VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g' > ~/varz/VERSION
+          git rev-parse --short HEAD > ~/varz/SHORT_HASH_COMMIT
+          date -d "-4 hours" "+%Y-%m-%d_%HH%Ms%S" > ~/varz/DATE
+          echo "$(cat ~/varz/BRANCH_NAME)_$(cat ~/varz/VERSION)_ci_$(cat ~/varz/SHORT_HASH_COMMIT)" > ~/varz/VERSION_CI
+          echo "$(cat ~/varz/BRANCH_NAME)_$(cat ~/varz/VERSION)" > ~/varz/VERSION_BRANCH
+          echo "$(cat ~/varz/BRANCH_NAME)_$(cat ~/varz/VERSION)_$(cat ~/varz/SHORT_HASH_COMMIT)" > ~/varz/VERSION_HASH_ONLY
+          echo "$(cat ~/varz/BRANCH_NAME)_$(cat ~/varz/VERSION)_$(cat ~/varz/SHORT_HASH_COMMIT)_$(cat ~/varz/DATE)" > ~/varz/VERSION_HASH_DATE
       - 
-        name: Show all variables
+        name: Set ALL variables for this job | à la sauce GitHub Actions
         run: |
-          echo "${{ env.VERSION_HASH_DATE }} < VERSION_HASH_DATE"
-          echo "${{ env.VERSION_HASH_ONLY }} < VERSION_HASH_ONLY"
-          echo "${{ env.VERSION_BRANCH }} < VERSION_BRANCH"
-          echo "${{ env.VERSION_CI }} < VERSION_CI"
-          echo "${{ env.VERSION }} < VERSION"
-          echo "${{ env.BRANCH_NAME }} < BRANCH_NAME"
-          echo "${{ env._NOTI_MESSAGE }} < _NOTI_MESSAGE"
-          echo "${{ env.DKR_PREFIX }} < DKR_PREFIX"
-          echo "${{ env.GPR_PREFIX }} < GPR_PREFIX"
-          echo "${{ env.SHORT_HASH_COMMIT }} < SHORT_HASH_COMMIT"
-          echo "${{ env.DATE }} < DATE"
-          echo "${{ env.DOCKERFILE_NAME }} < DOCKERFILE_NAME"
-          echo "${{ env.DOCKERHUB_USER }} < DOCKERHUB_USER"
-          echo "${{ env.APP_NAME }} < APP_NAME"
-          echo "${{ env.GITHUB_ORG }} < GITHUB_ORG"
-          echo "${{ env.GITHUB_REGISTRY }} < GITHUB_REGISTRY"
+          echo "VERSION_HASH_DATE=$(cat ~/varz/VERSION_HASH_DATE)" >> $GITHUB_ENV
+          echo "VERSION_HASH_ONLY=$(cat ~/varz/VERSION_HASH_ONLY)" >> $GITHUB_ENV
+          echo "VERSION_CI=$(cat ~/varz/VERSION_CI)" >> $GITHUB_ENV
+          echo "VERSION_BRANCH=$(cat ~/varz/VERSION_BRANCH)" >> $GITHUB_ENV
+          echo "BRANCH_NAME=$(cat ~/varz/BRANCH_NAME)" >> $GITHUB_ENV
+          echo "VERSION=$(cat ~/varz/VERSION)" >> $GITHUB_ENV
+          echo "DKR_PREFIX=$(cat ~/varz/DKR_PREFIX)" >> $GITHUB_ENV
+          echo "GPR_PREFIX=$(cat ~/varz/GPR_PREFIX)" >> $GITHUB_ENV
+          echo "SHORT_HASH_COMMIT=$(cat ~/varz/SHORT_HASH_COMMIT)" >> $GITHUB_ENV
+          echo "DATE=$(cat ~/varz/DATE)" >> $GITHUB_ENV
+          echo "DOCKERFILE=$(cat ~/varz/DOCKERFILE)" >> $GITHUB_ENV
+          echo "DOCKERHUB_USER=$(cat ~/varz/DOCKERHUB_USER)" >> $GITHUB_ENV
+          echo "APP_NAME=$(cat ~/varz/APP_NAME)" >> $GITHUB_ENV
+          echo "GITHUB_ORG=$(cat ~/varz/GITHUB_ORG)" >> $GITHUB_ENV
+          echo "GITHUB_REGISTRY=$(cat ~/varz/GITHUB_REGISTRY)" >> $GITHUB_ENV
+          echo "_NOTI_MESSAGE=$(cat ~/varz/_NOTI_MESSAGE)" >> $GITHUB_ENV
+      -
+        name: Show variables
+        run: |
+          echo "${{ env.VERSION_HASH_DATE }} < VERSION_HASH_DATE" && echo "${{ env.VERSION_HASH_ONLY }} < VERSION_HASH_ONLY"
+          echo "${{ env.VERSION_CI }} < VERSION_CI" && echo "${{ env.VERSION_BRANCH }} < VERSION_BRANCH"
+          echo "${{ env.BRANCH_NAME }} < BRANCH_NAME" && echo "${{ env.VERSION }} < VERSION"
+          echo "${{ env.DKR_PREFIX }} < DKR_PREFIX" && echo "${{ env.GPR_PREFIX }} < GPR_PREFIX"
+          echo "${{ env.SHORT_HASH_COMMIT }} < SHORT_HASH_COMMIT" && echo "${{ env.DATE }} < DATE"
+          echo "${{ env.DOCKERFILE }} < DOCKERFILE" && echo "${{ env.DOCKERHUB_USER }} < DOCKERHUB_USER"
+          echo "${{ env.APP_NAME }} < APP_NAME" && echo "${{ env.GITHUB_ORG }} < GITHUB_ORG"
+          echo "${{ env.GITHUB_REGISTRY }} < GITHUB_REGISTRY" && echo "${{ env._NOTI_MESSAGE }} < _NOTI_MESSAGE"
       - 
+        name: Upload variables as artifact
+        uses: actions/upload-artifact@master
+        with:
+          name: variables_on_disk
+          path: ~/varz
+
+  build:
+    needs: pre_build
+    runs-on: ubuntu-20.04
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      - 
+        name: Download variables from artifact
+        uses: actions/download-artifact@master
+        with:
+          name: variables_on_disk
+          path: ~/varz
+      - 
+        name: Set variables for this job | à la sauce GitHub Actions
+        run: |
+          echo "VERSION_HASH_DATE=$(cat ~/varz/VERSION_HASH_DATE)" >> $GITHUB_ENV
+          echo "VERSION_HASH_ONLY=$(cat ~/varz/VERSION_HASH_ONLY)" >> $GITHUB_ENV
+          echo "VERSION_BRANCH=$(cat ~/varz/VERSION_BRANCH)" >> $GITHUB_ENV
+          echo "BRANCH_NAME=$(cat ~/varz/BRANCH_NAME)" >> $GITHUB_ENV
+          echo "VERSION_CI=$(cat ~/varz/VERSION_CI)" >> $GITHUB_ENV
+          echo "DKR_PREFIX=$(cat ~/varz/DKR_PREFIX)" >> $GITHUB_ENV
+          echo "GPR_PREFIX=$(cat ~/varz/GPR_PREFIX)" >> $GITHUB_ENV
+          echo "DOCKERFILE=$(cat ~/varz/DOCKERFILE)" >> $GITHUB_ENV
+          echo "DOCKERHUB_USER=$(cat ~/varz/DOCKERHUB_USER)" >> $GITHUB_ENV
+          echo "GITHUB_ORG=$(cat ~/varz/GITHUB_ORG)" >> $GITHUB_ENV
+          echo "APP_NAME=$(cat ~/varz/APP_NAME)" >> $GITHUB_ENV
+          echo "_NOTI_MESSAGE=$(cat ~/varz/_NOTI_MESSAGE)" >> $GITHUB_ENV
+      -
         name: Set QEMU for Multi-platform builds
         uses: docker/setup-qemu-action@v1
       - 
@@ -136,15 +173,16 @@ jobs:
           username: ${{ env.GITHUB_ORG }}
           password: ${{ secrets.TOKEN_GPR }}
       -
-        name: EDGE or MASTER | buildx and push tag CI (limited to linux/amd64)
+        name: EDGE or MASTER | buildx and push tag VERSION_CI (limited to linux/amd64)
         uses: docker/build-push-action@v2
         with:
           context: .
-          file: ./${{ env.DOCKERFILE_NAME }}
+          file: ./${{ env.DOCKERFILE }}
           platforms: linux/amd64
           push: true
           tags: |
             ${{ env.DKR_PREFIX }}:${{ env.VERSION_CI }}
+            ${{ env.GPR_PREFIX }}:${{ env.VERSION_CI }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
       - 
@@ -156,30 +194,37 @@ jobs:
             sleep 4;
           done;
           curl http://localhost:2368 | grep "The professional publishing platform"
-          #
           git clone --depth 1 https://github.com/docker-library/official-images.git official-images
-          #
-          # override config.sh We must bypass UTC timezone test
+          ### overide config.sh We must bypass UTC timezone test
           cp ./test/config.sh official-images/test/config.sh
           official-images/test/run.sh ${{ env.DKR_PREFIX }}:${{ env.VERSION_CI }}
+      - 
+        name: Checkpoint | multi-platform images, docker inspect, history, version, info, uname
+        run: |
+          docker run --rm mplatform/mquery ${{ env.DKR_PREFIX }}:${{ env.VERSION_CI }} && echo && echo
+          docker inspect ${{ env.DKR_PREFIX }}:${{ env.VERSION_CI }} && echo && echo
+          docker history ${{ env.DKR_PREFIX }}:${{ env.VERSION_CI }} --no-trunc && echo && echo
+          docker version && echo && echo
+          docker info && echo && echo
+          uname -a
       -
         name: EDGE | buildx and push all tags (limited to linux/amd64)
         if: github.ref == 'refs/heads/edge'
         uses: docker/build-push-action@v2
         with:
           context: .
-          file: ./${{ env.DOCKERFILE_NAME }}
+          file: ./${{ env.DOCKERFILE }}
           platforms: linux/amd64
           push: true
           tags: |
-            ${{ env.DKR_PREFIX }}:${{ env.BRANCH_NAME }}
-            ${{ env.DKR_PREFIX }}:${{ env.VERSION_BRANCH }}
-            ${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_ONLY }}
             ${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
-            ghcr.io/${{ env.GPR_PREFIX }}:${{ env.BRANCH_NAME }}
-            ghcr.io/${{ env.GPR_PREFIX }}:${{ env.VERSION_BRANCH }}
-            ghcr.io/${{ env.GPR_PREFIX }}:${{ env.VERSION_HASH_ONLY }}
-            ghcr.io/${{ env.GPR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
+            ${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_ONLY }}
+            ${{ env.DKR_PREFIX }}:${{ env.VERSION_BRANCH }}
+            ${{ env.DKR_PREFIX }}:${{ env.BRANCH_NAME }}
+            ${{ env.GPR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
+            ${{ env.GPR_PREFIX }}:${{ env.VERSION_HASH_ONLY }}
+            ${{ env.GPR_PREFIX }}:${{ env.VERSION_BRANCH }}
+            ${{ env.GPR_PREFIX }}:${{ env.BRANCH_NAME }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
       -
@@ -188,84 +233,50 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          file: ./${{ env.DOCKERFILE_NAME }}
-          # linux/arm/v6 is not part available as fetching packages is unstable
+          file: ./${{ env.DOCKERFILE }}
+          # linux/arm/v6 not included as fetching packages is unstable
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           push: true
           tags: |
-            ${{ env.DKR_PREFIX }}:${{ env.BRANCH_NAME }}
-            ${{ env.DKR_PREFIX }}:${{ env.VERSION_BRANCH }}
-            ${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_ONLY }}
             ${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
-            ghcr.io/${{ env.GPR_PREFIX }}:${{ env.BRANCH_NAME }}
-            ghcr.io/${{ env.GPR_PREFIX }}:${{ env.VERSION_BRANCH }}
-            ghcr.io/${{ env.GPR_PREFIX }}:${{ env.VERSION_HASH_ONLY }}
-            ghcr.io/${{ env.GPR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
+            ${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_ONLY }}
+            ${{ env.DKR_PREFIX }}:${{ env.VERSION_BRANCH }}
+            ${{ env.DKR_PREFIX }}:${{ env.BRANCH_NAME }}
+            ${{ env.GPR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
+            ${{ env.GPR_PREFIX }}:${{ env.VERSION_HASH_ONLY }}
+            ${{ env.GPR_PREFIX }}:${{ env.VERSION_BRANCH }}
+            ${{ env.GPR_PREFIX }}:${{ env.BRANCH_NAME }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
 
   post_build:
-    needs: build
+    needs: [ pre_build,build ]
     runs-on: ubuntu-20.04
     steps:
       -
         name: Checkout
         uses: actions/checkout@v2
-      -
-        name: Set variables | hardcoded
-        run: |
-          echo "DOCKERFILE_NAME=Dockerfile" >> $GITHUB_ENV
-          echo "IMG_NOTI=devmtl/noti:stable" >> $GITHUB_ENV
-      -
-        name: Set variables | dynamically part#1
-        if: github.ref == 'refs/heads/master'
-        run: |
-          echo "BRANCH_NAME=stable" >> $GITHUB_ENV
-      -
-        name: Set variables | dynamically part#2
-        if: github.ref == 'refs/heads/edge'
-        run: |
-          echo "BRANCH_NAME=edge" >> $GITHUB_ENV
-      -
-        name: Set variables | dynamically part#3
-        run: |
-          echo "APP_NAME=$(cat ${{ env.DOCKERFILE_NAME }} | grep APP_NAME= | head -n 1 | grep -o '".*"' | sed 's/"//g')" >> $GITHUB_ENV
-          echo "DOCKERHUB_USER=$(cat ${{ env.DOCKERFILE_NAME }} | grep DOCKERHUB_USER= | head -n 1 | grep -o '".*"' | sed 's/"//g')" >> $GITHUB_ENV
-          echo "GITHUB_ORG=$(cat ${{ env.DOCKERFILE_NAME }} | grep GITHUB_ORG= | head -n 1 | grep -o '".*"' | sed 's/"//g')" >> $GITHUB_ENV
-          echo "GITHUB_REGISTRY=$(cat ${{ env.DOCKERFILE_NAME }} | grep GITHUB_REGISTRY= | head -n 1 | grep -o '".*"' | sed 's/"//g')" >> $GITHUB_ENV
-          #
-          echo "VERSION=$(cat ${{ env.DOCKERFILE_NAME }} | grep VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g')" >> $GITHUB_ENV
-          echo "SHORT_HASH_COMMIT=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-          echo "DATE=$(date -d "-4 hours" "+%Y-%m-%d_%HH%Ms%S")" >> $GITHUB_ENV
-      -
-        name: Set variables | dynamically part#4
-        run: |
-          echo "VERSION_CI=${{ env.BRANCH_NAME }}_${{ env.VERSION }}_ci_${{ env.SHORT_HASH_COMMIT }}" >> $GITHUB_ENV
-          echo "VERSION_BRANCH=${{ env.BRANCH_NAME }}_${{ env.VERSION }}" >> $GITHUB_ENV
-          echo "VERSION_HASH_ONLY=${{ env.BRANCH_NAME }}_${{ env.VERSION }}_${{ env.SHORT_HASH_COMMIT }}" >> $GITHUB_ENV
-          echo "VERSION_HASH_DATE=${{ env.BRANCH_NAME }}_${{ env.VERSION }}_${{ env.SHORT_HASH_COMMIT }}_${{ env.DATE }}" >> $GITHUB_ENV
-          echo "DKR_PREFIX=${{ env.DOCKERHUB_USER }}/${{ env.APP_NAME }}" >> $GITHUB_ENV
-          echo "GPR_PREFIX=${{ env.GITHUB_ORG }}/${{ env.GITHUB_REGISTRY }}/${{ env.APP_NAME }}" >> $GITHUB_ENV
-          echo "_NOTI_MESSAGE=${{ env.APP_NAME }}:${{ env.BRANCH_NAME }}_${{ env.VERSION }}_${{ env.SHORT_HASH_COMMIT }}" >> $GITHUB_ENV
       - 
-        name: Show all variables
+        name: Download variables from artifact
+        uses: actions/download-artifact@master
+        with:
+          name: variables_on_disk
+          path: ~/varz
+      - 
+        name: Set variables for this job | à la sauce GitHub Actions
         run: |
-          echo "${{ env.VERSION_HASH_DATE }} < VERSION_HASH_DATE"
-          echo "${{ env.VERSION_HASH_ONLY }} < VERSION_HASH_ONLY"
-          echo "${{ env.VERSION_BRANCH }} < VERSION_BRANCH"
-          echo "${{ env.VERSION_CI }} < VERSION_CI"
-          echo "${{ env.VERSION }} < VERSION"
-          echo "${{ env.BRANCH_NAME }} < BRANCH_NAME"
-          echo "${{ env._NOTI_MESSAGE }} < _NOTI_MESSAGE"
-          echo "${{ env.DKR_PREFIX }} < DKR_PREFIX"
-          echo "${{ env.GPR_PREFIX }} < GPR_PREFIX"
-          echo "${{ env.SHORT_HASH_COMMIT }} < SHORT_HASH_COMMIT"
-          echo "${{ env.DATE }} < DATE"
-          echo "${{ env.DOCKERFILE_NAME }} < DOCKERFILE_NAME"
-          echo "${{ env.DOCKERHUB_USER }} < DOCKERHUB_USER"
-          echo "${{ env.APP_NAME }} < APP_NAME"
-          echo "${{ env.GITHUB_ORG }} < GITHUB_ORG"
-          echo "${{ env.GITHUB_REGISTRY }} < GITHUB_REGISTRY"
+          echo "VERSION_HASH_DATE=$(cat ~/varz/VERSION_HASH_DATE)" >> $GITHUB_ENV
+          echo "VERSION_HASH_ONLY=$(cat ~/varz/VERSION_HASH_ONLY)" >> $GITHUB_ENV
+          echo "VERSION_BRANCH=$(cat ~/varz/VERSION_BRANCH)" >> $GITHUB_ENV
+          echo "BRANCH_NAME=$(cat ~/varz/BRANCH_NAME)" >> $GITHUB_ENV
+          echo "VERSION_CI=$(cat ~/varz/VERSION_CI)" >> $GITHUB_ENV
+          echo "DKR_PREFIX=$(cat ~/varz/DKR_PREFIX)" >> $GITHUB_ENV
+          echo "GPR_PREFIX=$(cat ~/varz/GPR_PREFIX)" >> $GITHUB_ENV
+          echo "DOCKERFILE=$(cat ~/varz/DOCKERFILE)" >> $GITHUB_ENV
+          echo "DOCKERHUB_USER=$(cat ~/varz/DOCKERHUB_USER)" >> $GITHUB_ENV
+          echo "GITHUB_ORG=$(cat ~/varz/GITHUB_ORG)" >> $GITHUB_ENV
+          echo "APP_NAME=$(cat ~/varz/APP_NAME)" >> $GITHUB_ENV
+          echo "_NOTI_MESSAGE=$(cat ~/varz/_NOTI_MESSAGE)" >> $GITHUB_ENV
       -
         name: Send a slack notification
         run: |
@@ -274,7 +285,7 @@ jobs:
             -e NOTI_MESSAGE='${{ env._NOTI_MESSAGE }}' \
             -e SLACK_CHANNEL="github-actions" \
             -e SLACK_TOKEN_CRON="${{ secrets.TOKEN_SLACK }}" \
-            ${{ env.IMG_NOTI }} sh -c \
+            devmtl/noti:stable sh -c \
               ' NOTI_SLACK_TOKEN="$SLACK_TOKEN_CRON" \
                 NOTI_SLACK_CHANNEL="$SLACK_CHANNEL" \
                 noti -k -m "$NOTI_MESSAGE" '
@@ -304,15 +315,6 @@ jobs:
             -e DOCKERHUB_REPO_NAME=${{ env.APP_NAME }} \
             devmtl/readme-to-dockerhub:stable
       - 
-        name: Checkpoint | multi-platform images, docker inspect, history, version, info, uname
-        run: |
-          docker run --rm mplatform/mquery ${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_DATE }} && echo && echo
-          docker inspect ${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_DATE }} && echo && echo
-          docker history ${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_DATE }} --no-trunc && echo && echo
-          docker version && echo && echo
-          docker info && echo && echo
-          uname -a
-      - 
         name: Checkpoint | Lighthouse Audit
         uses: treosh/lighthouse-ci-action@v3
         with:
@@ -329,26 +331,19 @@ jobs:
         with:
           filepath: ./.github/load-test.yml
       - 
-        name: security-audit | Dockle
+        name: Security audit | Dockle
         run: |
           export DOCKLE_LATEST=$(curl --silent "https://api.github.com/repos/goodwithtech/dockle/releases/latest" | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
-          docker run --rm goodwithtech/dockle:v${DOCKLE_LATEST} ${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_ONLY }}
+          docker run --rm goodwithtech/dockle:v${DOCKLE_LATEST} ${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
       - 
-        name: security-audit | Trivy on docker image
+        name: Security audit| Trivy on docker image
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: '${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_ONLY }}'
+          image-ref: '${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_DATE }}'
           format: 'table'
           exit-code: '0'
           ignore-unfixed: true
           severity: 'LOW,MEDIUM,HIGH,CRITICAL'
-      - 
-        name: security-audit | Trivy on Git repo
-        run: |
-          export VERSION_TRIVY=$(curl --silent "https://api.github.com/repos/aquasecurity/trivy/releases/latest" | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
-          wget https://github.com/aquasecurity/trivy/releases/download/v${VERSION_TRIVY}/trivy_${VERSION_TRIVY}_Linux-64bit.tar.gz
-          tar zxvf trivy_${VERSION_TRIVY}_Linux-64bit.tar.gz
-          ./trivy repo https://github.com/firepress-org/ghostfire/
 
         # uses: brpaz/hadolint-action@master
         # warning crash the ci

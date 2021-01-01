@@ -1,0 +1,11 @@
+config:
+  target: https://trial.firepress.link/edge
+  phases:
+    - duration: 30 #sec
+      arrivalRate: 2
+
+scenarios:
+  - name: load test
+    flow:
+      - get:
+          url: /

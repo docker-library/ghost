@@ -4,7 +4,7 @@
 # Requires secrets on github: secrets.DOCKERHUB_PASSWORD, secrets.TOKEN_SLACK, secrets.TOKEN_GPR
 # All details: https://github.com/firepress-org/ghostfire/issues/23
 #
-# GNU v3 | Please credit the author if you are re-using some of it :-p 
+# GNU v3 | Please credit the author if you are re-using some of it :-p
 # by Pascal Andy | https://pascalandy.com/blog/now/
 
 name: build
@@ -15,9 +15,6 @@ on:
     branches:
       - 'master'
       - 'edge'
-      - 'dev'
-      - 'wip'
-      - 'pr'
 
   schedule:
     - cron: '0 8 * * *'
@@ -28,33 +25,24 @@ defaults:
 
 jobs:
 
-  status:
+  github_status:
     runs-on: ubuntu-20.04
     steps:
       -
-        name: Check GitHub Status
+        name: Get GitHub Status
         uses: crazy-max/ghaction-github-status@v2
-      -
-        name: Checkout
-        uses: actions/checkout@v2
+        with:
+          overall_threshold: minor
+          git_threshold: degraded_performance
+          actions_threshold: operational
 
   build:
-    needs: status
+    needs: github_status
     runs-on: ubuntu-20.04
     steps:
       -
         name: Checkout
         uses: actions/checkout@v2
-      -
-        name: Set variables when branch equal master
-        if: github.ref == 'refs/heads/master'
-        run: |
-          echo "BRANCH_NAME=stable" >> $GITHUB_ENV
-      -
-        name: Set variables when branch equal edge
-        if: github.ref == 'refs/heads/edge'
-        run: |
-          echo "BRANCH_NAME=edge" >> $GITHUB_ENV
       -
         name: Set variables | hardcoded
         run: |
@@ -62,6 +50,16 @@ jobs:
           echo "IMG_NOTI=devmtl/noti:stable" >> $GITHUB_ENV
       -
         name: Set variables | dynamically part#1
+        if: github.ref == 'refs/heads/master'
+        run: |
+          echo "BRANCH_NAME=stable" >> $GITHUB_ENV
+      -
+        name: Set variables | dynamically part#2
+        if: github.ref == 'refs/heads/edge'
+        run: |
+          echo "BRANCH_NAME=edge" >> $GITHUB_ENV
+      -
+        name: Set variables | dynamically part#3
         run: |
           echo "APP_NAME=$(cat ${{ env.DOCKERFILE_NAME }} | grep APP_NAME= | head -n 1 | grep -o '".*"' | sed 's/"//g')" >> $GITHUB_ENV
           echo "DOCKERHUB_USER=$(cat ${{ env.DOCKERFILE_NAME }} | grep DOCKERHUB_USER= | head -n 1 | grep -o '".*"' | sed 's/"//g')" >> $GITHUB_ENV
@@ -72,7 +70,7 @@ jobs:
           echo "SHORT_HASH_COMMIT=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
           echo "DATE=$(date -d "-4 hours" "+%Y-%m-%d_%HH%Ms%S")" >> $GITHUB_ENV
       -
-        name: Set variables | dynamically part#2
+        name: Set variables | dynamically part#4
         run: |
           echo "VERSION_CI=${{ env.BRANCH_NAME }}_${{ env.VERSION }}_ci_${{ env.SHORT_HASH_COMMIT }}" >> $GITHUB_ENV
           echo "VERSION_BRANCH=${{ env.BRANCH_NAME }}_${{ env.VERSION }}" >> $GITHUB_ENV
@@ -82,7 +80,7 @@ jobs:
           echo "GPR_PREFIX=${{ env.GITHUB_ORG }}/${{ env.GITHUB_REGISTRY }}/${{ env.APP_NAME }}" >> $GITHUB_ENV
           echo "_NOTI_MESSAGE=${{ env.APP_NAME }}:${{ env.BRANCH_NAME }}_${{ env.VERSION }}_${{ env.SHORT_HASH_COMMIT }}" >> $GITHUB_ENV
       - 
-        name: Show variables
+        name: Show all variables
         run: |
           echo "${{ env.VERSION_HASH_DATE }} < VERSION_HASH_DATE"
           echo "${{ env.VERSION_HASH_ONLY }} < VERSION_HASH_ONLY"
@@ -94,6 +92,7 @@ jobs:
           echo "${{ env.DKR_PREFIX }} < DKR_PREFIX"
           echo "${{ env.GPR_PREFIX }} < GPR_PREFIX"
           echo "${{ env.SHORT_HASH_COMMIT }} < SHORT_HASH_COMMIT"
+          echo "${{ env.DATE }} < DATE"
           echo "${{ env.DOCKERFILE_NAME }} < DOCKERFILE_NAME"
           echo "${{ env.DOCKERHUB_USER }} < DOCKERHUB_USER"
           echo "${{ env.APP_NAME }} < APP_NAME"
@@ -103,7 +102,12 @@ jobs:
         name: Set QEMU for Multi-platform builds
         uses: docker/setup-qemu-action@v1
       - 
-        name: Set Docker Buildx
+        name: MASTER | Set Docker Buildx
+        if: github.ref == 'refs/heads/master'
+        uses: docker/setup-buildx-action@v1
+      - 
+        name: EDGE | Set Docker Buildx
+        if: github.ref == 'refs/heads/edge'
         uses: docker/setup-buildx-action@v1
         with:
           buildkitd-flags: "--debug"
@@ -117,14 +121,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
       - 
-        name: Set authentification to DockerHub registry
+        name: Login to DockerHub registry
         if: github.event_name != 'pull_request'
         uses: docker/login-action@v1
         with:
           username: ${{ env.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
       - 
-        name: Set authentification to GitHub registry
+        name: Login to GitHub registry
         if: github.event_name != 'pull_request'
         uses: docker/login-action@v1
         with:
@@ -144,7 +148,7 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
       - 
-        name: Unit test Ghost
+        name: Checkpoint | Test Ghost container
         run: |
           docker run -d --name blogtest -p 2368:2368 -e WEB_URL=http://localhost:2368 -e NODE_ENV=production ${{ env.DKR_PREFIX }}:${{ env.VERSION_CI }}
           until $(curl --output /dev/null --silent --head --fail http://localhost:2368); do
@@ -199,15 +203,6 @@ jobs:
             ghcr.io/${{ env.GPR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
-      - 
-        name: logs | multi-platform images, docker inspect, history, version, info, uname
-        run: |
-          docker run --rm mplatform/mquery ${{ env.DKR_PREFIX }}:${{ env.VERSION_CI }}
-          docker inspect ${{ env.DKR_PREFIX }}:${{ env.VERSION_CI }}
-          docker history ${{ env.DKR_PREFIX }}:${{ env.VERSION_CI }} --no-trunc
-          docker version
-          docker info
-          uname -a
 
   post_build:
     needs: build
@@ -217,22 +212,22 @@ jobs:
         name: Checkout
         uses: actions/checkout@v2
       -
-        name: Set variables when branch equal master
-        if: github.ref == 'refs/heads/master'
-        run: |
-          echo "BRANCH_NAME=stable" >> $GITHUB_ENV
-      -
-        name: Set variables when branch equal edge
-        if: github.ref == 'refs/heads/edge'
-        run: |
-          echo "BRANCH_NAME=edge" >> $GITHUB_ENV
-      -
         name: Set variables | hardcoded
         run: |
           echo "DOCKERFILE_NAME=Dockerfile" >> $GITHUB_ENV
           echo "IMG_NOTI=devmtl/noti:stable" >> $GITHUB_ENV
       -
         name: Set variables | dynamically part#1
+        if: github.ref == 'refs/heads/master'
+        run: |
+          echo "BRANCH_NAME=stable" >> $GITHUB_ENV
+      -
+        name: Set variables | dynamically part#2
+        if: github.ref == 'refs/heads/edge'
+        run: |
+          echo "BRANCH_NAME=edge" >> $GITHUB_ENV
+      -
+        name: Set variables | dynamically part#3
         run: |
           echo "APP_NAME=$(cat ${{ env.DOCKERFILE_NAME }} | grep APP_NAME= | head -n 1 | grep -o '".*"' | sed 's/"//g')" >> $GITHUB_ENV
           echo "DOCKERHUB_USER=$(cat ${{ env.DOCKERFILE_NAME }} | grep DOCKERHUB_USER= | head -n 1 | grep -o '".*"' | sed 's/"//g')" >> $GITHUB_ENV
@@ -243,7 +238,7 @@ jobs:
           echo "SHORT_HASH_COMMIT=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
           echo "DATE=$(date -d "-4 hours" "+%Y-%m-%d_%HH%Ms%S")" >> $GITHUB_ENV
       -
-        name: Set variables | dynamically part#2
+        name: Set variables | dynamically part#4
         run: |
           echo "VERSION_CI=${{ env.BRANCH_NAME }}_${{ env.VERSION }}_ci_${{ env.SHORT_HASH_COMMIT }}" >> $GITHUB_ENV
           echo "VERSION_BRANCH=${{ env.BRANCH_NAME }}_${{ env.VERSION }}" >> $GITHUB_ENV
@@ -253,7 +248,7 @@ jobs:
           echo "GPR_PREFIX=${{ env.GITHUB_ORG }}/${{ env.GITHUB_REGISTRY }}/${{ env.APP_NAME }}" >> $GITHUB_ENV
           echo "_NOTI_MESSAGE=${{ env.APP_NAME }}:${{ env.BRANCH_NAME }}_${{ env.VERSION }}_${{ env.SHORT_HASH_COMMIT }}" >> $GITHUB_ENV
       - 
-        name: Show variables
+        name: Show all variables
         run: |
           echo "${{ env.VERSION_HASH_DATE }} < VERSION_HASH_DATE"
           echo "${{ env.VERSION_HASH_ONLY }} < VERSION_HASH_ONLY"
@@ -265,6 +260,7 @@ jobs:
           echo "${{ env.DKR_PREFIX }} < DKR_PREFIX"
           echo "${{ env.GPR_PREFIX }} < GPR_PREFIX"
           echo "${{ env.SHORT_HASH_COMMIT }} < SHORT_HASH_COMMIT"
+          echo "${{ env.DATE }} < DATE"
           echo "${{ env.DOCKERFILE_NAME }} < DOCKERFILE_NAME"
           echo "${{ env.DOCKERHUB_USER }} < DOCKERHUB_USER"
           echo "${{ env.APP_NAME }} < APP_NAME"
@@ -283,6 +279,20 @@ jobs:
                 NOTI_SLACK_CHANNEL="$SLACK_CHANNEL" \
                 noti -k -m "$NOTI_MESSAGE" '
       - 
+        name: Execute commands on cluster via SSH
+        uses: appleboy/ssh-action@v0.1.4
+        with:
+          host: "${{ secrets.NODE1 }},${{ secrets.NODE2 }},${{ secrets.NODE3 }}"
+          #sync: true
+          port: ${{ secrets.SSH_PORT }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY_ACTIONS }}
+          passphrase: ${{ secrets.SSH_KEY_ACTIONS_PASSPHRASE }}
+          script: |
+            echo && hostname
+            cd ${{ secrets.DEPLOY_SETUP_PATH }}
+            git rev-parse --short HEAD
+      - 
         name: Update README on Dockerhub
         if: github.ref == 'refs/heads/master'
         run: |
@@ -293,6 +303,31 @@ jobs:
             -e DOCKERHUB_REPO_PREFIX=${{ env.DOCKERHUB_USER }} \
             -e DOCKERHUB_REPO_NAME=${{ env.APP_NAME }} \
             devmtl/readme-to-dockerhub:stable
+      - 
+        name: Checkpoint | multi-platform images, docker inspect, history, version, info, uname
+        run: |
+          docker run --rm mplatform/mquery ${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_DATE }} && echo && echo
+          docker inspect ${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_DATE }} && echo && echo
+          docker history ${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_DATE }} --no-trunc && echo && echo
+          docker version && echo && echo
+          docker info && echo && echo
+          uname -a
+      - 
+        name: Checkpoint | Lighthouse Audit
+        uses: treosh/lighthouse-ci-action@v3
+        with:
+          urls: |
+            https://trial.firepress.link/edge/publishing-options/
+            https://trial.firepress.link/edge/the-editor/
+          #budgetPath: ./budget.json # test performance budgets
+          uploadArtifacts: true # save results as an action artifacts
+          temporaryPublicStorage: true # upload lighthouse report to the temporary storage
+      - 
+        name: Checkpoint | Artillery Audit
+        id: load-test
+        uses: kenju/github-actions-artillery@master
+        with:
+          filepath: ./.github/load-test.yml
       - 
         name: security-audit | Dockle
         run: |

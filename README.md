@@ -23,40 +23,43 @@
 
 ## What is this?
 
-**Docker image** — This is a Docker image to run Ghost V3 in a container 🐳. Fully compatible with a simple `docker run`, Docker Swarm or Kubernetes. Ensure you have Docker installed on your machine.
+**Docker image** — This is a Docker image to run Ghost V3 in a container 🐳.
 
-**What is Ghost?** — Ghost is an open source software that lets you create your website with a blog. See the [FAQ section](https://play-with-ghost.com/ghost-themes/faq/#what-is-ghost) for more details.
+**What is Ghost?** — Ghost is an open-source software that lets you create your website with a blog. See the [FAQ section](https://play-with-ghost.com/ghost-themes/faq/#what-is-ghost) for more details.
 
 <br>
 
 ## Why forking the official Docker image?
 
-- [x] Use a complexe but easy to follow **multi-stage build**. This docker image is much smaller. See details below.
-- [x] Use a `node-core` layer in order to **not include** npm, yarn, npx and friends in the final docker image
-- [x] **Compress** `node` using `upx`
+- [x] Dockerfile uses **multi-stage builds**
+- [x] Trimmed `npm`, `yarn`, `npx`, `ghost cli` and friends in the final docker image
 - [x] Use [**tini**](https://github.com/krallin/tini#why-tini)
-- [x] Use a better `config.production.json` **template**. These override the [default one](https://github.com/TryGhost/Ghost/blob/0faf89b5abcf6de747d4b309cdac364a863c71dc/core/server/config/defaults.json#L82)
-- [x] Have `curl` in the final image to support **`healthchecks`**
-- [x] Enhanced **unit tests with scanners** (Aqua Security, Trivy) in the CI
-- [x] Using **LABELS** based on the opencontainer standard
-- [x] Uninstall the `ghost cli` to save some space in the final docker image
-- [x] Use `npm cache clean --force` to safe some space
-- [x] The Docker image is **multi-arch ready**: `AMD64`, `ARM64`, `ARM` (wip)
-- [x] Feature requests are [tracked in our issues](https://github.com/firepress-org/ghostfire/labels/feature%20request)
+- [x] Use a better `config.production.json` **template**.
+- [x] `curl` to support **`healthchecks`**
+- [x] **LABELS** based on the opencontainer standard
 
-Overall, I do my best to apply **best practices**. Please let me know if something can be improved :)
+#### Greater control over Github Actions (CI):
 
+- [x] Better logic between jobs (pre-build / build / post-build)
+- [x] Share variables between jobs
+- [x] Multi-arch build (linux/amd64, linux/arm64, linux/arm/v7)
+- [x] Build uses cache it’s much faster now
+- [x] Execute CI using a single build.yml file with conditions for branch edge/master
+- [x] Execute commands on the cluster (via SSH)
+- [x] Slack notifications when build is successful
+- [x] Lighthouse audit (localhost and online)
+- [x] Security audit (Dockle, Trivy)
+- [x] and more!
+
+Overall, I do my best to apply **best practices**.
 
 #### Comparing docker image sizes
 
-We were able to trim about `100MB` on this image!
+We were able to trim about 60MB on our Docker image.
 
 ```
-devmtl/ghostfire:stable_3.38.3         270MB (89MB)
-
-ghost:3.38.3-alpine                    374MB (110MB)
-
-ghost:3.38.3                           440MB (132MB)
+devmtl/ghostfire:stable           310MB
+ghost:3-alpine                    367MB
 ```
 
 <br>
@@ -75,14 +78,6 @@ In short, you can try Ghost on the spot without having to sign-up!
 ](https://play-with-ghost.com/)
 
 <br>
-
-## How to use this docker image?
-
-First, find the latest docker images tags 🐳.
-
-#### Docker hub
-Find the latest tags here: 
-[https://hub.docker.com/r/devmtl/ghostfire/tags/](https://hub.docker.com/r/devmtl/ghostfire/tags/)
 
 #### Continuous integration
 See[Github Actions sections](https://github.com/firepress-org/ghostfire/actions)
@@ -117,7 +112,7 @@ docker run -d \
 -p 2368:2368 \
 -e url=http://localhost:2368 \
 -v /myuser/localpath/ghost/content:/var/lib/ghost/content \
--v /myuser/localpath/ghost/content:/var/lib/ghost/config.production.json \
+-v /myuser/localpath/ghost/content/config.production.json:/var/lib/ghost/config.production.json \
 ${GHOSTFIRE_IMG}
 ```
 
@@ -133,9 +128,12 @@ devmtl/ghostfire:stable_3.38.3
 devmtl/ghostfire:stable
 ```
 
+Find the latest tags on **DockerHub** here: 
+[https://hub.docker.com/r/devmtl/ghostfire/tags/](https://hub.docker.com/r/devmtl/ghostfire/tags/)
+
 #### edge branch (dev) tags 🐳
 
-For the **edge** branch (for dev), I recommend using the tag from the **last line**:
+This is reserved for development and testing.
 
 ```
 devmtl/ghostfire:edge_3.38.3_613c210_2020-11-30_23H41s10
@@ -147,7 +145,7 @@ devmtl/ghostfire:edge
 
 ## DevOps best practices
 
-Let's understand our processes.In this post « [How we update hundreds of Ghost's websites on Docker Swarm?](https://firepress.org/en/how-we-update-hundreds-of-ghosts-websites-on-docker-swarm/) », we explain how we deploy Ghost in production and which best practices we do follow.
+Let's understand our processes. In this post « [How we update hundreds of Ghost's websites on Docker Swarm?](https://firepress.org/en/how-we-update-hundreds-of-ghosts-websites-on-docker-swarm/) », we explain how we deploy Ghost in production and which best practices we do follow.
 
 ## Enhanced unit tests during the CI
 
@@ -161,13 +159,13 @@ Let's understand our processes.In this post « [How we update hundreds of Ghost'
 
 ## Developing Ghost themes locally
 
-I open sourced [my setup here](https://github.com/firepress-org/ghost-local-dev-in-docker). It’s a workflow to run Ghost locally within a Docker container. Once your local paths are defined, it’s enjoyable and easy to work **between many themes**.
+I open-sourced [my setup here](https://github.com/firepress-org/ghost-local-dev-in-docker). It’s a workflow to run Ghost locally within a Docker container. Once your local paths are defined, it’s enjoyable and easy to work **between many themes**.
 
 <br>
 
 ## Random stuff
 
-**Breaking change**. If you still run Ghost 0.11.xx (not recommanded!), be aware of the container's path difference.
+**Breaking change**. If you still run Ghost 0.11.xx (not recommended!), be aware of the container's path difference.
 
 ```
 - Ghost 3.x.x is:  /var/lib/ghost/content
@@ -198,7 +196,7 @@ At FirePress we empower entrepreneurs and small organizations to create their we
 
 At the moment, our **pricing** for hosting one Ghost website is $15 (Canadian dollars). This price will be only available for our first 100 new clients, starting May 1st, 2019 🙌. [See our pricing section](https://firepress.org/en/pricing/) for details.
 
-More details [about this announcements](https://forum.ghost.org/t/host-your-ghost-website-on-firepress/7092/1) on Ghost's forum.
+More details [about this announcement](https://forum.ghost.org/t/host-your-ghost-website-on-firepress/7092/1) on Ghost's forum.
 
 <br>
 

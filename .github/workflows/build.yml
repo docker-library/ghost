@@ -1,11 +1,7 @@
-# The beauty of our CI setup is that it will build a Dockerfile by setting a few variables
-# See how at https://github.com/firepress-org/rclone-in-docker/blob/master/README-CI.md
-#
-# Requires secrets on github: secrets.DOCKERHUB_PASSWORD, secrets.TOKEN_SLACK, secrets.TOKEN_GPR
-# All details: https://github.com/firepress-org/ghostfire/issues/23
-# 
-# GNU v3 | Please credit the author if you are re-using some of it :-p
-# by Pascal Andy | https://pascalandy.com/blog/now/
+# The beauty of our CI setup is that it will build any Dockerfile by 
+# setting a variables directly in this Dockerfile.
+# GNU v3 | Please credit the author if you are re-using some of it
+# by https://pascalandy.com/ and https://firepress.org/
 
 name: build
 
@@ -31,37 +27,39 @@ jobs:
   pre_build:
     runs-on: ubuntu-20.04
     steps:
-      - name: Setup timezone
+      - name: Job preparation | Set timezone
         uses: zcong1993/setup-timezone@v1.1.1
         with:
           timezone: America/Montreal
       -
-        name: Checkpoint | GitHub Status
+        name: Job preparation | GitHub Status
         uses: crazy-max/ghaction-github-status@v2
         with:
           overall_threshold: minor
           git_threshold: degraded_performance
           actions_threshold: operational
       -
-        name: Checkout
+        name: Job preparation | Checkout
         uses: actions/checkout@v2
       -
         name: Set variables | hardcoded
+        # The way we define our variables is very explicit. It makes it easy to add/remove vars.
+        # Many vars comes from the Dockerfile. There is only one hardcoded var is DOCKERFILE.
         run: |
           mkdir -pv ~/varz
           echo "Dockerfile" > ~/varz/DOCKERFILE
       -
-        name: Set variables if branch is EDGE
+        name: Set variables | EDGE
         if: github.ref == 'refs/heads/edge'
         run: |
           echo "edge" > ~/varz/BRANCH_NAME
       -
-        name: Set variables if branchis MASTER
+        name: Set variables | MASTER
         if: github.ref == 'refs/heads/master'
         run: |
-          echo "master" > ~/varz/BRANCH_NAME
+          echo "stable" > ~/varz/BRANCH_NAME
       -
-        name: Set variables to disk
+        name: Save variables to disk
         run: |
           cat $(cat ~/varz/DOCKERFILE) | grep APP_NAME= | head -n 1 | grep -o '".*"' | sed 's/"//g' > ~/varz/APP_NAME
           cat $(cat ~/varz/DOCKERFILE) | grep DOCKERHUB_USER= | head -n 1 | grep -o '".*"' | sed 's/"//g' > ~/varz/DOCKERHUB_USER
@@ -117,6 +115,7 @@ jobs:
           echo "${{ env._NOTI_MESSAGE }} < _NOTI_MESSAGE"
       - 
         name: Upload variables as artifact
+        # Other steps will reuse the variables.
         uses: actions/upload-artifact@master
         with:
           name: variables_on_disk
@@ -126,21 +125,21 @@ jobs:
     needs: [pre_build]
     runs-on: ubuntu-20.04
     steps:
-      - name: Setup timezone
+      - name: Job preparation | Set timezone
         uses: zcong1993/setup-timezone@v1.1.1
         with:
           timezone: America/Montreal
       -
-        name: Checkout
+        name: Job preparation | Checkout
         uses: actions/checkout@v2
       - 
-        name: Download variables from artifact
+        name: Job preparation | Download variables from artifact
         uses: actions/download-artifact@master
         with:
           name: variables_on_disk
           path: ~/varz
       - 
-        name: Set variables for this job | à la sauce GitHub Actions
+        name: Job preparation | Set variables for this job | à la sauce GitHub Actions
         run: |
           echo "VERSION_HASH_DATE=$(cat ~/varz/VERSION_HASH_DATE)" >> $GITHUB_ENV
           echo "VERSION_HASH_ONLY=$(cat ~/varz/VERSION_HASH_ONLY)" >> $GITHUB_ENV
@@ -155,20 +154,20 @@ jobs:
           echo "APP_NAME=$(cat ~/varz/APP_NAME)" >> $GITHUB_ENV
           echo "_NOTI_MESSAGE=$(cat ~/varz/_NOTI_MESSAGE)" >> $GITHUB_ENV
       -
-        name: Set QEMU for Multi-platform builds
+        name: Set QEMU for Multi-platform docker builds
         uses: docker/setup-qemu-action@v1
       - 
-        name: MASTER | Set Docker Buildx
-        if: github.ref == 'refs/heads/master'
-        uses: docker/setup-buildx-action@v1
-      - 
-        name: EDGE | Set Docker Buildx
+        name: Set docker Buildx on EDGE
         if: github.ref == 'refs/heads/edge'
         uses: docker/setup-buildx-action@v1
         with:
           buildkitd-flags: "--debug"
+      - 
+        name: Set docker Buildx on MASTER
+        if: github.ref == 'refs/heads/master'
+        uses: docker/setup-buildx-action@v1
       -
-        name: Set cache Docker layers
+        name: Set cache docker layers
         id: docker-cache
         uses: actions/cache@v2
         with:
@@ -192,7 +191,7 @@ jobs:
           username: ${{ env.GITHUB_ORG }}
           password: ${{ secrets.TOKEN_GPR }}
       -
-        name: EDGE or MASTER | buildx and push tag VERSION_CI (limited to linux/amd64)
+        name: Build and push VERSION_CI tag (limited to linux/amd64)
         uses: docker/build-push-action@v2
         with:
           context: .
@@ -272,21 +271,21 @@ jobs:
     needs: [build]
     runs-on: ubuntu-20.04
     steps:
-      - name: Setup timezone
+      - name: Job preparation | Set timezone
         uses: zcong1993/setup-timezone@v1.1.1
         with:
           timezone: America/Montreal
       -
-        name: Checkout
+        name: Job preparation | Checkout
         uses: actions/checkout@v2
       - 
-        name: Download variables from artifact
+        name: Job preparation | Download variables from artifact
         uses: actions/download-artifact@master
         with:
           name: variables_on_disk
           path: ~/varz
       - 
-        name: Set variables for this job | à la sauce GitHub Actions
+        name: Job preparation | Set variables for this job | à la sauce GitHub Actions
         run: |
           echo "VERSION_HASH_DATE=$(cat ~/varz/VERSION_HASH_DATE)" >> $GITHUB_ENV
           echo "VERSION_HASH_ONLY=$(cat ~/varz/VERSION_HASH_ONLY)" >> $GITHUB_ENV
@@ -311,7 +310,7 @@ jobs:
           key: ${{ secrets.SSH_KEY_ACTIONS }}
           passphrase: ${{ secrets.SSH_KEY_ACTIONS_PASSPHRASE }}
           script: |
-            echo && hostname
+            hostname
             cd ${{ secrets.DEPLOY_SETUP_PATH }}
             git rev-parse --short HEAD
       - 
@@ -342,21 +341,21 @@ jobs:
     needs: [build]
     runs-on: ubuntu-20.04
     steps:
-      - name: Setup timezone
+      - name: Job preparation | Setup timezone
         uses: zcong1993/setup-timezone@v1.1.1
         with:
           timezone: America/Montreal
       -
-        name: Checkout
+        name: Job preparation | Checkout
         uses: actions/checkout@v2
       - 
-        name: Download variables from artifact
+        name: Job preparation | Download variables from artifact
         uses: actions/download-artifact@master
         with:
           name: variables_on_disk
           path: ~/varz
       - 
-        name: Set variables for this job | à la sauce GitHub Actions
+        name: Job preparation | Set variables for this job | à la sauce GitHub Actions
         run: |
           echo "VERSION_HASH_DATE=$(cat ~/varz/VERSION_HASH_DATE)" >> $GITHUB_ENV
           echo "VERSION_HASH_ONLY=$(cat ~/varz/VERSION_HASH_ONLY)" >> $GITHUB_ENV
@@ -401,14 +400,12 @@ jobs:
           ignore-unfixed: true
           severity: 'LOW,MEDIUM,HIGH,CRITICAL'
 
-
         # uses: brpaz/hadolint-action@master
         # warning crash the ci
         # https://github.com/brpaz/hadolint-action/issues/17
 
         # Send Github action logs to a PR or commits them
-        # I have no idea how to do this at the moment 2020-12-30_11h26
 
-  # post_build_cache:
-  # The strategy to save build time on master branch does not work at this point.
-  # That's because cache hit occurred on the primary key Linux-buildx-2f94a386b0106b66be4adacf39febfd8eac9dde5, not saving cache.
+        # post_build_cache:
+        # The strategy to save build time on master branch does not work at this point.
+        # That's because cache hit occurred on the primary key Linux-buildx-2f94a386b0106b66be4adacf39febfd8eac9dde5, not saving cache.

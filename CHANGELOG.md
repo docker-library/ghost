@@ -29,6 +29,7 @@ Since the last few a days, I’m doing massive Github Actions updates in the way
 - and more :-p
 
 ### ⚡️ Updates to our CI
+- [4f6a282](https://github.com/firepress-org/ghostfire/commit/4f6a282) CI / Rename steps and improve comments
 - [e92df60](https://github.com/firepress-org/ghostfire/commit/e92df60) CI / Rename jobs after the build
 - [4a3e4c9](https://github.com/firepress-org/ghostfire/commit/4a3e4c9) CI / Add step: timezone
 - [2b338d0](https://github.com/firepress-org/ghostfire/commit/2b338d0) CI / Add a new job: audits

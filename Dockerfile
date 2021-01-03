@@ -56,7 +56,7 @@ FROM myalpine AS version-debug
 # grab su-exec for easy step-down from root
 # add "bash" for "[["
 RUN set -eux && apk update && apk add --no-cache \
-    'su-exec>=0.2' bash upx curl tini tzdata &&\
+    'su-exec>=0.2-r1' bash curl tini tzdata &&\
     apk upgrade
 
 # ----------------------------------------------
@@ -98,11 +98,7 @@ FROM node-core AS ghost-base
 
 RUN set -eux && apk add --no-cache \
       # grab su-exec for easy step-down from root
-      'su-exec>=0.2-r1' \
-      bash \
-      curl \
-      tini="0.19.0-r0" \
-      tzdata="2020c-r1" &&\
+      'su-exec>=0.2-r1' bash curl tini tzdata &&\
     # set up timezone
     cp /usr/share/zoneinfo/America/New_York /etc/localtime        &&\
     echo "America/New_York" > /etc/timezone                       &&\

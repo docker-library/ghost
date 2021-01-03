@@ -1,14 +1,9 @@
-### About this changelog
+This **CHANGELOG** should make it easy for you to see what is happening with this project. Each release automatically generates/formats/updates this changeling thanks to [BashLaVa](https://github.com/firepress-org/bashlava). It uses the same « Agile Deployment Lifecycle » we use at FirePress. See our [blog post](https://firepress.org/en/how-do-we-update-hundreds-of-ghosts-websites-on-docker-swarm/) about it. It follows the [keep a changelog](https://keepachangelog.com/en/1.0.0/) spirit and adheres to [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
-Based on this [template](https://gist.github.com/pascalandy/af709db02d3fe132a3e6f1c11b934fe4). Release process at FirePress ([blog post](https://firepress.org/en/software-and-ghost-updates/)). Based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
-### Status template
-
-- ⚡️ Updates
-- 🚀 New feat.
-- 🐛 Fix bug
-- 🛑 Removed
-- 🔑 Security
+Status template:
+| ⚡️ Updates | 🚀 Added | ⚠️ Changed |
+🐛 Fixed | 🛑 Removed | 🔑 Security |
+🙈 Oops | 🎨 Design | 🎉 happy | 🙌 blessed
 
 # Releases
 

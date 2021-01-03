@@ -12,23 +12,24 @@ Based on this [template](https://gist.github.com/pascalandy/af709db02d3fe132a3e6
 
 # Releases
 
-## 3.40.2 (2021-01-01)
+## 3.40.2 (2021-01-03)
 ### ⚡️ Updates
 
 Since the last few a days, I’m doing massive Github Actions updates in the way we build Ghost. The highlights are:
 
-- Multi-arch build (linux/amd64, linux/arm64, linux/arm/v7)
-- Build uses cache it’s much faster now
-- Execute CI using a single build.yml file with conditions for branch edge/master
-- Better logic between jobs (pre-build / build / post-build)
-- Share variables between jobs
-- Execute commands on the cluster (via SSH)
-- Slack notifications when build is successful
-- Lighthouse audit (localhost and online)
-- Security audit (Dockle, Trivy)
-- and more :-p
+- [x] Better logic between jobs (pre-build / build / post-build)
+- [x] Share variables between jobs
+- [x] Multi-arch build (linux/amd64, linux/arm64, linux/arm/v7)
+- [x] Build uses cache it’s much faster now
+- [x] Execute CI using a single build.yml file with conditions for branch edge/master
+- [x] Execute commands on the cluster (via SSH)
+- [x] Slack notifications when build is successful
+- [x] Lighthouse audit (localhost and online)
+- [x] Security audit (Dockle, Trivy)
+- [x] and more!
 
 ### ⚡️ Updates to our CI
+- [043a245](https://github.com/firepress-org/ghostfire/commit/043a245) Dockerfile / Remove specific version from tini and tzdata
 - [4f6a282](https://github.com/firepress-org/ghostfire/commit/4f6a282) CI / Rename steps and improve comments
 - [e92df60](https://github.com/firepress-org/ghostfire/commit/e92df60) CI / Rename jobs after the build
 - [4a3e4c9](https://github.com/firepress-org/ghostfire/commit/4a3e4c9) CI / Add step: timezone

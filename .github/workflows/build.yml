@@ -235,14 +235,15 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: |
-            ${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
-            ${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_ONLY }}
-            ${{ env.DKR_PREFIX }}:${{ env.VERSION_BRANCH }}
             ${{ env.DKR_PREFIX }}:${{ env.BRANCH_NAME }}
-            ${{ env.GPR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
-            ${{ env.GPR_PREFIX }}:${{ env.VERSION_HASH_ONLY }}
-            ${{ env.GPR_PREFIX }}:${{ env.VERSION_BRANCH }}
+            ${{ env.DKR_PREFIX }}:${{ env.VERSION_BRANCH }}
+            ${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_ONLY }}
+            ${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
             ${{ env.GPR_PREFIX }}:${{ env.BRANCH_NAME }}
+            ${{ env.GPR_PREFIX }}:${{ env.VERSION_BRANCH }}
+            ${{ env.GPR_PREFIX }}:${{ env.VERSION_HASH_ONLY }}
+            ${{ env.GPR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
+          # The order for <docker push -tag> matters for our CD down the line.
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
       -

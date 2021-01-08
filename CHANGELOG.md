@@ -7,6 +7,19 @@ Status template:
 
 # Releases
 
+## 3.40.5 (2021-01-07)
+### ⚡️ Updates
+- [7f8c6e6](https://github.com/firepress-org/ghostfire/commit/7f8c6e6) Add SSH commands for deployments CICD
+- [31823ec](https://github.com/firepress-org/ghostfire/commit/31823ec) Update tag push order
+- [6f92127](https://github.com/firepress-org/ghostfire/commit/6f92127) Update ghostfire to version 3.40.5 /Dockerfile
+- [cf61334](https://github.com/firepress-org/ghostfire/commit/cf61334) Update ghostfire to version 3.40.4 /Dockerfile
+- [1773751](https://github.com/firepress-org/ghostfire/commit/1773751) Update ghostfire to version 3.40.3 /Dockerfile
+- [9205071](https://github.com/firepress-org/ghostfire/commit/9205071) update changelog header
+- [3543e22](https://github.com/firepress-org/ghostfire/commit/3543e22) CHANGELOG update
+
+### 🔍 Compare
+- ... with previous release: [3.40.2 <> 3.40.5](https://github.com/firepress-org/ghostfire/compare/3.40.2...3.40.5)
+
 ## 3.40.2 (2021-01-03)
 ### ⚡️ Updates
 

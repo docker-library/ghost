@@ -301,19 +301,33 @@ jobs:
           echo "APP_NAME=$(cat ~/varz/APP_NAME)" >> $GITHUB_ENV
           echo "_NOTI_MESSAGE=$(cat ~/varz/_NOTI_MESSAGE)" >> $GITHUB_ENV
       - 
-        name: Execute commands on cluster via SSH
+        name: via SSH | Continous deployment for edge
+        if: github.ref == 'refs/heads/edge'
         uses: appleboy/ssh-action@v0.1.4
         with:
-          host: "${{ secrets.NODE1 }},${{ secrets.NODE2 }},${{ secrets.NODE3 }}"
-          #sync: true
+          host: ${{ secrets.NODE1 }}
           port: ${{ secrets.SSH_PORT }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY_ACTIONS }}
           passphrase: ${{ secrets.SSH_KEY_ACTIONS_PASSPHRASE }}
           script: |
+            ${{ secrets.SSH_CMD__UPDATE_DKR_IMG_EDGE }}
             hostname
-            cd ${{ secrets.DEPLOY_SETUP_PATH }}
-            git rev-parse --short HEAD
+          #sync: true 
+          #host: "${{ secrets.NODE1 }},${{ secrets.NODE2 }},${{ secrets.NODE3 }}"
+      - 
+        name: via SSH | Continous deployment for master
+        if: github.ref == 'refs/heads/master'
+        uses: appleboy/ssh-action@v0.1.4
+        with:
+          host: ${{ secrets.NODE1 }}
+          port: ${{ secrets.SSH_PORT }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY_ACTIONS }}
+          passphrase: ${{ secrets.SSH_KEY_ACTIONS_PASSPHRASE }}
+          script: |
+            ${{ secrets.SSH_CMD__UPDATE_DKR_IMG_STABLE }}
+            hostname
       - 
         name: Update README on Dockerhub
         if: github.ref == 'refs/heads/master'

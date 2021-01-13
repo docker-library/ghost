@@ -315,6 +315,7 @@ jobs:
             hostname
           #sync: true 
           #host: "${{ secrets.NODE1 }},${{ secrets.NODE2 }},${{ secrets.NODE3 }}"
+          # alt projet: fifsky/ssh-action@master https://github.com/appleboy/ssh-action/issues/80#issuecomment-759473472
       - 
         name: via SSH | Continous deployment for master
         if: github.ref == 'refs/heads/master'

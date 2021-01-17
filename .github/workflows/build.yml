@@ -1,5 +1,5 @@
 # The beauty of our CI setup is that it will build any Dockerfile by 
-# setting a variables directly in this Dockerfile.
+# setting a variables directly in this Dockerfile. 
 # GNU v3 | Please credit the author if you are re-using some of it
 # by https://pascalandy.com/ and https://firepress.org/
 

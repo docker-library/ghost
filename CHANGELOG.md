@@ -7,6 +7,17 @@ Status template:
 
 # Releases
 
+## 3.40.5 (2021-01-18)
+### ⚡️ Updates
+- [ff0b624](https://github.com/firepress-org/ghostfire/commit/ff0b624) comment updates
+- [7a70097](https://github.com/firepress-org/ghostfire/commit/7a70097) ci trigger
+- [7c6736e](https://github.com/firepress-org/ghostfire/commit/7c6736e) Add comments
+- [7cc8680](https://github.com/firepress-org/ghostfire/commit/7cc8680) Update comments
+- [81bc7dd](https://github.com/firepress-org/ghostfire/commit/81bc7dd) remove backlog.md
+
+### 🔍 Compare
+- ... with previous release: [3.40.5 <> 3.40.5](https://github.com/firepress-org/ghostfire/compare/3.40.5...3.40.5)
+
 ## 3.40.5 (2021-01-07)
 ### ⚡️ Updates
 - [7f8c6e6](https://github.com/firepress-org/ghostfire/commit/7f8c6e6) Add SSH commands for deployments CICD

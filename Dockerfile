@@ -25,18 +25,16 @@ ARG GIT_REPO_SOURCE="https://github.com/TryGhost/Ghost"
 ###################################
 ARG OS="alpine"
 ARG NODE_VERSION="14.15-alpine3.12"
-  # node version issue: https://github.com/docker-library/ghost/issues/208
-  # https://hub.docker.com/_/node/
 ARG GHOST_CLI_VERSION="1.15.3"
 ARG ALPINE_VERSION="3.12"
 ARG USER="node"
 ARG GHOST_USER="node"
 ARG CREATED_DATE=not-set
 ARG SOURCE_COMMIT=not-set
-
+# node version issue: https://github.com/docker-library/ghost/issues/208
+# https://hub.docker.com/_/node/
 # https://docs.ghost.org/faq/node-versions/
 # https://github.com/nodejs/LTS
-
 
 # ----------------------------------------------
 # 1) LAYER to manage base image(s) versioning. Credit to Tõnis Tiigi / https://bit.ly/2RoCmvG

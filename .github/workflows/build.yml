@@ -387,7 +387,7 @@ jobs:
           echo "_NOTI_MESSAGE=$(cat ~/varz/_NOTI_MESSAGE)" >> $GITHUB_ENV
       - 
         name: Audit | Lighthouse
-        uses: treosh/lighthouse-ci-action@v7.0.0
+        uses: treosh/lighthouse-ci-action@7.0.0
         with:
           urls: |
             https://trial.firepress.link/edge/publishing-options/

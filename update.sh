@@ -48,11 +48,17 @@ for version in "${versions[@]}"; do
 		echo >&2 "error: cannot determine full version for '$version'"
 	fi
 
-	(
-		set -x
-		sed -ri \
-			-e 's/^(ENV GHOST_VERSION) .*/\1 '"$fullVersion"'/' \
-			-e 's/^(ENV GHOST_CLI_VERSION) .*/\1 '"$cliVersion"'/' \
-			"$version"/*/Dockerfile
-	)
+	# https://github.com/TryGhost/Ghost-CLI/commit/29848c090b9aaea32f19df5731fcf833b885f621
+	channel='stable'
+	if [ "$rcVersion" != "$version" ]; then
+		channel='next'
+	fi
+
+	echo "$version: $fullVersion ($channel; cli $cliVersion)"
+
+	sed -ri \
+		-e 's/^(ENV GHOST_VERSION) .*/\1 '"$fullVersion"'/' \
+		-e 's/^(ENV GHOST_CHANNEL) .*/\1 '"$channel"'/' \
+		-e 's/^(ENV GHOST_CLI_VERSION) .*/\1 '"$cliVersion"'/' \
+		"$version"/*/Dockerfile
 done

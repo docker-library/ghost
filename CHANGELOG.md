@@ -7,6 +7,34 @@ Status template:
 
 # Releases
 
+## 3.41.9 (2021-03-05)
+### ⚡️ Updates
+- [49e34e7](https://github.com/firepress-org/ghostfire/commit/49e34e7) Update ghostfire to version 3.41.9
+- [6e497a9](https://github.com/firepress-org/ghostfire/commit/6e497a9) update to Alpine 3.13 & Node v14.6
+- [8b59a44](https://github.com/firepress-org/ghostfire/commit/8b59a44) update to GHOST CLI to v1.16.0
+- [5137028](https://github.com/firepress-org/ghostfire/commit/5137028) Update ghostfire to version 3.41.8
+- [a3db817](https://github.com/firepress-org/ghostfire/commit/a3db817) Update ghostfire to version 3.41.6
+- [e573b86](https://github.com/firepress-org/ghostfire/commit/e573b86) update to actions/cache@v2.1.4
+- [8f7493c](https://github.com/firepress-org/ghostfire/commit/8f7493c) Update ghostfire to version 3.41.5
+- [10e6e7a](https://github.com/firepress-org/ghostfire/commit/10e6e7a) Update ghostfire to version 3.41.4
+- [7eb8690](https://github.com/firepress-org/ghostfire/commit/7eb8690) Bump treosh/lighthouse-ci-action from v3 to 7.0.0 /b
+- [cb2325b](https://github.com/firepress-org/ghostfire/commit/cb2325b) Bump treosh/lighthouse-ci-action from v3 to 7.0.0
+- [5e1d1ef](https://github.com/firepress-org/ghostfire/commit/5e1d1ef) Update ghostfire to version 3.41.3
+- [001cdf3](https://github.com/firepress-org/ghostfire/commit/001cdf3) improve comments
+- [7a6dee5](https://github.com/firepress-org/ghostfire/commit/7a6dee5) Update ghostfire to version 3.41.2
+- [d42dbc5](https://github.com/firepress-org/ghostfire/commit/d42dbc5) Update ghostfire to version 3.41.1
+- [8fa997c](https://github.com/firepress-org/ghostfire/commit/8fa997c) FIX changelog
+- [cbbcd80](https://github.com/firepress-org/ghostfire/commit/cbbcd80) Update ghostfire to version 3.41.0
+- [29a85c9](https://github.com/firepress-org/ghostfire/commit/29a85c9) init
+- [ff0b624](https://github.com/firepress-org/ghostfire/commit/ff0b624) comment updates
+- [7a70097](https://github.com/firepress-org/ghostfire/commit/7a70097) ci trigger
+- [7c6736e](https://github.com/firepress-org/ghostfire/commit/7c6736e) Add comments
+- [7cc8680](https://github.com/firepress-org/ghostfire/commit/7cc8680) Update comments
+- [81bc7dd](https://github.com/firepress-org/ghostfire/commit/81bc7dd) remove backlog.md
+
+### 🔍 Compare
+- ... with previous release: [3.40.5 <> 3.41.9](https://github.com/firepress-org/ghostfire/compare/3.40.5...3.41.9)
+
 ## 3.40.5 (2021-01-18)
 ### ⚡️ Updates
 - [ff0b624](https://github.com/firepress-org/ghostfire/commit/ff0b624) comment updates

@@ -11,19 +11,13 @@ versions=( "${versions[@]%/}" )
 
 allVersions="$(
 	git ls-remote --tags https://github.com/TryGhost/Ghost.git \
-		| cut -d$'\t' -f2 \
-		| grep -E '^refs/tags/[0-9]+\.[0-9]+' \
-		| cut -d/ -f3 \
-		| cut -d^ -f1 \
+		| sed -rne 's!^.*\trefs/tags/v?|\^\{\}$!!g; /^[0-9][.][0-9]+/p' \
 		| sort -ruV
 )"
 
 cliVersion="$(
 	git ls-remote --tags https://github.com/TryGhost/Ghost-CLI.git \
-		| cut -d$'\t' -f2 \
-		| grep -E '^refs/tags/[0-9]+\.[0-9]+' \
-		| cut -d/ -f3 \
-		| cut -d^ -f1 \
+		| sed -rne 's!^.*\trefs/tags/v?|\^\{\}$!!g; /^[0-9][.][0-9]+/p' \
 		| grep -vE -- '-(alpha|beta|rc)' \
 		| sort -ruV \
 		| head -n1

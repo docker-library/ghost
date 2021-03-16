@@ -25,7 +25,7 @@ ARG GIT_REPO_SOURCE="https://github.com/TryGhost/Ghost"
 ###################################
 ARG OS="alpine"
 ARG NODE_VERSION="14.16-alpine3.13"
-ARG GHOST_CLI_VERSION="1.16.1"
+ARG GHOST_CLI_VERSION="1.16.2"
 ARG ALPINE_VERSION="3.13"
 ARG USER="node"
 ARG GHOST_USER="node"

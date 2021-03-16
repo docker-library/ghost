@@ -24,7 +24,7 @@ ARG GIT_REPO_SOURCE="https://github.com/TryGhost/Ghost"
 # Start your Dockerfile from here
 ###################################
 ARG OS="alpine"
-ARG NODE_VERSION="node:12-alpine3.12"
+ARG NODE_VERSION="12-alpine3.12"
 ARG GHOST_CLI_VERSION="1.16.2"
 ARG ALPINE_VERSION="3.13"
 ARG USER="node"

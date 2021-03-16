@@ -46,6 +46,7 @@ for version in "${versions[@]}"; do
 	)"
 	if [ -z "$fullVersion" ]; then
 		echo >&2 "error: cannot determine full version for '$version'"
+		exit 1
 	fi
 
 	(

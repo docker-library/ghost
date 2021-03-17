@@ -7,6 +7,15 @@ Status template:
 
 # Releases
 
+## 3.42.2 (2021-03-17)
+### ⚡️ Updates
+- [2a84082](https://github.com/firepress-org/ghostfire/commit/2a84082) rollback to node 12-alpine3.12 /b
+- [39ad3e2](https://github.com/firepress-org/ghostfire/commit/39ad3e2) update to GHOST_CLI_VERSION 1.16.2
+- [90aa060](https://github.com/firepress-org/ghostfire/commit/90aa060) Update ghostfire to version 3.42.2 /Dockerfile
+
+### 🔍 Compare
+- ... with previous release: [3.41.9 <> 3.42.2](https://github.com/firepress-org/ghostfire/compare/3.41.9...3.42.2)
+
 ## 3.41.9 (2021-03-05)
 ### ⚡️ Updates
 - [49e34e7](https://github.com/firepress-org/ghostfire/commit/49e34e7) Update ghostfire to version 3.41.9

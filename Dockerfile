@@ -3,8 +3,8 @@
 # This Dockerfile is REQUIRED by BashLaVa https://github.com/firepress-org/bashlava
 ###################################
 ARG APP_NAME="ghostfire"
-ARG VERSION="3.42.3"
-ARG RELEASE="3.42.3"
+ARG VERSION="3.42.4"
+ARG RELEASE="3.42.4"
 ARG GITHUB_USER="firepress-org"
 
 ###################################

@@ -21,7 +21,7 @@ ARG GIT_REPO_SOURCE="https://github.com/TryGhost/Ghost"
 # ----------------------------------------------
 # Start your Dockerfile from here
 ARG GHOST_CLI_VERSION="1.16.3"
-ARG NODE_VERSION="12-alpine3.12"
+ARG NODE_VERSION="14.16-alpine3.13"
 ARG OS="alpine"
 ARG ALPINE_VERSION="3.13"
 ARG USER="node"
@@ -29,7 +29,6 @@ ARG GHOST_USER="node"
 ARG CREATED_DATE="not-set"
 ARG SOURCE_COMMIT="not-set"
 
-# node version issue: https://github.com/docker-library/ghost/issues/208
 # https://hub.docker.com/_/node/
 # https://docs.ghost.org/faq/node-versions/
 # https://github.com/nodejs/LTS
@@ -168,6 +167,7 @@ RUN set -eux                                                      &&\
 COPY --chown=node:node docker-entrypoint.sh /usr/local/bin
 COPY --chown=node:node Dockerfile /usr/local/bin
 COPY --chown=node:node README.md /usr/local/bin
+
 COPY --from=ghost-builder --chown=node:node "${GHOST_INSTALL}" "${GHOST_INSTALL}"
 
 # add knex-migrator bins into PATH

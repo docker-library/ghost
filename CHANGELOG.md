@@ -7,6 +7,17 @@ Status template:
 
 # Releases
 
+## 3.42.4 (2021-03-23)
+### ⚡️ Updates
+- [eba4a60](https://github.com/firepress-org/ghostfire/commit/eba4a60) update to 14.16-alpine3.13
+- [86bb20f](https://github.com/firepress-org/ghostfire/commit/86bb20f) Update ghostfire to version 3.42.4 /Dockerfile
+- [0971e58](https://github.com/firepress-org/ghostfire/commit/0971e58) Update ghostfire to version 3.42.3 /Dockerfile
+- [af3f487](https://github.com/firepress-org/ghostfire/commit/af3f487) update ghost cli to 1.16.3
+- [ef2ca11](https://github.com/firepress-org/ghostfire/commit/ef2ca11) restructure Dockerfile
+
+### 🔍 Compare
+- ... with previous release: [3.42.2 <> 3.42.4](https://github.com/firepress-org/ghostfire/compare/3.42.2...3.42.4)
+
 ## 3.42.2 (2021-03-17)
 ### ⚡️ Updates
 - [2a84082](https://github.com/firepress-org/ghostfire/commit/2a84082) rollback to node 12-alpine3.12 /b

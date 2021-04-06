@@ -157,13 +157,13 @@ jobs:
         name: Set QEMU for Multi-platform docker builds
         uses: docker/setup-qemu-action@v1
       - 
-        name: Set docker Buildx on EDGE
+        name: EDGE | Set docker Buildx
         if: github.ref == 'refs/heads/edge'
         uses: docker/setup-buildx-action@v1
         with:
           buildkitd-flags: "--debug"
       - 
-        name: Set docker Buildx on MASTER
+        name: MASTER | Set docker Buildx on
         if: github.ref == 'refs/heads/master'
         uses: docker/setup-buildx-action@v1
       -
@@ -208,10 +208,10 @@ jobs:
         run: |
           docker run -d --name blogtest -p 2368:2368 -e WEB_URL=http://localhost:2368 -e NODE_ENV=production ${{ env.DKR_PREFIX }}:${{ env.VERSION_CI }}
           until $(curl --output /dev/null --silent --head --fail http://localhost:2368); do
-            echo "waiting for ghostblog container...";
-            sleep 4;
+            echo "Waiting for Ghost ghostblog container...";
+            sleep 3;
           done;
-          curl http://localhost:2368 | grep "The professional publishing platform"
+          curl http://localhost:2368 | grep "Thoughts, stories and ideas"
           git clone --depth 1 https://github.com/docker-library/official-images.git official-images
           ### overide config.sh We must bypass UTC timezone test
           cp ./test/config.sh official-images/test/config.sh
@@ -253,7 +253,6 @@ jobs:
         with:
           context: .
           file: ./${{ env.DOCKERFILE }}
-          # linux/arm/v6 not included as fetching packages is unstable
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           push: true
           tags: |

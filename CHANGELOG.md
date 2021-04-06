@@ -7,6 +7,14 @@ Status template:
 
 # Releases
 
+## 4.1.2 (2021-04-05)
+### ⚡️ Updates
+- [49f6679](https://github.com/firepress-org/ghostfire/commit/49f6679) Update node:14-alpine3.13, multi-platform build .
+- [18f31d6](https://github.com/firepress-org/ghostfire/commit/d02d29c) Major update to Ghost 4.1.2, Node v12, CLI 1.16.3 (squash)
+
+### 🔍 Compare
+- ... with previous release: [3.42.4 <> 4.1.2](https://github.com/firepress-org/ghostfire/compare/3.42.4...4.1.2)
+
 ## 3.42.4 (2021-03-23)
 ### ⚡️ Updates
 - [eba4a60](https://github.com/firepress-org/ghostfire/commit/eba4a60) update to 14.16-alpine3.13

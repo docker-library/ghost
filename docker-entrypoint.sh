@@ -1,17 +1,10 @@
 #!/usr/bin/env bash
-# based on https://github.com/docker-library/ghost/blob/master/2/alpine/docker-entrypoint.sh
-
-# A better class of script
-set -o errexit          # Exit on most errors (see the manual)
-set -o errtrace         # Make sure any error trap is inherited
-set -o nounset          # Disallow expansion of unset variables
-#!/bin/bash
 set -e
 
 # allow the container to be started with `--user`
 if [[ "$*" == node*current/index.js* ]] && [ "$(id -u)" = '0' ]; then
 	find "$GHOST_CONTENT" \! -user node -exec chown node '{}' +
-	exec gosu node "$BASH_SOURCE" "$@"
+	exec su-exec node "$BASH_SOURCE" "$@"
 fi
 
 if [[ "$*" == node*current/index.js* ]]; then

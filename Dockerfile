@@ -3,8 +3,8 @@
 # This Dockerfile is REQUIRED by BashLaVa https://github.com/firepress-org/bashlava
 ###################################
 ARG APP_NAME="ghostfire"
-ARG VERSION="4.1.2"
-ARG RELEASE="4.1.2"
+ARG VERSION="4.2.0"
+ARG RELEASE="4.2.0"
 ARG GITHUB_USER="firepress-org"
 
 ###################################
@@ -49,8 +49,8 @@ FROM node:${NODE_VERSION} AS mynode
 FROM myalpine AS version-debug
 # grab su-exec for easy step-down from root
 # add "bash" for "[["
-RUN set -eux && apk update && apk add --no-cache  \
-    'su-exec>=0.2' bash curl tzdata               &&\
+RUN set -eux && apk update && apk add --no-cache                  \
+    'su-exec>=0.2' bash curl tzdata                               &&\
     apk upgrade
 
 # ----------------------------------------------
@@ -71,8 +71,8 @@ ENV GHOST_INSTALL="/var/lib/ghost"                                \
     GHOST_CLI_VERSION="${GHOST_CLI_VERSION}"
 
 # installation process from the official Ghost image https://bit.ly/2JWOTam
-RUN set -eux && apk --update add --no-cache 'su-exec>=0.2' bash   &&\
-    rm -rvf /var/cache/apk/*                                      &&\
+RUN set -eux && apk update && apk add --no-cache                  \
+    'su-exec>=0.2' bash curl tzdata                               &&\
     \
   # install Ghost CLI
     npm install --production -g "ghost-cli@${GHOST_CLI_VERSION}"  &&\
@@ -151,10 +151,8 @@ ENV GHOST_INSTALL="/var/lib/ghost"                                \
     VERSION="${VERSION}"                                          \
     GHOST_CLI_VERSION="${GHOST_CLI_VERSION}"
 
-RUN set -eux                                                      &&\
-# grab su-exec for easy step-down from root
-    apk add --no-cache \
-      'su-exec>=0.2' bash curl tzdata &&\
+RUN set -eux && apk update && apk add --no-cache                  \
+    'su-exec>=0.2' bash curl tzdata                               &&\
 # set up timezone
     cp /usr/share/zoneinfo/America/New_York /etc/localtime        &&\
     echo "America/New_York" > /etc/timezone                       &&\
@@ -164,7 +162,6 @@ RUN set -eux                                                      &&\
 COPY --chown="${USER}":"${USER}" docker-entrypoint.sh /usr/local/bin
 COPY --chown="${USER}":"${USER}" Dockerfile /usr/local/bin
 COPY --chown="${USER}":"${USER}" README.md /usr/local/bin
-
 COPY --from=ghost-builder --chown="${USER}":"${USER}" "${GHOST_INSTALL}" "${GHOST_INSTALL}"
 
 # add knex-migrator bins into PATH

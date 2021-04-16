@@ -1,15 +1,13 @@
-###################################
+# ----------------------------------------------
 # At FirePress we run virtually everything in Docker
-# This Dockerfile is REQUIRED by BashLaVa https://github.com/firepress-org/bashlava
-###################################
+# Dockerfile required by https://github.com/firepress-org/bashlava
+# Dockerfile required by our Github Actions CI
+# ----------------------------------------------
 ARG APP_NAME="ghostfire"
 ARG VERSION="4.2.2"
 ARG RELEASE="4.2.2"
 ARG GITHUB_USER="firepress-org"
 
-###################################
-# REQUIRED BY OUR GITHUB ACTION CI
-###################################
 ARG GIT_PROJECT_NAME="ghostfire"
 ARG DOCKERHUB_USER="devmtl"
 ARG GITHUB_ORG="firepress-org"
@@ -20,18 +18,15 @@ ARG GIT_REPO_SOURCE="https://github.com/TryGhost/Ghost"
 
 # ----------------------------------------------
 # Start your Dockerfile from here
-# CI / platforms: linux/amd64 # ONLY
+# ----------------------------------------------
+# https://docs.ghost.org/faq/node-versions/
+# https://github.com/nodejs/Release (looking for "LTS")
+# https://github.com/TryGhost/Ghost/blob/v4.1.2/package.json#L38
 ARG GHOST_CLI_VERSION="1.16.3"
 ARG NODE_VERSION="14-alpine3.13"
 ARG ALPINE_VERSION="3.13"
 ARG OS="alpine"
 ARG USER="node"
-ARG CREATED_DATE="not-set"
-ARG SOURCE_COMMIT="not-set"
-
-# https://hub.docker.com/_/node/
-# https://docs.ghost.org/faq/node-versions/
-# https://github.com/nodejs/LTS
 
 # ----------------------------------------------
 # 1) LAYER to manage base image(s) versioning.
@@ -74,13 +69,13 @@ ENV GHOST_INSTALL="/var/lib/ghost"                                \
 RUN set -eux && apk update && apk add --no-cache                  \
     'su-exec>=0.2' bash curl tzdata                               &&\
     \
-  # install Ghost CLI
+# install Ghost CLI
     npm install --production -g "ghost-cli@${GHOST_CLI_VERSION}"  &&\
     npm cache clean --force                                       &&\
     mkdir -p "${GHOST_INSTALL}"                                   &&\
     chown -R "${USER}":"${USER}" "${GHOST_INSTALL}"               &&\
     \
-  # install Ghost / optional: --verbose
+# install Ghost / optional: --verbose
     su-exec "${USER}" ghost install "${VERSION}"                  \
       --db sqlite3 --no-prompt --no-stack                         \
       --no-setup --dir "${GHOST_INSTALL}"                         &&\
@@ -151,6 +146,7 @@ ENV GHOST_INSTALL="/var/lib/ghost"                                \
     VERSION="${VERSION}"                                          \
     GHOST_CLI_VERSION="${GHOST_CLI_VERSION}"
 
+
 RUN set -eux && apk update && apk add --no-cache                  \
     'su-exec>=0.2' bash curl tzdata                               &&\
 # set up timezone
@@ -166,7 +162,7 @@ COPY --from=ghost-builder --chown="${USER}":"${USER}" "${GHOST_INSTALL}" "${GHOS
 
 # add knex-migrator bins into PATH
 # we want these from the context of Ghost's "node_modules" directory (instead of doing "npm install -g knex-migrator") so they can share the DB driver modules
-ENV PATH $PATH:${GHOST_INSTALL}/current/node_modules/knex-migrator/bin
+# ENV PATH $PATH:${GHOST_INSTALL}/current/node_modules/knex-migrator/bin
 
 # credit to https://github.com/opencontainers/image-spec/blob/master/annotations.md
 LABEL org.opencontainers.image.authors="Pascal Andy https://firepress.org/en/contact/"  \
@@ -178,12 +174,12 @@ LABEL org.opencontainers.image.authors="Pascal Andy https://firepress.org/en/con
       org.opencontainers.image.url="https://hub.docker.com/r/devmtl/ghostfire/tags/"    \
       org.opencontainers.image.source="https://github.com/firepress-org/ghostfire"      \
       org.opencontainers.image.licenses="GNUv3 https://github.com/pascalandy/GNU-GENERAL-PUBLIC-LICENSE/blob/master/LICENSE.md" \
-      org.firepress.image.cliversion="${GHOST_CLI_VERSION}"                             \
+      org.firepress.image.ghost_cli_version="${GHOST_CLI_VERSION}"                      \
       org.firepress.image.user="${USER}"                                                \
-      org.firepress.image.node-env="${NODE_ENV}"                                        \
-      org.firepress.image.nodeversion="${NODE_VERSION}"                                 \
-      org.firepress.image.alpineversion="${ALPINE_VERSION}"                             \
-      org.firepress.image.schemaversion="1.0"
+      org.firepress.image.node_env="${NODE_ENV}"                                        \
+      org.firepress.image.node_version="${NODE_VERSION}"                                \
+      org.firepress.image.alpine_version="${ALPINE_VERSION}"                            \
+      org.firepress.image.schema_version="1.0"
 
 WORKDIR "${GHOST_INSTALL}"
 VOLUME "${GHOST_CONTENT}"
@@ -193,5 +189,7 @@ EXPOSE 2368
 ENTRYPOINT [ "docker-entrypoint.sh" ]
 CMD [ "node", "current/index.js" ]
 
-# HEALTHCHECK CMD wget -q -s http://localhost:2368 || exit 1   // bypassed as attributes are passed during runtime <docker service create>
-# Next, copy Ghost's app in the final layer
+# ----------------------------------------------
+# HEALTHCHECK CMD wget -q -s http://localhost:2368 || exit 1
+# HEALTHCHECK attributes are passed during runtime <docker service create>
+# ----------------------------------------------

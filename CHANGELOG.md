@@ -7,6 +7,21 @@ Status template:
 
 # Releases
 
+## 4.3.3 (2021-04-29)
+### ⚡️ Updates
+- [3c8e357](https://github.com/firepress-org/ghostfire/commit/3c8e357) Update ghostfire to version 4.3.3 /Dockerfile AND rollback to node12
+- [9e87467](https://github.com/firepress-org/ghostfire/commit/9e87467) Update ghostfire to version 4.3.2 /Dockerfile
+- [8b10193](https://github.com/firepress-org/ghostfire/commit/8b10193) Update ghostfire to version 4.3.1 /Dockerfile
+- [aaacb11](https://github.com/firepress-org/ghostfire/commit/aaacb11) Update ghostfire to version 4.3.0 /Dockerfile
+- [7552884](https://github.com/firepress-org/ghostfire/commit/7552884) Syntax improvements + remove knex-migrator
+- [4c8baae](https://github.com/firepress-org/ghostfire/commit/4c8baae) Update ghostfire to version 4.2.2 /Dockerfile
+- [397019b](https://github.com/firepress-org/ghostfire/commit/397019b) Update ghostfire to version 4.2.1 /Dockerfile
+- [25191b9](https://github.com/firepress-org/ghostfire/commit/25191b9) Update ghostfire to version 4.2.0 /Dockerfile
+- [28d6bfe](https://github.com/firepress-org/ghostfire/commit/28d6bfe) Major updates: Ghost 4.1.2, node:14-alpine3.13, CLI 1.16.3
+
+### 🔍 Compare
+- ... with previous release: [4.1.2 <> 4.3.3](https://github.com/firepress-org/ghostfire/compare/4.1.2...4.3.3)
+
 ## 4.1.2 (2021-04-05)
 ### ⚡️ Updates
 - [49f6679](https://github.com/firepress-org/ghostfire/commit/49f6679) Update node:14-alpine3.13, multi-platform build .

@@ -4,8 +4,8 @@
 # Dockerfile required by our Github Actions CI
 # ----------------------------------------------
 ARG APP_NAME="ghostfire"
-ARG VERSION="4.3.2"
-ARG RELEASE="4.3.2"
+ARG VERSION="4.3.3"
+ARG RELEASE="4.3.3"
 ARG GITHUB_USER="firepress-org"
 
 ARG GIT_PROJECT_NAME="ghostfire"
@@ -23,8 +23,8 @@ ARG GIT_REPO_SOURCE="https://github.com/TryGhost/Ghost"
 # https://github.com/nodejs/Release (looking for "LTS")
 # https://github.com/TryGhost/Ghost/blob/v4.1.2/package.json#L38
 ARG GHOST_CLI_VERSION="1.16.3"
-ARG NODE_VERSION="14-alpine3.13"
-ARG ALPINE_VERSION="3.13"
+ARG NODE_VERSION="12-alpine3.12"
+ARG ALPINE_VERSION="3.12"
 ARG OS="alpine"
 ARG USER="node"
 

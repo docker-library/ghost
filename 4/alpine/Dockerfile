@@ -1,7 +1,10 @@
 # https://docs.ghost.org/faq/node-versions/
 # https://github.com/nodejs/Release (looking for "LTS")
 # https://github.com/TryGhost/Ghost/blob/v4.1.2/package.json#L38
-FROM node:14-alpine3.13
+# TODO: node 14 on alpine 3.13 has an issue with sharp/image resizing
+# see: https://github.com/docker-library/ghost/issues/256
+# sticking to Node 12 until the underlying sharp issue is resolved
+FROM node:12-alpine3.12
 
 # grab su-exec for easy step-down from root
 RUN apk add --no-cache 'su-exec>=0.2'

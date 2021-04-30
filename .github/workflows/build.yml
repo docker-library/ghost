@@ -253,7 +253,9 @@ jobs:
         with:
           context: .
           file: ./${{ env.DOCKERFILE }}
-          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          platforms: linux/amd64
+        # crash since 2021-04-28
+        # platforms: linux/amd64,linux/arm64,linux/arm/v7
           push: true
           tags: |
             ${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_DATE }}

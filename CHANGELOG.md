@@ -7,8 +7,9 @@ Status template:
 
 # Releases
 
-## 4.3.3 (2021-04-29)
+## 4.3.3 (2021-04-30)
 ### ⚡️ Updates
+- [1c0c8ea](https://github.com/firepress-org/ghostfire/commit/1c0c8ea) limit to amd64 platform
 - [3c8e357](https://github.com/firepress-org/ghostfire/commit/3c8e357) Update ghostfire to version 4.3.3 /Dockerfile AND rollback to node12
 - [9e87467](https://github.com/firepress-org/ghostfire/commit/9e87467) Update ghostfire to version 4.3.2 /Dockerfile
 - [8b10193](https://github.com/firepress-org/ghostfire/commit/8b10193) Update ghostfire to version 4.3.1 /Dockerfile

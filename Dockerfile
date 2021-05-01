@@ -119,7 +119,7 @@ RUN set -eux && apk update && apk add --no-cache                  \
         gcc libc-dev make python3 vips-dev                        &&\
       npm_config_python='python3' su-exec "${USER}"               \
         yarn add "sqlite3@$sqlite3Version" --force                \
-        --build-from-source                                       &&\
+        --build-from-source --ignore-optional                     &&\
       apk del --no-network .build-deps                            ; \
     fi                                                            &&\
     \

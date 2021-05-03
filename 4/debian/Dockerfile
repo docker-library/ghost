@@ -80,7 +80,7 @@ RUN set -eux; \
 		apt-get install -y --no-install-recommends g++ gcc libc-dev libvips-dev make python3; \
 		rm -rf /var/lib/apt/lists/*; \
 		\
-		npm_config_python='python3' gosu node yarn add "sqlite3@$sqlite3Version" --force --build-from-source; \
+		npm_config_python='python3' gosu node yarn add "sqlite3@$sqlite3Version" --force --build-from-source --ignore-optional; \
 		\
 		apt-mark showmanual | xargs apt-mark auto > /dev/null; \
 		[ -z "$savedAptMark" ] || apt-mark manual $savedAptMark; \

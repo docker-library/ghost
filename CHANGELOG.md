@@ -7,12 +7,11 @@ Status template:
 
 # Releases
 
-## 4.3.3 (2021-05-05)
+## 4.3.3-r2 (2021-05-05)
 ### ⚡️ Updates
 - [b09774e](https://github.com/firepress-org/ghostfire/commit/b09774e) rollback to Ghost v4.3.3 + CLI v1.17.0 + Back to node v14
 - [027fca7](https://github.com/firepress-org/ghostfire/commit/027fca7) CI: Add multi-build platform on edge
 - [5eb40f1](https://github.com/firepress-org/ghostfire/commit/5eb40f1) add --ignore-optional to sqlite force install so sharp doesn't try and rebuild at the same time
-- [02afb9c](https://github.com/firepress-org/ghostfire/commit/02afb9c) Update CHANGELOG
 - [1c0c8ea](https://github.com/firepress-org/ghostfire/commit/1c0c8ea) limit to amd64 platform
 - [9e87467](https://github.com/firepress-org/ghostfire/commit/9e87467) Update ghostfire to version 4.3.2 /Dockerfile
 - [8b10193](https://github.com/firepress-org/ghostfire/commit/8b10193) Update ghostfire to version 4.3.1 /Dockerfile

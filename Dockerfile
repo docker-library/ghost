@@ -1,11 +1,11 @@
 # ----------------------------------------------
 # At FirePress we run virtually everything in Docker
 # Dockerfile required by https://github.com/firepress-org/bashlava
-# Dockerfile required by our Github Actions CI
+# Dockerfile required by our Github Actions CI 
 # ----------------------------------------------
 ARG APP_NAME="ghostfire"
-ARG VERSION="4.3.3"
-ARG RELEASE="4.3.3-r3"
+ARG VERSION="4.4.0"
+ARG RELEASE="4.4.0"
 ARG GITHUB_USER="firepress-org"
 
 ARG GIT_PROJECT_NAME="ghostfire"
@@ -22,7 +22,7 @@ ARG GIT_REPO_SOURCE="https://github.com/TryGhost/Ghost"
 # https://docs.ghost.org/faq/node-versions/
 # https://github.com/nodejs/Release (looking for "LTS")
 # https://github.com/TryGhost/Ghost/blob/v4.1.2/package.json#L38
-ARG GHOST_CLI_VERSION="1.17.0"
+ARG GHOST_CLI_VERSION="1.17.3"
 ARG NODE_VERSION="12-alpine3.12"
 ARG ALPINE_VERSION="3.12"
 ARG OS="alpine"

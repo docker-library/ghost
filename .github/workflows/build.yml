@@ -209,6 +209,7 @@ jobs:
           docker run -d --name ghostuat -p 2368:2368 -e WEB_URL=http://localhost:2368 -e NODE_ENV=production ${{ env.DKR_PREFIX }}:${{ env.VERSION_CI }}
       - 
         name: Checkpoint | Wait for container ghostuat
+        timeout-minutes: 2
         run: |
           until $(curl --output /dev/null --silent --head --fail http://localhost:2368); do
             echo "waiting for ghostblog container...";

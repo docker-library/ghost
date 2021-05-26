@@ -204,20 +204,26 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
       - 
-        name: Checkpoint | Test Ghost container
+        name: Checkpoint | Run container ghostuat
         run: |
-          docker run -d --name blogtest -p 2368:2368 -e WEB_URL=http://localhost:2368 -e NODE_ENV=production ${{ env.DKR_PREFIX }}:${{ env.VERSION_CI }}
+          docker run -d --name ghostuat -p 2368:2368 -e WEB_URL=http://localhost:2368 -e NODE_ENV=production ${{ env.DKR_PREFIX }}:${{ env.VERSION_CI }}
+      - 
+        name: Checkpoint | Wait for container ghostuat
+        run: |
           until $(curl --output /dev/null --silent --head --fail http://localhost:2368); do
-            echo "Waiting for Ghost ghostblog container...";
-            sleep 3;
+            echo "waiting for ghostblog container...";
+            sleep 2;
           done;
+      -
+        name: Checkpoint | Test ghostuat
+        run: |
           curl http://localhost:2368 | grep "Thoughts, stories and ideas"
           git clone --depth 1 https://github.com/docker-library/official-images.git official-images
-          ### overide config.sh We must bypass UTC timezone test
+          echo "overide config.sh - We must bypass UTC timezone test"
           cp ./test/config.sh official-images/test/config.sh
           official-images/test/run.sh ${{ env.DKR_PREFIX }}:${{ env.VERSION_CI }}
       - 
-        name: Checkpoint | multi-platform images, docker inspect, history, version, info, uname
+        name: Checkpoint | logs (multi-platform images, docker inspect, history, version, info, uname)
         run: |
           docker run --rm mplatform/mquery ${{ env.DKR_PREFIX }}:${{ env.VERSION_CI }} && echo && echo
           docker inspect ${{ env.DKR_PREFIX }}:${{ env.VERSION_CI }} && echo && echo
@@ -226,13 +232,14 @@ jobs:
           docker info && echo && echo
           uname -a
       -
-        name: EDGE | buildx and push all tags (limited to linux/amd64)
+        name: EDGE | buildx and push all tags (using multi-platform)
         if: github.ref == 'refs/heads/edge'
         uses: docker/build-push-action@v2
         with:
           context: .
           file: ./${{ env.DOCKERFILE }}
           platforms: linux/amd64,linux/arm64,linux/arm/v7
+        # platforms: linux/amd64,linux/arm64,linux/arm/v7
           push: true
           tags: |
             ${{ env.DKR_PREFIX }}:${{ env.BRANCH_NAME }}
@@ -254,18 +261,18 @@ jobs:
           context: .
           file: ./${{ env.DOCKERFILE }}
           platforms: linux/amd64,linux/arm64,linux/arm/v7
-        # crash since 2021-04-28
         # platforms: linux/amd64,linux/arm64,linux/arm/v7
           push: true
           tags: |
-            ${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
-            ${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_ONLY }}
-            ${{ env.DKR_PREFIX }}:${{ env.VERSION_BRANCH }}
             ${{ env.DKR_PREFIX }}:${{ env.BRANCH_NAME }}
-            ${{ env.GPR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
-            ${{ env.GPR_PREFIX }}:${{ env.VERSION_HASH_ONLY }}
-            ${{ env.GPR_PREFIX }}:${{ env.VERSION_BRANCH }}
+            ${{ env.DKR_PREFIX }}:${{ env.VERSION_BRANCH }}
+            ${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_ONLY }}
+            ${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
             ${{ env.GPR_PREFIX }}:${{ env.BRANCH_NAME }}
+            ${{ env.GPR_PREFIX }}:${{ env.VERSION_BRANCH }}
+            ${{ env.GPR_PREFIX }}:${{ env.VERSION_HASH_ONLY }}
+            ${{ env.GPR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
+          # The order for <docker push -tag> matters for our CD down the line.
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
 

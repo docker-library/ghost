@@ -204,19 +204,21 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
       - 
-        name: Checkpoint | Run container ghostuat
+        # docker logs --follow --until 2m ghostUAT (TEST is not working yet)
+        name: Test | Start ghostUAT
         run: |
-          docker run -d --name ghostuat -p 2368:2368 -e WEB_URL=http://localhost:2368 -e NODE_ENV=production ${{ env.DKR_PREFIX }}:${{ env.VERSION_CI }}
+          docker run -d --name ghostUAT -p 2368:2368 -e WEB_URL=http://localhost:2368 -e NODE_ENV=production ${{ env.DKR_PREFIX }}:${{ env.VERSION_CI }}
       - 
-        name: Checkpoint | Wait for container ghostuat
-        timeout-minutes: 2
+        name: Test | Wait for ghostUAT to start
+        timeout-minutes: 1
         run: |
           until $(curl --output /dev/null --silent --head --fail http://localhost:2368); do
-            echo "waiting for ghostblog container...";
-            sleep 2;
+            echo "--- ghostUAT is starting ..."
+            sleep 1
           done;
+          echo "--- ghostUAT is running! --->"
       -
-        name: Checkpoint | Test ghostuat
+        name: Test | Test ghostUAT
         run: |
           curl http://localhost:2368 | grep "Thoughts, stories and ideas"
           git clone --depth 1 https://github.com/docker-library/official-images.git official-images
@@ -224,7 +226,7 @@ jobs:
           cp ./test/config.sh official-images/test/config.sh
           official-images/test/run.sh ${{ env.DKR_PREFIX }}:${{ env.VERSION_CI }}
       - 
-        name: Checkpoint | logs (multi-platform images, docker inspect, history, version, info, uname)
+        name: Test | logs ghostUAT (multi-platform images, docker inspect, history, version, info, uname)
         run: |
           docker run --rm mplatform/mquery ${{ env.DKR_PREFIX }}:${{ env.VERSION_CI }} && echo && echo
           docker inspect ${{ env.DKR_PREFIX }}:${{ env.VERSION_CI }} && echo && echo
@@ -233,6 +235,7 @@ jobs:
           docker info && echo && echo
           uname -a
       -
+        # platforms might differ between EDGE and MASTER
         name: EDGE | buildx and push all tags (using multi-platform)
         if: github.ref == 'refs/heads/edge'
         uses: docker/build-push-action@v2
@@ -255,6 +258,7 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
       -
+        # platforms might differ between EDGE and MASTER
         name: MASTER | buildx and push all tags (using multi-platform)
         if: github.ref == 'refs/heads/master'
         uses: docker/build-push-action@v2

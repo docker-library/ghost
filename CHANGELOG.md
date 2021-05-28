@@ -12,7 +12,7 @@ Status template:
 ## 4.3.3-r3 (2021-05-06)
 ### ⚡️ Updates
 - [35d6711](https://github.com/firepress-org/ghostfire/commit/35d6711) rollback to 12-alpine3.12
-- [f9871f9](https://github.com/firepress-org/ghostfire/commit/f9871f9) Add a URL to log history
+- [f9871f9](https://github.com/firepress-org/ghostfire/commit/f9871f9) Add a URL to log history 
 
 ### 🔍 Compare
 - ... with previous release: [4.3.3-r2 <> 4.3.3-r3](https://github.com/firepress-org/ghostfire/compare/4.3.3-r2...4.3.3-r3)

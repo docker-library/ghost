@@ -9,15 +9,23 @@ Status template:
 
 # Releases
 
+## 4.6.6 (2021-06-08)
+### ⚡️ Updates
+- [bf2c285](https://github.com/firepress-org/ghostfire/commit/bf2c285) Update ghostfire to version 4.6.6 /Dockerfile
+- [5a2490c](https://github.com/firepress-org/ghostfire/commit/5a2490c) CI: update Test | Using docker-library
+
+### 🔍 Compare
+- ... with previous release: [4.6.4 <> 4.6.6](https://github.com/firepress-org/ghostfire/compare/4.6.4...4.6.6)
+
 ## 4.6.4 (2021-05-28)
 ### ⚡️ Updates
 - [fc5b3b6](https://github.com/firepress-org/ghostfire/commit/fc5b3b6) CI: on EDGE, build only linux/amd64
 - [b01e4a9](https://github.com/firepress-org/ghostfire/commit/b01e4a9) CI: various syntax updates
-- [31fac15](https://github.com/firepress-org/ghostfire/commit/31fac15) Bumps actions/cache from 2.1.4 to 2.1.6.
+- [31fac15](https://github.com/firepress-org/ghostfire/commit/31fac15) Bumps actions/cache from 2.1.4 to 2.1.6
 - [7f7cbff](https://github.com/firepress-org/ghostfire/commit/7f7cbff) Update ghostfire to version 4.6.4 /Dockerfile
 - [5c46101](https://github.com/firepress-org/ghostfire/commit/5c46101) CI: update ghost UAT tests
 - [934e5a5](https://github.com/firepress-org/ghostfire/commit/934e5a5) Add CI: add timeout-minutes
-- [e184217](https://github.com/firepress-org/ghostfire/commit/e184217) Update v4.6.0 + CI: update tests
+- [e184217](https://github.com/firepress-org/ghostfire/commit/e184217) Update 4.6.0 + CI: update tests
 - [fa7e4c3](https://github.com/firepress-org/ghostfire/commit/fa7e4c3) Ghost 4.4.0 + CLI 1.17.3
 - [c24fc0a](https://github.com/firepress-org/ghostfire/commit/c24fc0a) Test: Update Lighthouse URLs
 

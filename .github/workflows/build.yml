@@ -286,7 +286,7 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
 
-  post_build_actions:
+  post_build_continous_deployment:
     needs: [build]
     runs-on: ubuntu-20.04
     steps:
@@ -319,7 +319,7 @@ jobs:
           echo "APP_NAME=$(cat ~/varz/APP_NAME)" >> $GITHUB_ENV
           echo "_NOTI_MESSAGE=$(cat ~/varz/_NOTI_MESSAGE)" >> $GITHUB_ENV
       - 
-        name: via SSH | Continous deployment for edge
+        name: via SSH | Continous Deployment for edge
         if: github.ref == 'refs/heads/edge'
         uses: appleboy/ssh-action@v0.1.4
         with:
@@ -335,7 +335,7 @@ jobs:
           #host: "${{ secrets.NODE1 }},${{ secrets.NODE2 }},${{ secrets.NODE3 }}"
           # alt projet: fifsky/ssh-action@master https://github.com/appleboy/ssh-action/issues/80#issuecomment-759473472
       - 
-        name: via SSH | Continous deployment for master
+        name: via SSH | Continous Deployment for master
         if: github.ref == 'refs/heads/master'
         uses: appleboy/ssh-action@v0.1.4
         with:
@@ -434,12 +434,26 @@ jobs:
           ignore-unfixed: true
           severity: 'LOW,MEDIUM,HIGH,CRITICAL'
 
-        # uses: brpaz/hadolint-action@master
-        # warning crash the ci
-        # https://github.com/brpaz/hadolint-action/issues/17
-
-        # Send Github action logs to a PR or commits them
-
-        # post_build_cache:
-        # The strategy to save build time on master branch does not work at this point.
-        # That's because cache hit occurred on the primary key Linux-buildx-2f94a386b0106b66be4adacf39febfd8eac9dde5, not saving cache.
+  post_build_super_linter:
+    needs: [build]
+    runs-on: ubuntu-20.04
+    steps:
+      - 
+        name: Job preparation | Setup timezone
+        uses: zcong1993/setup-timezone@v1.1.1
+        with:
+          timezone: America/Montreal
+      -
+        name: Job preparation | Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - 
+        name: Test | Using super-linter
+        continue-on-error: true
+        uses: docker://ghcr.io/github/super-linter:slim-v4
+        env:
+          VALIDATE_ALL_CODEBASE: false
+          VALIDATE_JSCPD: false
+          DEFAULT_BRANCH: edge
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

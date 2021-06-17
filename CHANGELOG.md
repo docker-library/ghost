@@ -9,6 +9,11 @@ Status template:
 
 # Releases
 
+- [c54ffdf](https://github.com/firepress-org/ghostfire/commit/c54ffdf) CI: add <workflow_dispatch>
+
+### 🔍 Compare
+- ... with previous release: [4.7.0 <> 4.7.0](https://github.com/firepress-org/ghostfire/compare/4.7.0...4.7.0)
+
 ## 4.7.0 (2021-06-08)
 ### ⚡️ Updates
 - [2c0ed5c](https://github.com/firepress-org/ghostfire/commit/2c0ed5c) Update ghostfire to version 4.7.0 /Dockerfile

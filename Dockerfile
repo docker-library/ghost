@@ -45,7 +45,7 @@ FROM myalpine AS version-debug
 # grab su-exec for easy step-down from root
 # add "bash" for "[["
 RUN set -eux && apk update && apk add --no-cache                  \
-    'su-exec>=0.2' bash curl tzdata                               &&\
+    'su-exec>=0.2' bash curl                                      &&\
     apk upgrade
 
 # ----------------------------------------------
@@ -67,7 +67,7 @@ ENV GHOST_INSTALL="/var/lib/ghost"                                \
 
 # installation process from the official Ghost image https://bit.ly/2JWOTam
 RUN set -eux && apk update && apk add --no-cache                  \
-    'su-exec>=0.2' bash curl tzdata                               &&\
+    'su-exec>=0.2' bash curl                                      &&\
     \
 # install Ghost CLI
     npm install --production -g "ghost-cli@${GHOST_CLI_VERSION}"  &&\
@@ -148,11 +148,7 @@ ENV GHOST_INSTALL="/var/lib/ghost"                                \
 
 
 RUN set -eux && apk update && apk add --no-cache                  \
-    'su-exec>=0.2' bash curl tzdata                               &&\
-# set up timezone
-    cp /usr/share/zoneinfo/America/New_York /etc/localtime        &&\
-    echo "America/New_York" > /etc/timezone                       &&\
-    apk del tzdata                                                &&\
+    'su-exec>=0.2' bash curl                                      &&\
     rm -rvf /var/cache/apk/* /tmp/*                               ;
 
 COPY --chown="${USER}":"${USER}" docker-entrypoint.sh /usr/local/bin

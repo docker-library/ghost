@@ -23,39 +23,39 @@
 
 ## What is this?
 
-**Docker image** — This is a Docker image to run Ghost V3 in a container 🐳.
+**Docker image** — This is a Docker image to run Ghost V4 in a container 🐳.
 
 **What is Ghost?** — Ghost is an open-source software that lets you create your website with a blog. See the [FAQ section](https://play-with-ghost.com/ghost-themes/faq/#what-is-ghost) for more details.
 
 <br>
 
-## Why forking the official Docker image?
+## Advantages over the official Docker image :
 
 - [x] Dockerfile uses **multi-stage builds**
 - [x] Trimmed `npm`, `yarn`, `npx`, `ghost cli` and friends in the final docker image
-- [x] Use [**tini**](https://github.com/krallin/tini#why-tini)
 - [x] Use a better `config.production.json` **template**.
 - [x] `curl` to support **`healthchecks`**
 - [x] **LABELS** based on the opencontainer standard
+- [x] Greater control over the CI/CD
 
-#### Greater control over Github Actions (CI):
+#### Github Actions CI/CD :
+
+We do our the maximum to apply [best practices](https://firepress.org/en/how-do-we-update-hundreds-of-ghosts-websites-on-docker-swarm/).
 
 - [x] Better logic between jobs (pre-build / build / post-build)
 - [x] Share variables between jobs
 - [x] Multi-arch build (linux/amd64, linux/arm64, linux/arm/v7)
 - [x] Build uses cache it’s much faster now
-- [x] Execute CI using a single build.yml file with conditions for branch edge/master
-- [x] Execute commands on the cluster (via SSH)
+- [x] Continuous Deployment the cluster (via SSH)
 - [x] Slack notifications when build is successful
 - [x] Lighthouse audit (localhost and online)
 - [x] Security audit (Dockle, Trivy)
+- [x] super-linter
 - [x] and more!
-
-Overall, I do my best to apply **best practices**.
 
 #### Comparing docker image sizes
 
-We were able to trim about 60MB on our Docker image.
+We were able to trim about 60MB on our Docker image. These the **uncompressed sizes** :
 
 ```
 devmtl/ghostfire:stable           310MB
@@ -123,8 +123,8 @@ To configure the `config.production.json` refer the [ghost docs](https://docs.gh
 For the **stable** branch, I recommend using the tag from the **first line**:
 
 ```
-devmtl/ghostfire:stable_3.38.3_24b6bdf_2020-11-30_04H07s53
-devmtl/ghostfire:stable_3.38.3
+devmtl/ghostfire:stable_4.6.4_fc5b3b6_2021-05-28_11H26s02
+devmtl/ghostfire:stable_4.6.4
 devmtl/ghostfire:stable
 ```
 
@@ -136,8 +136,8 @@ Find the latest tags on **DockerHub** here:
 This is reserved for development and testing.
 
 ```
-devmtl/ghostfire:edge_3.38.3_613c210_2020-11-30_23H41s10
-devmtl/ghostfire:edge_3.38.3
+devmtl/ghostfire:edge_4.7.0_bd6bac4_2021-06-17_18H43s47
+devmtl/ghostfire:edge_4.7.0
 devmtl/ghostfire:edge
 ```
 
@@ -168,6 +168,7 @@ I open-sourced [my setup here](https://github.com/firepress-org/ghost-local-dev-
 **Breaking change**. If you still run Ghost 0.11.xx (not recommended!), be aware of the container's path difference.
 
 ```
+- Ghost 4.x.x is:  /var/lib/ghost/content
 - Ghost 3.x.x is:  /var/lib/ghost/content
 - Ghost 2.x.x is:  /var/lib/ghost/content
 - Ghost 1.x.x is:  /var/lib/ghost/content

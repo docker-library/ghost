@@ -511,8 +511,6 @@ jobs:
         # github/super-linter@v4
         # docker://ghcr.io/github/super-linter:slim-v4
         env:
-          VALIDATE_ALL_CODEBASE: false
-          VALIDATE_JSCPD: false
           VALIDATE_MARKDOWN: false
           DEFAULT_BRANCH: edge
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

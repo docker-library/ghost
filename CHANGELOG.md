@@ -9,15 +9,16 @@ Status template:
 
 # Releases
 
+- [84f3dc6](https://github.com/firepress-org/ghostfire/commit/84f3dc6) CI: Major granularity between jobs
+- [bf40598](https://github.com/firepress-org/ghostfire/commit/bf40598) Dockerfile: Minor syntax updates
+- [e501c40](https://github.com/firepress-org/ghostfire/commit/e501c40) Update README
+- [c51a927](https://github.com/firepress-org/ghostfire/commit/c51a927) Update CHANGELOG
 - [1c47c04](https://github.com/firepress-org/ghostfire/commit/1c47c04) CI: dependabot.yml to weekly
 - [bd6bac4](https://github.com/firepress-org/ghostfire/commit/bd6bac4) CI: super-linter@v4.2.2 / not slim
 - [67dbe4d](https://github.com/firepress-org/ghostfire/commit/67dbe4d) CI: Adding post_build_linter
 - [1dd5a48](https://github.com/firepress-org/ghostfire/commit/1dd5a48) CI: Test | Show Digest
 - [6086c63](https://github.com/firepress-org/ghostfire/commit/6086c63) CI: add <workflow_dispatch>
 - [c54ffdf](https://github.com/firepress-org/ghostfire/commit/c54ffdf) CI: add <workflow_dispatch>
-
-### 🔍 Compare
-- ... with previous release: [4.7.0 <> 4.7.0](https://github.com/firepress-org/ghostfire/compare/4.7.0...4.7.0)
 
 ## 4.7.0 (2021-06-08)
 ### ⚡️ Updates

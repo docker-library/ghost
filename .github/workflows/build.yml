@@ -26,6 +26,10 @@ defaults:
 
 jobs:
 
+# ----------------------------------------------
+# PRE_BUILD
+# ----------------------------------------------
+
   pre_build:
     runs-on: ubuntu-20.04
     steps:
@@ -123,7 +127,10 @@ jobs:
           name: variables_on_disk
           path: ~/varz
 
-  build:
+# ----------------------------------------------
+# TEST_BUILD
+# ----------------------------------------------
+  test_build:
     needs: [pre_build]
     runs-on: ubuntu-20.04
     steps:
@@ -239,6 +246,80 @@ jobs:
           curl http://localhost:2368 | grep "Thoughts, stories and ideas"
           git clone --depth 1 https://github.com/docker-library/official-images.git official-images
           official-images/test/run.sh ${{ env.DKR_PREFIX }}:${{ env.VERSION_CI }}
+
+# ----------------------------------------------
+# FINAL_BUILD
+# ----------------------------------------------
+
+  final_build:
+    needs: [test_build]
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Job preparation | Set timezone
+        uses: zcong1993/setup-timezone@v1.1.1
+        with:
+          timezone: America/Montreal
+      -
+        name: Job preparation | Checkout
+        uses: actions/checkout@v2
+      - 
+        name: Job preparation | Download variables from artifact
+        uses: actions/download-artifact@master
+        with:
+          name: variables_on_disk
+          path: ~/varz
+      - 
+        name: Job preparation | Set variables for this job | à la sauce GitHub Actions
+        run: |
+          echo "VERSION_HASH_DATE=$(cat ~/varz/VERSION_HASH_DATE)" >> $GITHUB_ENV
+          echo "VERSION_HASH_ONLY=$(cat ~/varz/VERSION_HASH_ONLY)" >> $GITHUB_ENV
+          echo "VERSION_BRANCH=$(cat ~/varz/VERSION_BRANCH)" >> $GITHUB_ENV
+          echo "BRANCH_NAME=$(cat ~/varz/BRANCH_NAME)" >> $GITHUB_ENV
+          echo "VERSION_CI=$(cat ~/varz/VERSION_CI)" >> $GITHUB_ENV
+          echo "DKR_PREFIX=$(cat ~/varz/DKR_PREFIX)" >> $GITHUB_ENV
+          echo "GPR_PREFIX=$(cat ~/varz/GPR_PREFIX)" >> $GITHUB_ENV
+          echo "DOCKERFILE=$(cat ~/varz/DOCKERFILE)" >> $GITHUB_ENV
+          echo "DOCKERHUB_USER=$(cat ~/varz/DOCKERHUB_USER)" >> $GITHUB_ENV
+          echo "GITHUB_ORG=$(cat ~/varz/GITHUB_ORG)" >> $GITHUB_ENV
+          echo "APP_NAME=$(cat ~/varz/APP_NAME)" >> $GITHUB_ENV
+          echo "_NOTI_MESSAGE=$(cat ~/varz/_NOTI_MESSAGE)" >> $GITHUB_ENV
+      -
+        name: Set QEMU for Multi-platform docker builds
+        uses: docker/setup-qemu-action@v1
+      - 
+        name: EDGE | Set docker Buildx
+        if: github.ref == 'refs/heads/edge'
+        uses: docker/setup-buildx-action@v1
+        with:
+          buildkitd-flags: "--debug"
+      - 
+        name: MASTER | Set docker Buildx
+        if: github.ref == 'refs/heads/master'
+        uses: docker/setup-buildx-action@v1
+      -
+        name: Set cache docker layers
+        id: docker-cache
+        uses: actions/cache@v2.1.6
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+      - 
+        name: Login to DockerHub registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v1
+        with:
+          username: ${{ env.DOCKERHUB_USER }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+      - 
+        name: Login to GitHub registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ env.GITHUB_ORG }}
+          password: ${{ secrets.TOKEN_GPR }}
       -
         name: EDGE | buildx and push all tags (limited to ARCH linux/amd64)
         if: github.ref == 'refs/heads/edge'
@@ -286,8 +367,205 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
 
-  post_build_various_tasks:
-    needs: [build]
+# ----------------------------------------------
+# POST BUILD (test)
+# ----------------------------------------------
+
+  Scanner_Dockle:
+    needs: [test_build]
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Job preparation | Setup timezone
+        uses: zcong1993/setup-timezone@v1.1.1
+        with:
+          timezone: America/Montreal
+      -
+        name: Job preparation | Checkout
+        uses: actions/checkout@v2
+      - 
+        name: Job preparation | Download variables from artifact
+        uses: actions/download-artifact@master
+        with:
+          name: variables_on_disk
+          path: ~/varz
+      - 
+        name: Job preparation | Set variables for this job | à la sauce GitHub Actions
+        run: |
+          echo "VERSION_HASH_DATE=$(cat ~/varz/VERSION_HASH_DATE)" >> $GITHUB_ENV
+          echo "VERSION_HASH_ONLY=$(cat ~/varz/VERSION_HASH_ONLY)" >> $GITHUB_ENV
+          echo "VERSION_BRANCH=$(cat ~/varz/VERSION_BRANCH)" >> $GITHUB_ENV
+          echo "BRANCH_NAME=$(cat ~/varz/BRANCH_NAME)" >> $GITHUB_ENV
+          echo "VERSION_CI=$(cat ~/varz/VERSION_CI)" >> $GITHUB_ENV
+          echo "DKR_PREFIX=$(cat ~/varz/DKR_PREFIX)" >> $GITHUB_ENV
+          echo "GPR_PREFIX=$(cat ~/varz/GPR_PREFIX)" >> $GITHUB_ENV
+          echo "DOCKERFILE=$(cat ~/varz/DOCKERFILE)" >> $GITHUB_ENV
+          echo "DOCKERHUB_USER=$(cat ~/varz/DOCKERHUB_USER)" >> $GITHUB_ENV
+          echo "GITHUB_ORG=$(cat ~/varz/GITHUB_ORG)" >> $GITHUB_ENV
+          echo "APP_NAME=$(cat ~/varz/APP_NAME)" >> $GITHUB_ENV
+          echo "_NOTI_MESSAGE=$(cat ~/varz/_NOTI_MESSAGE)" >> $GITHUB_ENV
+      - 
+        name: Audit | scanner by Dockle
+        run: |
+          export DOCKLE_LATEST=$(curl --silent "https://api.github.com/repos/goodwithtech/dockle/releases/latest" | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
+          docker run --rm goodwithtech/dockle:v${DOCKLE_LATEST} ${{ env.DKR_PREFIX }}:${{ env.VERSION_CI }}
+
+  Scanner_Trivy:
+    needs: [test_build]
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Job preparation | Setup timezone
+        uses: zcong1993/setup-timezone@v1.1.1
+        with:
+          timezone: America/Montreal
+      -
+        name: Job preparation | Checkout
+        uses: actions/checkout@v2
+      - 
+        name: Job preparation | Download variables from artifact
+        uses: actions/download-artifact@master
+        with:
+          name: variables_on_disk
+          path: ~/varz
+      - 
+        name: Job preparation | Set variables for this job | à la sauce GitHub Actions
+        run: |
+          echo "VERSION_HASH_DATE=$(cat ~/varz/VERSION_HASH_DATE)" >> $GITHUB_ENV
+          echo "VERSION_HASH_ONLY=$(cat ~/varz/VERSION_HASH_ONLY)" >> $GITHUB_ENV
+          echo "VERSION_BRANCH=$(cat ~/varz/VERSION_BRANCH)" >> $GITHUB_ENV
+          echo "BRANCH_NAME=$(cat ~/varz/BRANCH_NAME)" >> $GITHUB_ENV
+          echo "VERSION_CI=$(cat ~/varz/VERSION_CI)" >> $GITHUB_ENV
+          echo "DKR_PREFIX=$(cat ~/varz/DKR_PREFIX)" >> $GITHUB_ENV
+          echo "GPR_PREFIX=$(cat ~/varz/GPR_PREFIX)" >> $GITHUB_ENV
+          echo "DOCKERFILE=$(cat ~/varz/DOCKERFILE)" >> $GITHUB_ENV
+          echo "DOCKERHUB_USER=$(cat ~/varz/DOCKERHUB_USER)" >> $GITHUB_ENV
+          echo "GITHUB_ORG=$(cat ~/varz/GITHUB_ORG)" >> $GITHUB_ENV
+          echo "APP_NAME=$(cat ~/varz/APP_NAME)" >> $GITHUB_ENV
+          echo "_NOTI_MESSAGE=$(cat ~/varz/_NOTI_MESSAGE)" >> $GITHUB_ENV
+      - 
+        name: Checkpoint | scanner by Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: '${{ env.DKR_PREFIX }}:${{ env.VERSION_CI }}'
+          format: 'table'
+          exit-code: '0'
+          ignore-unfixed: true
+          severity: 'LOW,MEDIUM,HIGH,CRITICAL'
+
+  Audit_Artillery:
+    needs: [test_build]
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Job preparation | Setup timezone
+        uses: zcong1993/setup-timezone@v1.1.1
+        with:
+          timezone: America/Montreal
+      -
+        name: Job preparation | Checkout
+        uses: actions/checkout@v2
+      - 
+        name: Job preparation | Download variables from artifact
+        uses: actions/download-artifact@master
+        with:
+          name: variables_on_disk
+          path: ~/varz
+      - 
+        name: Job preparation | Set variables for this job | à la sauce GitHub Actions
+        run: |
+          echo "VERSION_HASH_DATE=$(cat ~/varz/VERSION_HASH_DATE)" >> $GITHUB_ENV
+          echo "VERSION_HASH_ONLY=$(cat ~/varz/VERSION_HASH_ONLY)" >> $GITHUB_ENV
+          echo "VERSION_BRANCH=$(cat ~/varz/VERSION_BRANCH)" >> $GITHUB_ENV
+          echo "BRANCH_NAME=$(cat ~/varz/BRANCH_NAME)" >> $GITHUB_ENV
+          echo "VERSION_CI=$(cat ~/varz/VERSION_CI)" >> $GITHUB_ENV
+          echo "DKR_PREFIX=$(cat ~/varz/DKR_PREFIX)" >> $GITHUB_ENV
+          echo "GPR_PREFIX=$(cat ~/varz/GPR_PREFIX)" >> $GITHUB_ENV
+          echo "DOCKERFILE=$(cat ~/varz/DOCKERFILE)" >> $GITHUB_ENV
+          echo "DOCKERHUB_USER=$(cat ~/varz/DOCKERHUB_USER)" >> $GITHUB_ENV
+          echo "GITHUB_ORG=$(cat ~/varz/GITHUB_ORG)" >> $GITHUB_ENV
+          echo "APP_NAME=$(cat ~/varz/APP_NAME)" >> $GITHUB_ENV
+          echo "_NOTI_MESSAGE=$(cat ~/varz/_NOTI_MESSAGE)" >> $GITHUB_ENV
+      - 
+        name: Audit | Artillery
+        id: load-test
+        uses: kenju/github-actions-artillery@master
+        with:
+          filepath: ./.github/load-test.yml
+
+  SuperLinter:
+    needs: [test_build]
+    runs-on: ubuntu-20.04
+    steps:
+      - 
+        name: Job preparation | Setup timezone
+        uses: zcong1993/setup-timezone@v1.1.1
+        with:
+          timezone: America/Montreal
+      -
+        name: Job preparation | Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - 
+        name: Checkpoint | Linter
+        continue-on-error: true
+        uses: github/super-linter@v4.2.2
+        # github/super-linter@v4
+        # docker://ghcr.io/github/super-linter:slim-v4
+        env:
+          VALIDATE_ALL_CODEBASE: false
+          VALIDATE_JSCPD: false
+          DEFAULT_BRANCH: edge
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  Push_README:
+    needs: [test_build]
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Job preparation | Set timezone
+        uses: zcong1993/setup-timezone@v1.1.1
+        with:
+          timezone: America/Montreal
+      -
+        name: Job preparation | Checkout
+        uses: actions/checkout@v2
+      - 
+        name: Job preparation | Download variables from artifact
+        uses: actions/download-artifact@master
+        with:
+          name: variables_on_disk
+          path: ~/varz
+      - 
+        name: Job preparation | Set variables for this job | à la sauce GitHub Actions
+        run: |
+          echo "VERSION_HASH_DATE=$(cat ~/varz/VERSION_HASH_DATE)" >> $GITHUB_ENV
+          echo "VERSION_HASH_ONLY=$(cat ~/varz/VERSION_HASH_ONLY)" >> $GITHUB_ENV
+          echo "VERSION_BRANCH=$(cat ~/varz/VERSION_BRANCH)" >> $GITHUB_ENV
+          echo "BRANCH_NAME=$(cat ~/varz/BRANCH_NAME)" >> $GITHUB_ENV
+          echo "VERSION_CI=$(cat ~/varz/VERSION_CI)" >> $GITHUB_ENV
+          echo "DKR_PREFIX=$(cat ~/varz/DKR_PREFIX)" >> $GITHUB_ENV
+          echo "GPR_PREFIX=$(cat ~/varz/GPR_PREFIX)" >> $GITHUB_ENV
+          echo "DOCKERFILE=$(cat ~/varz/DOCKERFILE)" >> $GITHUB_ENV
+          echo "DOCKERHUB_USER=$(cat ~/varz/DOCKERHUB_USER)" >> $GITHUB_ENV
+          echo "GITHUB_ORG=$(cat ~/varz/GITHUB_ORG)" >> $GITHUB_ENV
+          echo "APP_NAME=$(cat ~/varz/APP_NAME)" >> $GITHUB_ENV
+          echo "_NOTI_MESSAGE=$(cat ~/varz/_NOTI_MESSAGE)" >> $GITHUB_ENV
+      - 
+        name: Update README on Dockerhub
+        if: github.ref == 'refs/heads/master'
+        run: |
+          docker run --rm \
+            -v $(pwd)/README.md:/data/README.md \
+            -e DOCKERHUB_USERNAME=${{ env.DOCKERHUB_USER }} \
+            -e DOCKERHUB_PASSWORD=${{ secrets.DOCKERHUB_PASSWORD }} \
+            -e DOCKERHUB_REPO_PREFIX=${{ env.DOCKERHUB_USER }} \
+            -e DOCKERHUB_REPO_NAME=${{ env.APP_NAME }} \
+            devmtl/readme-to-dockerhub:stable
+
+# ----------------------------------------------
+# POST BUILD (final)
+# ----------------------------------------------
+
+  Continuous_Deployment:
+    needs: [final_build]
     runs-on: ubuntu-20.04
     steps:
       - name: Job preparation | Set timezone
@@ -347,32 +625,13 @@ jobs:
           script: |
             ${{ secrets.SSH_CMD__UPDATE_DKR_IMG_STABLE }}
             hostname
-      - 
-        name: Update README on Dockerhub
-        if: github.ref == 'refs/heads/master'
-        run: |
-          docker run --rm \
-            -v $(pwd)/README.md:/data/README.md \
-            -e DOCKERHUB_USERNAME=${{ env.DOCKERHUB_USER }} \
-            -e DOCKERHUB_PASSWORD=${{ secrets.DOCKERHUB_PASSWORD }} \
-            -e DOCKERHUB_REPO_PREFIX=${{ env.DOCKERHUB_USER }} \
-            -e DOCKERHUB_REPO_NAME=${{ env.APP_NAME }} \
-            devmtl/readme-to-dockerhub:stable
-      -
-        name: Notify on Slack
-        run: |
-          docker run --rm \
-            --name noti \
-            -e NOTI_MESSAGE='${{ env._NOTI_MESSAGE }}' \
-            -e SLACK_CHANNEL="github-actions" \
-            -e SLACK_TOKEN_CRON="${{ secrets.TOKEN_SLACK }}" \
-            devmtl/noti:stable sh -c \
-              ' NOTI_SLACK_TOKEN="$SLACK_TOKEN_CRON" \
-                NOTI_SLACK_CHANNEL="$SLACK_CHANNEL" \
-                noti -k -m "$NOTI_MESSAGE" '
 
-  post_build_audits:
-    needs: [build]
+# ----------------------------------------------
+# POST Continuous_Deployment
+# ----------------------------------------------
+
+  Audit_Lighthouse:
+    needs: [Continuous_Deployment]
     runs-on: ubuntu-20.04
     steps:
       - name: Job preparation | Setup timezone
@@ -413,49 +672,48 @@ jobs:
           #budgetPath: ./budget.json # test performance budgets
           uploadArtifacts: true # save results as an action artifacts
           temporaryPublicStorage: true # upload lighthouse report to the temporary storage
-      - 
-        name: Audit | Artillery
-        id: load-test
-        uses: kenju/github-actions-artillery@master
-        with:
-          filepath: ./.github/load-test.yml
-      - 
-        name: Audit | scanner by Dockle
-        run: |
-          export DOCKLE_LATEST=$(curl --silent "https://api.github.com/repos/goodwithtech/dockle/releases/latest" | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
-          docker run --rm goodwithtech/dockle:v${DOCKLE_LATEST} ${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
-      - 
-        name: Checkpoint | scanner by Trivy
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: '${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_DATE }}'
-          format: 'table'
-          exit-code: '0'
-          ignore-unfixed: true
-          severity: 'LOW,MEDIUM,HIGH,CRITICAL'
 
-  post_build_linter:
-    needs: [build]
+  Notify_on_Slack:
+    needs: [Continuous_Deployment]
     runs-on: ubuntu-20.04
     steps:
-      - 
-        name: Job preparation | Setup timezone
+      - name: Job preparation | Set timezone
         uses: zcong1993/setup-timezone@v1.1.1
         with:
           timezone: America/Montreal
       -
         name: Job preparation | Checkout
         uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
       - 
-        name: Test | Using super-linter
-        continue-on-error: true
-        uses: github/super-linter@v4.2.2
-        # github/super-linter@v4
-        # docker://ghcr.io/github/super-linter:slim-v4
-        env:
-          VALIDATE_ALL_CODEBASE: false
-          VALIDATE_JSCPD: false
-          DEFAULT_BRANCH: edge
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        name: Job preparation | Download variables from artifact
+        uses: actions/download-artifact@master
+        with:
+          name: variables_on_disk
+          path: ~/varz
+      - 
+        name: Job preparation | Set variables for this job | à la sauce GitHub Actions
+        run: |
+          echo "VERSION_HASH_DATE=$(cat ~/varz/VERSION_HASH_DATE)" >> $GITHUB_ENV
+          echo "VERSION_HASH_ONLY=$(cat ~/varz/VERSION_HASH_ONLY)" >> $GITHUB_ENV
+          echo "VERSION_BRANCH=$(cat ~/varz/VERSION_BRANCH)" >> $GITHUB_ENV
+          echo "BRANCH_NAME=$(cat ~/varz/BRANCH_NAME)" >> $GITHUB_ENV
+          echo "VERSION_CI=$(cat ~/varz/VERSION_CI)" >> $GITHUB_ENV
+          echo "DKR_PREFIX=$(cat ~/varz/DKR_PREFIX)" >> $GITHUB_ENV
+          echo "GPR_PREFIX=$(cat ~/varz/GPR_PREFIX)" >> $GITHUB_ENV
+          echo "DOCKERFILE=$(cat ~/varz/DOCKERFILE)" >> $GITHUB_ENV
+          echo "DOCKERHUB_USER=$(cat ~/varz/DOCKERHUB_USER)" >> $GITHUB_ENV
+          echo "GITHUB_ORG=$(cat ~/varz/GITHUB_ORG)" >> $GITHUB_ENV
+          echo "APP_NAME=$(cat ~/varz/APP_NAME)" >> $GITHUB_ENV
+          echo "_NOTI_MESSAGE=$(cat ~/varz/_NOTI_MESSAGE)" >> $GITHUB_ENV
+      -
+        name: Notify on Slack
+        run: |
+          docker run --rm \
+            --name noti \
+            -e NOTI_MESSAGE='${{ env._NOTI_MESSAGE }}' \
+            -e SLACK_CHANNEL="github-actions" \
+            -e SLACK_TOKEN_CRON="${{ secrets.TOKEN_SLACK }}" \
+            devmtl/noti:stable sh -c \
+              ' NOTI_SLACK_TOKEN="$SLACK_TOKEN_CRON" \
+                NOTI_SLACK_CHANNEL="$SLACK_CHANNEL" \
+                noti -k -m "$NOTI_MESSAGE" '

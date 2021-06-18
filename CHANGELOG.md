@@ -9,6 +9,11 @@ Status template:
 
 # Releases
 
+- [1c47c04](https://github.com/firepress-org/ghostfire/commit/1c47c04) CI: dependabot.yml to weekly
+- [bd6bac4](https://github.com/firepress-org/ghostfire/commit/bd6bac4) CI: super-linter@v4.2.2 / not slim
+- [67dbe4d](https://github.com/firepress-org/ghostfire/commit/67dbe4d) CI: Adding post_build_linter
+- [1dd5a48](https://github.com/firepress-org/ghostfire/commit/1dd5a48) CI: Test | Show Digest
+- [6086c63](https://github.com/firepress-org/ghostfire/commit/6086c63) CI: add <workflow_dispatch>
 - [c54ffdf](https://github.com/firepress-org/ghostfire/commit/c54ffdf) CI: add <workflow_dispatch>
 
 ### 🔍 Compare

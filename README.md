@@ -12,7 +12,7 @@
     <a href="https://github.com/firepress-org/">GitHub</a> |
     <a href="https://twitter.com/askpascalandy">Twitter</a>
     <br /> <br />
-		![build](https://github.com/firepress-org/ghostfire/workflows/build/badge.svg?branch=master)
+    [![build](https://github.com/firepress-org/ghostfire/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/firepress-org/ghostfire/actions/workflows/build.yml)
 </p>
 
 &nbsp;

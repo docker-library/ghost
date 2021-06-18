@@ -1,7 +1,7 @@
 # ----------------------------------------------
 # At FirePress we run virtually everything in Docker
-# Dockerfile required by https://github.com/firepress-org/bashlava
-# Dockerfile required by our Github Actions CI 
+#   Dockerfile required by https://github.com/firepress-org/bashlava
+#   Dockerfile required by our Github Actions CI
 # ----------------------------------------------
 ARG APP_NAME="ghostfire"
 ARG VERSION="4.7.0"
@@ -18,10 +18,10 @@ ARG GIT_REPO_SOURCE="https://github.com/TryGhost/Ghost"
 
 # ----------------------------------------------
 # Start your Dockerfile from here
+#   https://docs.ghost.org/faq/node-versions/
+#   https://github.com/nodejs/Release (looking for "LTS")
+#   https://github.com/TryGhost/Ghost/blob/v4.1.2/package.json#L38
 # ----------------------------------------------
-# https://docs.ghost.org/faq/node-versions/
-# https://github.com/nodejs/Release (looking for "LTS")
-# https://github.com/TryGhost/Ghost/blob/v4.1.2/package.json#L38
 ARG GHOST_CLI_VERSION="1.17.3"
 ARG NODE_VERSION="12-alpine3.12"
 ARG ALPINE_VERSION="3.12"
@@ -30,7 +30,7 @@ ARG USER="node"
 
 # ----------------------------------------------
 # 1) LAYER to manage base image(s) versioning.
-# Credit to Tõnis Tiigi https://bit.ly/2RoCmvG
+#   Credit to Tõnis Tiigi https://bit.ly/2RoCmvG
 # ----------------------------------------------
 FROM alpine:${ALPINE_VERSION} AS myalpine
 FROM node:${NODE_VERSION} AS mynode
@@ -45,11 +45,13 @@ FROM myalpine AS version-debug
 # grab su-exec for easy step-down from root
 # add "bash" for "[["
 RUN set -eux && apk update && apk add --no-cache                  \
-    'su-exec>=0.2' bash curl                                      &&\
-    apk upgrade
+    'su-exec>=0.2' bash curl                                      ;
+
+RUN apk upgrade
 
 # ----------------------------------------------
 # 3) LAYER ghost-builder
+#   from the official Ghost image https://bit.ly/2JWOTam
 # ----------------------------------------------
 FROM mynode AS ghost-builder
 
@@ -65,7 +67,6 @@ ENV GHOST_INSTALL="/var/lib/ghost"                                \
     VERSION="${VERSION}"                                          \
     GHOST_CLI_VERSION="${GHOST_CLI_VERSION}"
 
-# installation process from the official Ghost image https://bit.ly/2JWOTam
 RUN set -eux && apk update && apk add --no-cache                  \
     'su-exec>=0.2' bash curl                                      &&\
     \
@@ -130,6 +131,8 @@ RUN set -eux && apk update && apk add --no-cache                  \
 
 # ----------------------------------------------
 # 4) LAYER ghost-final
+#   HEALTHCHECK CMD wget -q -s http://localhost:2368 || exit 1
+#   HEALTHCHECK attributes are passed during runtime <docker service create>
 # ----------------------------------------------
 FROM mynode AS ghost-final
 
@@ -145,7 +148,6 @@ ENV GHOST_INSTALL="/var/lib/ghost"                                \
     USER="${USER}"                                                \
     VERSION="${VERSION}"                                          \
     GHOST_CLI_VERSION="${GHOST_CLI_VERSION}"
-
 
 RUN set -eux && apk update && apk add --no-cache                  \
     'su-exec>=0.2' bash curl                                      &&\
@@ -184,8 +186,3 @@ EXPOSE 2368
 
 ENTRYPOINT [ "docker-entrypoint.sh" ]
 CMD [ "node", "current/index.js" ]
-
-# ----------------------------------------------
-# HEALTHCHECK CMD wget -q -s http://localhost:2368 || exit 1
-# HEALTHCHECK attributes are passed during runtime <docker service create>
-# ----------------------------------------------

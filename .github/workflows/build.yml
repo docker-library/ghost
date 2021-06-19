@@ -371,7 +371,7 @@ jobs:
 # POST BUILD (test)
 # ----------------------------------------------
 
-  Scanner_Dockle:
+  Test_Dockle:
     needs: [test_build]
     runs-on: ubuntu-20.04
     steps:
@@ -404,12 +404,12 @@ jobs:
           echo "APP_NAME=$(cat ~/varz/APP_NAME)" >> $GITHUB_ENV
           echo "_NOTI_MESSAGE=$(cat ~/varz/_NOTI_MESSAGE)" >> $GITHUB_ENV
       - 
-        name: Audit | scanner by Dockle
+        name: Checkpoint | scanner by Dockle
         run: |
           export DOCKLE_LATEST=$(curl --silent "https://api.github.com/repos/goodwithtech/dockle/releases/latest" | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
           docker run --rm goodwithtech/dockle:v${DOCKLE_LATEST} ${{ env.DKR_PREFIX }}:${{ env.VERSION_CI }}
 
-  Scanner_Trivy:
+  Test_Trivy:
     needs: [test_build]
     runs-on: ubuntu-20.04
     steps:
@@ -451,7 +451,7 @@ jobs:
           ignore-unfixed: true
           severity: 'LOW,MEDIUM,HIGH,CRITICAL'
 
-  Audit_Artillery:
+  Test_Artillery:
     needs: [test_build]
     runs-on: ubuntu-20.04
     steps:
@@ -484,13 +484,13 @@ jobs:
           echo "APP_NAME=$(cat ~/varz/APP_NAME)" >> $GITHUB_ENV
           echo "_NOTI_MESSAGE=$(cat ~/varz/_NOTI_MESSAGE)" >> $GITHUB_ENV
       - 
-        name: Audit | Artillery
+        name: Checkpoint | Artillery
         id: load-test
         uses: kenju/github-actions-artillery@master
         with:
           filepath: ./.github/load-test.yml
 
-  SuperLinter:
+  Test_Linter:
     needs: [test_build]
     runs-on: ubuntu-20.04
     steps:
@@ -629,7 +629,7 @@ jobs:
 # POST Continuous_Deployment
 # ----------------------------------------------
 
-  Audit_Lighthouse:
+  Test_Lighthouse:
     needs: [Continuous_Deployment]
     runs-on: ubuntu-20.04
     steps:
@@ -662,7 +662,7 @@ jobs:
           echo "APP_NAME=$(cat ~/varz/APP_NAME)" >> $GITHUB_ENV
           echo "_NOTI_MESSAGE=$(cat ~/varz/_NOTI_MESSAGE)" >> $GITHUB_ENV
       - 
-        name: Audit | Lighthouse
+        name: Checkpoint | Lighthouse
         uses: treosh/lighthouse-ci-action@7.0.0
         with:
           urls: |
@@ -672,7 +672,7 @@ jobs:
           uploadArtifacts: true # save results as an action artifacts
           temporaryPublicStorage: true # upload lighthouse report to the temporary storage
 
-  Notify_on_Slack:
+  Notify_Slack:
     needs: [Continuous_Deployment]
     runs-on: ubuntu-20.04
     steps:

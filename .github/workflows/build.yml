@@ -3,7 +3,7 @@
 # GNU v3 | Please credit the author if you are re-using some of it
 # by https://pascalandy.com/ and https://firepress.org/
 
-name: build
+name: ci
 
 on:
   push:

@@ -321,6 +321,9 @@ jobs:
           username: ${{ env.GITHUB_ORG }}
           password: ${{ secrets.TOKEN_GPR }}
       -
+        # platforms: linux/amd64,linux/arm64,linux/arm/v7
+        # platforms might differ between EDGE and MASTER
+        # The order for <docker push -tag> matters for our CD down the line.
         name: EDGE | buildx and push all tags (limited to ARCH linux/amd64)
         if: github.ref == 'refs/heads/edge'
         uses: docker/build-push-action@v2
@@ -328,8 +331,6 @@ jobs:
           context: .
           file: ./${{ env.DOCKERFILE }}
           platforms: linux/amd64
-        # platforms: linux/amd64,linux/arm64,linux/arm/v7
-        # platforms might differ between EDGE and MASTER
           push: true
           tags: |
             ${{ env.DKR_PREFIX }}:${{ env.BRANCH_NAME }}
@@ -340,7 +341,6 @@ jobs:
             ${{ env.GPR_PREFIX }}:${{ env.VERSION_BRANCH }}
             ${{ env.GPR_PREFIX }}:${{ env.VERSION_HASH_ONLY }}
             ${{ env.GPR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
-          # The order for <docker push -tag> matters for our CD down the line.
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
       -
@@ -351,8 +351,6 @@ jobs:
           context: .
           file: ./${{ env.DOCKERFILE }}
           platforms: linux/amd64,linux/arm64,linux/arm/v7
-        # platforms: linux/amd64,linux/arm64,linux/arm/v7
-        # platforms might differ between EDGE and MASTER
           push: true
           tags: |
             ${{ env.DKR_PREFIX }}:${{ env.BRANCH_NAME }}
@@ -363,7 +361,6 @@ jobs:
             ${{ env.GPR_PREFIX }}:${{ env.VERSION_BRANCH }}
             ${{ env.GPR_PREFIX }}:${{ env.VERSION_HASH_ONLY }}
             ${{ env.GPR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
-          # The order for <docker push -tag> matters for our CD down the line.
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
 

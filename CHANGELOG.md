@@ -9,6 +9,14 @@ Status template:
 
 # Releases
 
+### ⚡️ Updates
+- [518bf40](https://github.com/firepress-org/ghostfire/commit/518bf40) rename to ci instead of build
+- [1aa44cc](https://github.com/firepress-org/ghostfire/commit/1aa44cc) CI: Syntax improvement
+- [9e9fcf1](https://github.com/firepress-org/ghostfire/commit/9e9fcf1) CI: rename jobs
+- [0d23fd3](https://github.com/firepress-org/ghostfire/commit/0d23fd3) super-linter: ajust config
+- [46962df](https://github.com/firepress-org/ghostfire/commit/46962df) super-linter: bypass markdown
+- [90933f2](https://github.com/firepress-org/ghostfire/commit/90933f2) Add linters rules
+- [614b2d9](https://github.com/firepress-org/ghostfire/commit/614b2d9) Update CHANGELOG
 - [84f3dc6](https://github.com/firepress-org/ghostfire/commit/84f3dc6) CI: Major granularity between jobs
 - [bf40598](https://github.com/firepress-org/ghostfire/commit/bf40598) Dockerfile: Minor syntax updates
 - [e501c40](https://github.com/firepress-org/ghostfire/commit/e501c40) Update README

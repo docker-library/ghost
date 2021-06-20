@@ -1,7 +1,11 @@
 version: 2
 updates:
-  # Maintain dependencies for GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
+      time: "07:00"
+      timezone: "America/New_York"
+    labels:
+      - ":game_die: dependencies"
+      - ":robot: bot"

@@ -10,6 +10,11 @@ Status template:
 # Releases
 
 ### ⚡️ Updates
+- [874867d](https://github.com/firepress-org/ghostfire/commit/874867d) CI: more granular syntax
+- [7a2c83b](https://github.com/firepress-org/ghostfire/commit/7a2c83b) Init FUNDING.yml
+- [ad80dc0](https://github.com/firepress-org/ghostfire/commit/ad80dc0) update dependabot.yml
+- [ff3362f](https://github.com/firepress-org/ghostfire/commit/ff3362f) Add CODEOWNERS
+- [2cc8bb7](https://github.com/firepress-org/ghostfire/commit/2cc8bb7) Update CHANGELOG
 - [518bf40](https://github.com/firepress-org/ghostfire/commit/518bf40) rename to ci instead of build
 - [1aa44cc](https://github.com/firepress-org/ghostfire/commit/1aa44cc) CI: Syntax improvement
 - [9e9fcf1](https://github.com/firepress-org/ghostfire/commit/9e9fcf1) CI: rename jobs

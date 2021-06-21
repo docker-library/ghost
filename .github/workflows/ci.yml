@@ -130,6 +130,7 @@ jobs:
 # ----------------------------------------------
 # TEST_BUILD
 # ----------------------------------------------
+
   test_build:
     needs: [pre_build]
     runs-on: ubuntu-20.04
@@ -213,39 +214,14 @@ jobs:
             ${{ env.GPR_PREFIX }}:${{ env.VERSION_CI }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
-      - 
-        name: Test | Show Digest
-        run: echo ${{ steps.docker_build.outputs.digest }}
-      - 
-        name: Test | Start ghostUAT
-        # docker logs --follow --until 2m ghostUAT (TEST is not working yet)
-        timeout-minutes: 2
-        run: |
-          docker run -d --name ghostUAT -p 2368:2368 -e WEB_URL=http://localhost:2368 -e NODE_ENV=production ${{ env.DKR_PREFIX }}:${{ env.VERSION_CI }}
-          echo "--- Wait for ghostUAT --->"
-          until $(curl --output /dev/null --silent --head --fail http://localhost:2368); do
-            echo "--- ghostUAT is starting..."
-            sleep 1
-          done;
-          echo "--- ghostUAT is running! --->"
-      - 
-        name: Test | logs ghostUAT (multi-platform images, docker inspect, history, version, info, uname)
-        run: |
-          docker run --rm mplatform/mquery ${{ env.DKR_PREFIX }}:${{ env.VERSION_CI }} && echo && echo
-          docker inspect ${{ env.DKR_PREFIX }}:${{ env.VERSION_CI }} && echo && echo
-          docker history ${{ env.DKR_PREFIX }}:${{ env.VERSION_CI }} --no-trunc && echo && echo
-          docker version && echo && echo
-          docker info && echo && echo
-          uname -a
       -
-        name: Test | Using docker-library
+        name: Show docker inspect, docker history
         continue-on-error: true
         # echo "overide config.sh - We must bypass UTC timezone test"
         # cp ./test/config.sh official-images/test/config.sh
         run: |
-          curl http://localhost:2368 | grep "Thoughts, stories and ideas"
-          git clone --depth 1 https://github.com/docker-library/official-images.git official-images
-          official-images/test/run.sh ${{ env.DKR_PREFIX }}:${{ env.VERSION_CI }}
+          docker inspect ${{ env.DKR_PREFIX }}:${{ env.VERSION_CI }} && echo && echo
+          docker history ${{ env.DKR_PREFIX }}:${{ env.VERSION_CI }} --no-trunc && echo && echo
 
 # ----------------------------------------------
 # FINAL_BUILD
@@ -448,7 +424,32 @@ jobs:
           ignore-unfixed: true
           severity: 'LOW,MEDIUM,HIGH,CRITICAL'
 
-  Test_Artillery:
+  Test_Linter:
+    needs: [test_build]
+    runs-on: ubuntu-20.04
+    steps:
+      - 
+        name: Job preparation | Setup timezone
+        uses: zcong1993/setup-timezone@v1.1.1
+        with:
+          timezone: America/Montreal
+      -
+        name: Job preparation | Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - 
+        name: Checkpoint | Linter
+        continue-on-error: true
+        uses: docker://ghcr.io/github/super-linter:slim-v4
+        # github/super-linter@v4
+        # docker://ghcr.io/github/super-linter:slim-v4
+        env:
+          VALIDATE_MARKDOWN: false
+          DEFAULT_BRANCH: edge
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  UAT_Docker_Library:
     needs: [test_build]
     runs-on: ubuntu-20.04
     steps:
@@ -468,51 +469,70 @@ jobs:
       - 
         name: Job preparation | Set variables for this job | à la sauce GitHub Actions
         run: |
-          echo "VERSION_HASH_DATE=$(cat ~/varz/VERSION_HASH_DATE)" >> $GITHUB_ENV
-          echo "VERSION_HASH_ONLY=$(cat ~/varz/VERSION_HASH_ONLY)" >> $GITHUB_ENV
-          echo "VERSION_BRANCH=$(cat ~/varz/VERSION_BRANCH)" >> $GITHUB_ENV
-          echo "BRANCH_NAME=$(cat ~/varz/BRANCH_NAME)" >> $GITHUB_ENV
           echo "VERSION_CI=$(cat ~/varz/VERSION_CI)" >> $GITHUB_ENV
           echo "DKR_PREFIX=$(cat ~/varz/DKR_PREFIX)" >> $GITHUB_ENV
-          echo "GPR_PREFIX=$(cat ~/varz/GPR_PREFIX)" >> $GITHUB_ENV
-          echo "DOCKERFILE=$(cat ~/varz/DOCKERFILE)" >> $GITHUB_ENV
-          echo "DOCKERHUB_USER=$(cat ~/varz/DOCKERHUB_USER)" >> $GITHUB_ENV
-          echo "GITHUB_ORG=$(cat ~/varz/GITHUB_ORG)" >> $GITHUB_ENV
-          echo "APP_NAME=$(cat ~/varz/APP_NAME)" >> $GITHUB_ENV
-          echo "_NOTI_MESSAGE=$(cat ~/varz/_NOTI_MESSAGE)" >> $GITHUB_ENV
-      - 
-        name: Checkpoint | Artillery
-        id: load-test
-        uses: kenju/github-actions-artillery@master
-        with:
-          filepath: ./.github/load-test.yml
+      -
+        name: Show docker-library tests
+        continue-on-error: true
+        # echo "overide config.sh - We must bypass UTC timezone test"
+        # cp ./test/config.sh official-images/test/config.sh
+        run: |
+          curl http://localhost:2368 | grep "Thoughts, stories and ideas"
+          git clone --depth 1 https://github.com/docker-library/official-images.git official-images
+          official-images/test/run.sh ${{ env.DKR_PREFIX }}:${{ env.VERSION_CI }}
 
-  Test_Linter:
+  Show_DockerImage_Architectures:
     needs: [test_build]
     runs-on: ubuntu-20.04
     steps:
-      - 
-        name: Job preparation | Setup timezone
+      - name: Job preparation | Setup timezone
         uses: zcong1993/setup-timezone@v1.1.1
         with:
           timezone: America/Montreal
       -
         name: Job preparation | Checkout
         uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
       - 
-        name: Checkpoint | Linter
-        continue-on-error: true
-        uses: github/super-linter@v4.2.2
-        # github/super-linter@v4
-        # docker://ghcr.io/github/super-linter:slim-v4
-        env:
-          VALIDATE_MARKDOWN: false
-          DEFAULT_BRANCH: edge
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        name: Job preparation | Download variables from artifact
+        uses: actions/download-artifact@master
+        with:
+          name: variables_on_disk
+          path: ~/varz
+      - 
+        name: Job preparation | Set variables for this job | à la sauce GitHub Actions
+        run: |
+          echo "VERSION_CI=$(cat ~/varz/VERSION_CI)" >> $GITHUB_ENV
+          echo "DKR_PREFIX=$(cat ~/varz/DKR_PREFIX)" >> $GITHUB_ENV
+      - 
+        name: Show architecture(s) | Docker inspect/history/version/info | etc.
+        run: |
+          docker run --rm mplatform/mquery ${{ env.DKR_PREFIX }}:${{ env.VERSION_CI }}
 
-  Push_README:
+  Show_Docker_Info:
+    needs: [test_build]
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Job preparation | Setup timezone
+        uses: zcong1993/setup-timezone@v1.1.1
+        with:
+          timezone: America/Montreal
+      -
+        name: Job preparation | Checkout
+        uses: actions/checkout@v2
+      - 
+        name: Job preparation | Download variables from artifact
+        uses: actions/download-artifact@master
+        with:
+          name: variables_on_disk
+          path: ~/varz
+      - 
+        name: Show Docker inspect
+        run: |
+          docker info
+          docker version
+          uname -a
+
+  Update_README_DockerHub:
     needs: [test_build]
     runs-on: ubuntu-20.04
     steps:
@@ -572,27 +592,6 @@ jobs:
         name: Job preparation | Checkout
         uses: actions/checkout@v2
       - 
-        name: Job preparation | Download variables from artifact
-        uses: actions/download-artifact@master
-        with:
-          name: variables_on_disk
-          path: ~/varz
-      - 
-        name: Job preparation | Set variables for this job | à la sauce GitHub Actions
-        run: |
-          echo "VERSION_HASH_DATE=$(cat ~/varz/VERSION_HASH_DATE)" >> $GITHUB_ENV
-          echo "VERSION_HASH_ONLY=$(cat ~/varz/VERSION_HASH_ONLY)" >> $GITHUB_ENV
-          echo "VERSION_BRANCH=$(cat ~/varz/VERSION_BRANCH)" >> $GITHUB_ENV
-          echo "BRANCH_NAME=$(cat ~/varz/BRANCH_NAME)" >> $GITHUB_ENV
-          echo "VERSION_CI=$(cat ~/varz/VERSION_CI)" >> $GITHUB_ENV
-          echo "DKR_PREFIX=$(cat ~/varz/DKR_PREFIX)" >> $GITHUB_ENV
-          echo "GPR_PREFIX=$(cat ~/varz/GPR_PREFIX)" >> $GITHUB_ENV
-          echo "DOCKERFILE=$(cat ~/varz/DOCKERFILE)" >> $GITHUB_ENV
-          echo "DOCKERHUB_USER=$(cat ~/varz/DOCKERHUB_USER)" >> $GITHUB_ENV
-          echo "GITHUB_ORG=$(cat ~/varz/GITHUB_ORG)" >> $GITHUB_ENV
-          echo "APP_NAME=$(cat ~/varz/APP_NAME)" >> $GITHUB_ENV
-          echo "_NOTI_MESSAGE=$(cat ~/varz/_NOTI_MESSAGE)" >> $GITHUB_ENV
-      - 
         name: EDGE | Continuous Deployment
         if: github.ref == 'refs/heads/edge'
         uses: appleboy/ssh-action@v0.1.4
@@ -638,27 +637,6 @@ jobs:
         name: Job preparation | Checkout
         uses: actions/checkout@v2
       - 
-        name: Job preparation | Download variables from artifact
-        uses: actions/download-artifact@master
-        with:
-          name: variables_on_disk
-          path: ~/varz
-      - 
-        name: Job preparation | Set variables for this job | à la sauce GitHub Actions
-        run: |
-          echo "VERSION_HASH_DATE=$(cat ~/varz/VERSION_HASH_DATE)" >> $GITHUB_ENV
-          echo "VERSION_HASH_ONLY=$(cat ~/varz/VERSION_HASH_ONLY)" >> $GITHUB_ENV
-          echo "VERSION_BRANCH=$(cat ~/varz/VERSION_BRANCH)" >> $GITHUB_ENV
-          echo "BRANCH_NAME=$(cat ~/varz/BRANCH_NAME)" >> $GITHUB_ENV
-          echo "VERSION_CI=$(cat ~/varz/VERSION_CI)" >> $GITHUB_ENV
-          echo "DKR_PREFIX=$(cat ~/varz/DKR_PREFIX)" >> $GITHUB_ENV
-          echo "GPR_PREFIX=$(cat ~/varz/GPR_PREFIX)" >> $GITHUB_ENV
-          echo "DOCKERFILE=$(cat ~/varz/DOCKERFILE)" >> $GITHUB_ENV
-          echo "DOCKERHUB_USER=$(cat ~/varz/DOCKERHUB_USER)" >> $GITHUB_ENV
-          echo "GITHUB_ORG=$(cat ~/varz/GITHUB_ORG)" >> $GITHUB_ENV
-          echo "APP_NAME=$(cat ~/varz/APP_NAME)" >> $GITHUB_ENV
-          echo "_NOTI_MESSAGE=$(cat ~/varz/_NOTI_MESSAGE)" >> $GITHUB_ENV
-      - 
         name: Checkpoint | Lighthouse
         uses: treosh/lighthouse-ci-action@7.0.0
         with:
@@ -668,6 +646,24 @@ jobs:
           #budgetPath: ./budget.json # test performance budgets
           uploadArtifacts: true # save results as an action artifacts
           temporaryPublicStorage: true # upload lighthouse report to the temporary storage
+
+  Test_Artillery:
+    needs: [Continuous_Deployment]
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Job preparation | Setup timezone
+        uses: zcong1993/setup-timezone@v1.1.1
+        with:
+          timezone: America/Montreal
+      -
+        name: Job preparation | Checkout
+        uses: actions/checkout@v2
+      - 
+        name: Checkpoint | Artillery
+        id: load-test
+        uses: kenju/github-actions-artillery@master
+        with:
+          filepath: ./.github/load-test.yml
 
   Notify_Slack:
     needs: [Continuous_Deployment]
@@ -689,17 +685,6 @@ jobs:
       - 
         name: Job preparation | Set variables for this job | à la sauce GitHub Actions
         run: |
-          echo "VERSION_HASH_DATE=$(cat ~/varz/VERSION_HASH_DATE)" >> $GITHUB_ENV
-          echo "VERSION_HASH_ONLY=$(cat ~/varz/VERSION_HASH_ONLY)" >> $GITHUB_ENV
-          echo "VERSION_BRANCH=$(cat ~/varz/VERSION_BRANCH)" >> $GITHUB_ENV
-          echo "BRANCH_NAME=$(cat ~/varz/BRANCH_NAME)" >> $GITHUB_ENV
-          echo "VERSION_CI=$(cat ~/varz/VERSION_CI)" >> $GITHUB_ENV
-          echo "DKR_PREFIX=$(cat ~/varz/DKR_PREFIX)" >> $GITHUB_ENV
-          echo "GPR_PREFIX=$(cat ~/varz/GPR_PREFIX)" >> $GITHUB_ENV
-          echo "DOCKERFILE=$(cat ~/varz/DOCKERFILE)" >> $GITHUB_ENV
-          echo "DOCKERHUB_USER=$(cat ~/varz/DOCKERHUB_USER)" >> $GITHUB_ENV
-          echo "GITHUB_ORG=$(cat ~/varz/GITHUB_ORG)" >> $GITHUB_ENV
-          echo "APP_NAME=$(cat ~/varz/APP_NAME)" >> $GITHUB_ENV
           echo "_NOTI_MESSAGE=$(cat ~/varz/_NOTI_MESSAGE)" >> $GITHUB_ENV
       -
         name: Notify on Slack

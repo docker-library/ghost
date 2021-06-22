@@ -254,10 +254,10 @@ jobs:
           uname -a
 
 # ----------------------------------------------
-# prod_BUILD
+# main_build
 # Docs platforms QEMU setup-qemu-action https://github.com/firepress-org/ghostfire/issues/44
 # ----------------------------------------------
-  prod_build:
+  main_build:
     needs: [test_build]
     runs-on: ubuntu-20.04
     steps:
@@ -349,14 +349,6 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
       -
-        name: Inspect builder
-        run: |
-          echo "Name:      ${{ steps.buildx.outputs.name }}"
-          echo "Endpoint:  ${{ steps.buildx.outputs.endpoint }}"
-          echo "Status:    ${{ steps.buildx.outputs.status }}"
-          echo "Flags:     ${{ steps.buildx.outputs.flags }}"
-          echo "Platforms: ${{ steps.buildx.outputs.platforms }}"
-      -
         name: MASTER | buildx and push all tags | multi-platforms
         if: github.ref == 'refs/heads/master'
         uses: docker/build-push-action@v2
@@ -380,14 +372,6 @@ jobs:
             ${{ env.GPR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
-      -
-        name: Inspect builder
-        run: |
-          echo "Name:      ${{ steps.buildx.outputs.name }}"
-          echo "Endpoint:  ${{ steps.buildx.outputs.endpoint }}"
-          echo "Status:    ${{ steps.buildx.outputs.status }}"
-          echo "Flags:     ${{ steps.buildx.outputs.flags }}"
-          echo "Platforms: ${{ steps.buildx.outputs.platforms }}"
 
 # ----------------------------------------------
 # Tests after test_BUILD
@@ -479,10 +463,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 # ----------------------------------------------
-# Tests after prod_BUILD
+# Tests after main_build
 # ----------------------------------------------
   review_arch:
-    needs: [prod_build]
+    needs: [main_build]
     runs-on: ubuntu-20.04
     steps:
       - name: Job preparation | Setup timezone
@@ -507,6 +491,65 @@ jobs:
         name: Checkpoint | platform(s)
         run: |
           docker run --rm mplatform/mquery ${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
+
+  review_inspect:
+    needs: [main_build]
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Job preparation | Setup timezone
+        uses: zcong1993/setup-timezone@v1.1.1
+        with:
+          timezone: America/Montreal
+      -
+        name: Job preparation | Checkout
+        uses: actions/checkout@v2
+      - 
+        name: Job preparation | Download variables from artifact
+        uses: actions/download-artifact@master
+        with:
+          name: variables_on_disk
+          path: ~/varz
+      - 
+        name: Job preparation | Set variables for this job | à la sauce GitHub Actions
+        run: |
+          echo "VERSION_HASH_DATE=$(cat ~/varz/VERSION_HASH_DATE)" >> $GITHUB_ENV
+          echo "DKR_PREFIX=$(cat ~/varz/DKR_PREFIX)" >> $GITHUB_ENV
+          echo "GPR_PREFIX=$(cat ~/varz/GPR_PREFIX)" >> $GITHUB_ENV
+          echo "DOCKERHUB_USER=$(cat ~/varz/DOCKERHUB_USER)" >> $GITHUB_ENV
+          echo "GITHUB_ORG=$(cat ~/varz/GITHUB_ORG)" >> $GITHUB_ENV
+      - 
+        name: Login to DockerHub registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v1
+        with:
+          username: ${{ env.DOCKERHUB_USER }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+      - 
+        name: Login to GitHub registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ env.GITHUB_ORG }}
+          password: ${{ secrets.TOKEN_GPR }}
+      -
+        name: Checkpoint | pull image
+        if: github.event_name != 'pull_request'
+        run: |
+          docker pull ${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
+          docker pull ${{ env.GPR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
+      -
+        name: Checkpoint | buildx inspect
+        if: github.event_name != 'pull_request'
+        run: |
+          docker buildx imagetools inspect ${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
+          docker buildx imagetools inspect ${{ env.GPR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
+      -
+        name: Checkpoint | inspect image
+        if: github.event_name != 'pull_request'
+        run: |
+          docker image inspect ${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
+          docker image inspect ${{ env.GPR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
 
   update_readme:
     needs: [continuous_deployment]
@@ -553,10 +596,10 @@ jobs:
             devmtl/readme-to-dockerhub:stable
 
 # ----------------------------------------------
-# continuous_deployment after prod_BUILD
+# continuous_deployment after main_build
 # ----------------------------------------------
   continuous_deployment:
-    needs: [prod_build]
+    needs: [main_build]
     runs-on: ubuntu-20.04
     steps:
       - name: Job preparation | Set timezone

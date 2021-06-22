@@ -319,6 +319,21 @@ jobs:
           key: ${{ runner.os }}-buildx-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-buildx-
+      - 
+        name: Login to DockerHub registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v1
+        with:
+          username: ${{ env.DOCKERHUB_USER }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+      - 
+        name: Login to GitHub registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ env.GITHUB_ORG }}
+          password: ${{ secrets.TOKEN_GPR }}
       -
         name: EDGE | buildx and push all tags | limited to linux/amd64
         if: github.ref == 'refs/heads/edge'

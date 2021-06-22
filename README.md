@@ -31,11 +31,20 @@
 
 ## Docker image features :
 
+<<<<<<< HEAD
 - [x] **multi-stage builds**
 - [x] Add **`curl`** to support `healthchecks`
 - [x] Use a better `config.production.json` **template**.
 - [x] Docker image based on **alpine** (we don't maintain debian)
 - [ ] **Labels** based on the opencontainer standard
+=======
+- [x] Dockerfile uses **multi-stage builds**
+- [x] Multi platforms: linux/amd64, linux/arm64, linux/arm/v7, linux/arm/v6
+- [x] CI/CD: extreme visibility on the build process.
+- [x] Add`curl` to support `healthchecks`
+- [x] Use a better `config.production.json` **template**.
+- [x] **LABELS** based on the opencontainer standard
+>>>>>>> Update README
 
 #### Github Actions CI/CD :
 

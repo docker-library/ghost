@@ -31,37 +31,36 @@
 
 ## Docker image features :
 
-- [x] Dockerfile uses **multi-stage builds**
-- [x] Multi platforms: linux/amd64, linux/arm64, linux/arm/v7, linux/arm/v6
-- [x] CI/CD: extreme visibility on the build process.
-- [x] Add`curl` to support `healthchecks`
-- [x] Use a better `config.production.json` **template**.
-- [x] **LABELS** based on the opencontainer standard
+- [x] **multi-stage builds**
+- [x] Add **`curl`** to support `healthchecks`
+- [x] **Config**: a better `config.production.json` **template**.
+- [x] Docker image based on **alpine** (we don't maintain debian)
+- [x] **Labels** based on the opencontainer standard
 
-#### Github Actions CI/CD :
-
-We do our the maximum to apply [best practices](https://firepress.org/en/how-do-we-update-hundreds-of-ghosts-websites-on-docker-swarm/).
-
-- [x] **Extreme visibility** in the Graph.
-- [x] Great **logic** between jobs
-- [x] **Share variables** between jobs
-- [x] Support **Multi platforms**: linux/amd64, linux/arm64, linux/arm/v7, linux/arm/v6
-- [x] Build uses **cache** it’s much faster now
-- [x] **Continuous Deployment** the cluster (via SSH)
-- [x] **Slack notifications** when build is successful
-- [x] Lighthouse **audit** (localhost and online)
-- [x] Security **audit** (Dockle, Trivy)
-- [x] **super-linter**
-- [x] and more!
-
-#### Comparing docker image sizes
-
-We trim about 45MB on our Docker image. These the **uncompressed sizes** :
+We trim about 45MB on our Docker image. These are **uncompressed sizes** :
 
 ```
 devmtl/ghostfire:stable               320MB
 ghost:4.7.0-alpine                    366MB
 ```
+
+<br>
+
+## Github Actions CI/CD :
+
+- [x] **Extreme visibility** in the Graph.
+Support **Multi platforms**: `linux/amd64`, `linux/arm64`, `linux/arm/v7`, `linux/arm/v6`
+- [x] Great **logic** between jobs
+- [x] **Share variables** between jobs
+- [x] Builds use **cache** it’s much faster now
+- [x] **Continuous Deployment** the cluster (via SSH)
+- [x] **Slack notifications** when a build is successful
+- [x] Lighthouse **audit** (localhost and online)
+- [x] **Security** audit (Dockle, Trivy)
+- [x] **super-linter**
+- [x] Overall we apply [best practices](https://firepress.org/en/how-do-we-update-hundreds-of-ghosts-websites-on-docker-swarm/)
+
+![Screen Shot 2021-06-22 at 3 23 02 PM](https://user-images.githubusercontent.com/6694151/122986776-ddbd5180-d36d-11eb-9356-fa225b345bba.jpg)
 
 <br>
 
@@ -81,17 +80,13 @@ In short, you can try Ghost on the spot without having to sign-up!
 <br>
 
 #### Continuous integration
-See[Github Actions sections](https://github.com/firepress-org/ghostfire/actions)
+See [Github Actions sections](https://github.com/firepress-org/ghostfire/actions)
 
 At this point, this docker image has been pulled more than **11 millions of time**!
 
 ![docker-hub](https://user-images.githubusercontent.com/6694151/53067692-4c8af700-34a3-11e9-9fcf-9c7ad169a91b.jpg)
 
-#### Option #1 (let the script work for you):
-
-- Run this script by typing: `./runup.sh`
-
-#### Option #2:
+#### Option #1 (basic run)
 
 ```
 GHOSTFIRE_IMG="devmtl/ghostfire:stable"
@@ -103,7 +98,7 @@ docker run -d \
 ${GHOSTFIRE_IMG}
 ```
 
-#### Option #3 (Stateful with configs):
+#### Option #2 (with configs and stateful data)
 
 ```
 GHOSTFIRE_IMG="devmtl/ghostfire:stable"

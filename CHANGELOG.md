@@ -10,6 +10,7 @@ Status template:
 # Releases
 
 ### ⚡️ Updates
+- [42b11d1](https://github.com/firepress-org/ghostfire/commit/42b11d1) CI: multi-arch platform update
 - [f5cf042](https://github.com/firepress-org/ghostfire/commit/f5cf042) CI: Fix issues in jobs
 - [eb03661](https://github.com/firepress-org/ghostfire/commit/eb03661) Update docker-library tests from source
 - [0d5edc7](https://github.com/firepress-org/ghostfire/commit/0d5edc7) Update CHANGELOG
@@ -34,7 +35,6 @@ Status template:
 - [67dbe4d](https://github.com/firepress-org/ghostfire/commit/67dbe4d) CI: Adding post_build_linter
 - [1dd5a48](https://github.com/firepress-org/ghostfire/commit/1dd5a48) CI: Test | Show Digest
 - [6086c63](https://github.com/firepress-org/ghostfire/commit/6086c63) CI: add <workflow_dispatch>
-- [c54ffdf](https://github.com/firepress-org/ghostfire/commit/c54ffdf) CI: add <workflow_dispatch>
 
 ## 4.7.0 (2021-06-08)
 ### ⚡️ Updates

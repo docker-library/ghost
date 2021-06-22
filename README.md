@@ -32,11 +32,11 @@
 ## Advantages over the official Docker image :
 
 - [x] Dockerfile uses **multi-stage builds**
-- [x] Trimmed `npm`, `yarn`, `npx`, `ghost cli` and friends in the final docker image
+- [x] Multi platforms: linux/amd64, linux/arm64, linux/arm/v7, linux/arm/v6
+- [x] CI/CD: extreme visibility on the build process.
+- [x] Add`curl` to support `healthchecks`
 - [x] Use a better `config.production.json` **template**.
-- [x] `curl` to support **`healthchecks`**
 - [x] **LABELS** based on the opencontainer standard
-- [x] Greater control over the CI/CD
 
 #### Github Actions CI/CD :
 

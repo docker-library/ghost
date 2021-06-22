@@ -9,33 +9,6 @@ Status template:
 
 # Releases
 
-### ⚡️ Updates
-- [42b11d1](https://github.com/firepress-org/ghostfire/commit/42b11d1) CI: multi-arch platform update
-- [f5cf042](https://github.com/firepress-org/ghostfire/commit/f5cf042) CI: Fix issues in jobs
-- [eb03661](https://github.com/firepress-org/ghostfire/commit/eb03661) Update docker-library tests from source
-- [0d5edc7](https://github.com/firepress-org/ghostfire/commit/0d5edc7) Update CHANGELOG
-- [874867d](https://github.com/firepress-org/ghostfire/commit/874867d) CI: more granular syntax
-- [7a2c83b](https://github.com/firepress-org/ghostfire/commit/7a2c83b) Init FUNDING.yml
-- [ad80dc0](https://github.com/firepress-org/ghostfire/commit/ad80dc0) update dependabot.yml
-- [ff3362f](https://github.com/firepress-org/ghostfire/commit/ff3362f) Add CODEOWNERS
-- [2cc8bb7](https://github.com/firepress-org/ghostfire/commit/2cc8bb7) Update CHANGELOG
-- [518bf40](https://github.com/firepress-org/ghostfire/commit/518bf40) rename to ci instead of build
-- [1aa44cc](https://github.com/firepress-org/ghostfire/commit/1aa44cc) CI: Syntax improvement
-- [9e9fcf1](https://github.com/firepress-org/ghostfire/commit/9e9fcf1) CI: rename jobs
-- [0d23fd3](https://github.com/firepress-org/ghostfire/commit/0d23fd3) super-linter: ajust config
-- [46962df](https://github.com/firepress-org/ghostfire/commit/46962df) super-linter: bypass markdown
-- [90933f2](https://github.com/firepress-org/ghostfire/commit/90933f2) Add linters rules
-- [614b2d9](https://github.com/firepress-org/ghostfire/commit/614b2d9) Update CHANGELOG
-- [84f3dc6](https://github.com/firepress-org/ghostfire/commit/84f3dc6) CI: Major granularity between jobs
-- [bf40598](https://github.com/firepress-org/ghostfire/commit/bf40598) Dockerfile: Minor syntax updates
-- [e501c40](https://github.com/firepress-org/ghostfire/commit/e501c40) Update README
-- [c51a927](https://github.com/firepress-org/ghostfire/commit/c51a927) Update CHANGELOG
-- [1c47c04](https://github.com/firepress-org/ghostfire/commit/1c47c04) CI: dependabot.yml to weekly
-- [bd6bac4](https://github.com/firepress-org/ghostfire/commit/bd6bac4) CI: super-linter@v4.2.2 / not slim
-- [67dbe4d](https://github.com/firepress-org/ghostfire/commit/67dbe4d) CI: Adding post_build_linter
-- [1dd5a48](https://github.com/firepress-org/ghostfire/commit/1dd5a48) CI: Test | Show Digest
-- [6086c63](https://github.com/firepress-org/ghostfire/commit/6086c63) CI: add <workflow_dispatch>
-
 ## 4.7.0 (2021-06-08)
 ### ⚡️ Updates
 - [2c0ed5c](https://github.com/firepress-org/ghostfire/commit/2c0ed5c) Update ghostfire to version 4.7.0 /Dockerfile

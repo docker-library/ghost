@@ -512,7 +512,7 @@ jobs:
           echo "VERSION_HASH_DATE=$(cat ~/varz/VERSION_HASH_DATE)" >> $GITHUB_ENV
           echo "DKR_PREFIX=$(cat ~/varz/DKR_PREFIX)" >> $GITHUB_ENV
       - 
-        name: Checkpoint | platform(s) EDGE
+        name: Checkpoint | platform(s)
         if: github.ref == 'refs/heads/edge'
         run: |
           docker run --rm mplatform/mquery ${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
@@ -651,7 +651,6 @@ jobs:
 
   notify_slack:
     needs: [continuous_deployment]
-    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-20.04
     steps:
       - name: Job preparation | Set timezone

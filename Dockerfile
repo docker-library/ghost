@@ -44,8 +44,9 @@ FROM node:${NODE_VERSION} AS mynode
 FROM myalpine AS version-debug
 # grab su-exec for easy step-down from root
 # add "bash" for "[["
-RUN set -eux && apk update && apk add --no-cache                  \
-    'su-exec>=0.2' bash curl                                      ;
+
+RUN set -eux && apk update && apk add --no-cache --virtual        \
+    'su-exec>=0.2' bash curl tzdata                               ;
 
 RUN apk upgrade
 
@@ -150,12 +151,14 @@ ENV GHOST_INSTALL="/var/lib/ghost"                                \
     GHOST_CLI_VERSION="${GHOST_CLI_VERSION}"
 
 RUN set -eux && apk update && apk add --no-cache                  \
-    'su-exec>=0.2' bash curl                                      &&\
+    'su-exec>=0.2' bash curl tzdata                               &&\
+# set up timezone
+    cp /usr/share/zoneinfo/America/New_York /etc/localtime        &&\
+    echo "America/New_York" > /etc/timezone                       &&\
+    apk del tzdata                                                &&\
     rm -rvf /var/cache/apk/* /tmp/*                               ;
 
 COPY --chown="${USER}":"${USER}" docker-entrypoint.sh /usr/local/bin
-COPY --chown="${USER}":"${USER}" Dockerfile /usr/local/bin
-COPY --chown="${USER}":"${USER}" README.md /usr/local/bin
 COPY --from=ghost-builder --chown="${USER}":"${USER}" "${GHOST_INSTALL}" "${GHOST_INSTALL}"
 
 # add knex-migrator bins into PATH

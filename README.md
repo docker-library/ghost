@@ -29,37 +29,37 @@
 
 <br>
 
-## Advantages over the official Docker image :
+## Docker image features :
 
-- [x] Dockerfile uses **multi-stage builds**
-- [x] Trimmed `npm`, `yarn`, `npx`, `ghost cli` and friends in the final docker image
+- [x] **multi-stage builds**
+- [x] Add **`curl`** to support `healthchecks`
 - [x] Use a better `config.production.json` **template**.
-- [x] `curl` to support **`healthchecks`**
-- [x] **LABELS** based on the opencontainer standard
-- [x] Greater control over the CI/CD
+- [x] Docker image based on **alpine** (we don't maintain debian)
+- [ ] **Labels** based on the opencontainer standard
 
 #### Github Actions CI/CD :
 
 We do our the maximum to apply [best practices](https://firepress.org/en/how-do-we-update-hundreds-of-ghosts-websites-on-docker-swarm/).
 
-- [x] Better logic between jobs (pre-build / build / post-build)
-- [x] Share variables between jobs
-- [x] Multi-arch build (linux/amd64, linux/arm64, linux/arm/v7)
-- [x] Build uses cache it’s much faster now
-- [x] Continuous Deployment the cluster (via SSH)
-- [x] Slack notifications when build is successful
-- [x] Lighthouse audit (localhost and online)
-- [x] Security audit (Dockle, Trivy)
-- [x] super-linter
+- [x] **Extreme visibility** in the Graph.
+- [x] Great **logic** between jobs
+- [x] **Share variables** between jobs
+- [x] Support **Multi platforms**: linux/amd64, linux/arm64, linux/arm/v7, linux/arm/v6
+- [x] Build uses **cache** it’s much faster now
+- [x] **Continuous Deployment** the cluster (via SSH)
+- [x] **Slack notifications** when build is successful
+- [x] Lighthouse **audit** (localhost and online)
+- [x] Security **audit** (Dockle, Trivy)
+- [x] **super-linter**
 - [x] and more!
 
 #### Comparing docker image sizes
 
-We were able to trim about 60MB on our Docker image. These the **uncompressed sizes** :
+We trim about 45MB on our Docker image. These the **uncompressed sizes** :
 
 ```
-devmtl/ghostfire:stable           310MB
-ghost:3-alpine                    367MB
+devmtl/ghostfire:stable               320MB
+ghost:4.7.0-alpine                    366MB
 ```
 
 <br>

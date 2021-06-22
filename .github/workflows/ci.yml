@@ -257,6 +257,7 @@ jobs:
 # prod_BUILD
     # linux/amd64
     # linux/arm64
+    # linux/arm/v8
     # linux/arm/v7
     # linux/arm/v6
     # linux/i386
@@ -343,7 +344,6 @@ jobs:
           file: ./${{ env.DOCKERFILE }}
           platforms: |
             linux/amd64
-          # linux/arm64
           push: true
           tags: |
             ${{ env.DKR_PREFIX }}:${{ env.BRANCH_NAME }}
@@ -358,6 +358,14 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
       -
+        name: Inspect builder
+        run: |
+          echo "Name:      ${{ steps.buildx.outputs.name }}"
+          echo "Endpoint:  ${{ steps.buildx.outputs.endpoint }}"
+          echo "Status:    ${{ steps.buildx.outputs.status }}"
+          echo "Flags:     ${{ steps.buildx.outputs.flags }}"
+          echo "Platforms: ${{ steps.buildx.outputs.platforms }}"
+      -
         name: MASTER | buildx and push all tags | multi-platforms
         if: github.ref == 'refs/heads/master'
         uses: docker/build-push-action@v2
@@ -367,6 +375,8 @@ jobs:
           platforms: |
             linux/amd64
             linux/arm64
+            linux/arm/v7
+            linux/arm/v6
           push: true
           tags: |
             ${{ env.DKR_PREFIX }}:${{ env.BRANCH_NAME }}
@@ -379,6 +389,14 @@ jobs:
             ${{ env.GPR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
+      -
+        name: Inspect builder
+        run: |
+          echo "Name:      ${{ steps.buildx.outputs.name }}"
+          echo "Endpoint:  ${{ steps.buildx.outputs.endpoint }}"
+          echo "Status:    ${{ steps.buildx.outputs.status }}"
+          echo "Flags:     ${{ steps.buildx.outputs.flags }}"
+          echo "Platforms: ${{ steps.buildx.outputs.platforms }}"
 
 # ----------------------------------------------
 # Tests after test_BUILD
@@ -473,7 +491,6 @@ jobs:
 # ----------------------------------------------
   review_arch:
     needs: [prod_build]
-    if: github.ref == 'refs/heads/edge'
     runs-on: ubuntu-20.04
     steps:
       - name: Job preparation | Setup timezone

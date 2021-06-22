@@ -10,6 +10,9 @@ Status template:
 # Releases
 
 ### ⚡️ Updates
+- [f5cf042](https://github.com/firepress-org/ghostfire/commit/f5cf042) CI: Fix issues in jobs
+- [eb03661](https://github.com/firepress-org/ghostfire/commit/eb03661) Update docker-library tests from source
+- [0d5edc7](https://github.com/firepress-org/ghostfire/commit/0d5edc7) Update CHANGELOG
 - [874867d](https://github.com/firepress-org/ghostfire/commit/874867d) CI: more granular syntax
 - [7a2c83b](https://github.com/firepress-org/ghostfire/commit/7a2c83b) Init FUNDING.yml
 - [ad80dc0](https://github.com/firepress-org/ghostfire/commit/ad80dc0) update dependabot.yml

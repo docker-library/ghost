@@ -453,6 +453,7 @@ jobs:
           echo "DKR_PREFIX=$(cat ~/varz/DKR_PREFIX)" >> $GITHUB_ENV
       - 
         name: Checkpoint | scanner by Trivy
+        continue-on-error: true
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: '${{ env.DKR_PREFIX }}:${{ env.VERSION_CI }}'
@@ -513,7 +514,6 @@ jobs:
           echo "DKR_PREFIX=$(cat ~/varz/DKR_PREFIX)" >> $GITHUB_ENV
       - 
         name: Checkpoint | platform(s)
-        if: github.ref == 'refs/heads/edge'
         run: |
           docker run --rm mplatform/mquery ${{ env.DKR_PREFIX }}:${{ env.VERSION_HASH_DATE }}
 

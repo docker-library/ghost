@@ -23,7 +23,7 @@
 
 ## What is this?
 
-**Docker image** — This is a Docker image to run Ghost V4 in a container 🐳.
+🐳 **Docker image** — This is a Docker image to run Ghost V4 in a container.
 
 **What is Ghost?** — Ghost is an open-source software that lets you create your website with a blog. See the [FAQ section](https://play-with-ghost.com/ghost-themes/faq/#what-is-ghost) for more details.
 

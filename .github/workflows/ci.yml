@@ -47,10 +47,20 @@ jobs:
           git_threshold: degraded_performance
           actions_threshold: operational
       -
-        name: Define and save variables to disk
+        name: EDGE | Set BRANCH_NAME
+        if: github.ref == 'refs/heads/edge'
         run: |
           mkdir -pv ~/varz
-          echo "$GITHUB_REF" | cut -d "/" -f3- > ~/varz/BRANCH_NAME
+          echo "edge" > ~/varz/BRANCH_NAME
+      -
+        name: MASTER | Set BRANCH_NAME
+        if: github.ref == 'refs/heads/master'
+        run: |
+          mkdir -pv ~/varz
+          echo "stable" > ~/varz/BRANCH_NAME
+      -
+        name: Define and save variables to disk
+        run: |
           cat ${{ env.DOCKERFILE }} | grep APP_NAME= | head -n 1 | grep -o '".*"' | sed 's/"//g' > ~/varz/APP_NAME
           cat ${{ env.DOCKERFILE }} | grep DOCKERHUB_USER= | head -n 1 | grep -o '".*"' | sed 's/"//g' > ~/varz/DOCKERHUB_USER
           cat ${{ env.DOCKERFILE }} | grep GITHUB_ORG= | head -n 1 | grep -o '".*"' | sed 's/"//g' > ~/varz/GITHUB_ORG

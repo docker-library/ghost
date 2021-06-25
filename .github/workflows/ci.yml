@@ -321,6 +321,17 @@ jobs:
           echo "${{ needs.myvars.outputs.VERSION_HASH_ONLY }} << VERSION_HASH_ONLY"
           echo "${{ needs.myvars.outputs.VERSION_HASH_DATE }} << VERSION_HASH_DATE"
           echo "${{ needs.myvars.outputs._NOTI_MESSAGE }} << _NOTI_MESSAGE"
+          echo
+          echo "Docker image name:"
+          echo
+          echo ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.BRANCH_NAME }}
+          echo ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_BRANCH }}
+          echo ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_ONLY }}
+          echo ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_DATE }}
+          echo ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.BRANCH_NAME }}
+          echo ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_BRANCH }}
+          echo ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_ONLY }}
+          echo ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_DATE }}
 
   review_linter:
     needs: [myvars,build]

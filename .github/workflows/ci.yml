@@ -429,26 +429,6 @@ jobs:
           docker image inspect ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_DATE }}
           docker image inspect ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_DATE }}
 
-  update_readme:
-    needs: [myvars,continuous_deployment]
-    if: github.ref == 'refs/heads/master'
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v2
-      - uses: zcong1993/setup-timezone@v1.1.1
-        with:
-          timezone: America/Montreal
-      - 
-        name: Update README on Dockerhub
-        run: |
-          docker run --rm \
-            -v $(pwd)/README.md:/data/README.md \
-            -e DOCKERHUB_USERNAME=${{ needs.myvars.outputs.DOCKERHUB_USER }} \
-            -e DOCKERHUB_PASSWORD=${{ secrets.DOCKERHUB_PASSWORD }} \
-            -e DOCKERHUB_REPO_PREFIX=${{ needs.myvars.outputs.DOCKERHUB_USER }} \
-            -e DOCKERHUB_REPO_NAME=${{ needs.myvars.outputs.APP_NAME }} \
-            devmtl/readme-to-dockerhub:stable
-
 # ----------------------------------------------
 # continuous_deployment after build
 # ----------------------------------------------
@@ -489,6 +469,16 @@ jobs:
           script: |
             ${{ secrets.SSH_CMD__UPDATE_DKR_IMG_STABLE }}
             hostname
+      - 
+        name: Update README on Dockerhub
+        run: |
+          docker run --rm \
+            -v $(pwd)/README.md:/data/README.md \
+            -e DOCKERHUB_USERNAME=${{ needs.myvars.outputs.DOCKERHUB_USER }} \
+            -e DOCKERHUB_PASSWORD=${{ secrets.DOCKERHUB_PASSWORD }} \
+            -e DOCKERHUB_REPO_PREFIX=${{ needs.myvars.outputs.DOCKERHUB_USER }} \
+            -e DOCKERHUB_REPO_NAME=${{ needs.myvars.outputs.APP_NAME }} \
+            devmtl/readme-to-dockerhub:stable
 
 # ----------------------------------------------
 # Actions after continuous_deployment

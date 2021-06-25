@@ -303,7 +303,6 @@ jobs:
 # ----------------------------------------------
 # Tests after build
 # ----------------------------------------------
-
   review_myvars:
     needs: [myvars,build]
     runs-on: ubuntu-20.04
@@ -315,6 +314,19 @@ jobs:
       -
         name: Show variables
         run: |
+          echo "Final Docker image name:"
+          echo "= = = = = = = = = ="
+          echo ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.BRANCH_NAME }}
+          echo ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_BRANCH }}
+          echo ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_ONLY }}
+          echo ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_DATE }}
+          echo ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.BRANCH_NAME }}
+          echo ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_BRANCH }}
+          echo ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_ONLY }}
+          echo ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_DATE }}
+          echo
+          echo "Core environment variables:"
+          echo "= = = = = = = = = ="
           echo "${{ env.DOCKERFILE }} << DOCKERFILE"
           echo "${{ needs.myvars.outputs.BRANCH_NAME }} << BRANCH_NAME"
           echo "${{ needs.myvars.outputs.APP_NAME }} << APP_NAME"
@@ -332,16 +344,32 @@ jobs:
           echo "${{ needs.myvars.outputs.VERSION_HASH_DATE }} << VERSION_HASH_DATE"
           echo "${{ needs.myvars.outputs._NOTI_MESSAGE }} << _NOTI_MESSAGE"
           echo
-          echo "Docker image name:"
-          echo
-          echo ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.BRANCH_NAME }}
-          echo ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_BRANCH }}
-          echo ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_ONLY }}
-          echo ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_DATE }}
-          echo ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.BRANCH_NAME }}
-          echo ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_BRANCH }}
-          echo ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_ONLY }}
-          echo ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_DATE }}
+          echo "Environment variables provided Github Actions :"
+          echo "= = = = = = = = = ="
+          echo "${GITHUB_WORKFLOW} << GITHUB_WORKFLOW"
+          echo "${GITHUB_RUN_ID} << GITHUB_RUN_ID"
+          echo "${GITHUB_RUN_NUMBER} << GITHUB_RUN_NUMBER"
+          echo "${GITHUB_JOB} << GITHUB_JOB"
+          echo "${GITHUB_ACTION} << GITHUB_ACTION"
+          echo "${GITHUB_ACTOR} << GITHUB_ACTOR"
+          echo "${GITHUB_REPOSITORY} << GITHUB_REPOSITORY"
+          echo "${GITHUB_EVENT_NAME} << GITHUB_EVENT_NAME"
+          echo "${GITHUB_EVENT_PATH} << GITHUB_EVENT_PATH"
+          echo "${GITHUB_WORKSPACE} << GITHUB_WORKSPACE"
+          echo "${GITHUB_SHA} << GITHUB_SHA"
+          echo "${GITHUB_REF} << GITHUB_REF"
+          echo "${GITHUB_SERVER_URL} << GITHUB_SERVER_URL"
+          echo "${GITHUB_API_URL} << GITHUB_API_URL"
+          echo "${GITHUB_GRAPHQL_URL} << GITHUB_GRAPHQL_URL"
+          echo "${RUNNER_OS} << RUNNER_OS"
+          echo "${RUNNER_TEMP} << RUNNER_TEMP"
+          echo "${RUNNER_TOOL_CACHE} << RUNNER_TOOL_CACHE"
+          echo "${GITHUB_ACTIONS} << GITHUB_ACTIONS"
+
+# https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#context-availability
+# if: github.event_name != 'pull_request'
+# if: ${{ github.ref == 'refs/heads/main' }}
+# $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID
 
   review_linter:
     needs: [myvars,build]
@@ -373,8 +401,7 @@ jobs:
       - 
         name: Checkpoint | scanner by Dockle
         run: |
-          export DOCKLE_LATEST=$(curl --silent "https://api.github.com/repos/goodwithtech/dockle/releases/latest" | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
-          docker run --rm goodwithtech/dockle:v${DOCKLE_LATEST} ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_DATE }}
+          docker run --rm goodwithtech/dockle:latest ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_DATE }}
 
   review_trivy:
     needs: [myvars,build]

@@ -9,6 +9,30 @@ Status template:
 
 # Releases
 
+## 4.8.3 (2021-06-26)
+### ⚡️ Updates
+- [b5dd88d](https://github.com/firepress-org/ghostfire/commit/b5dd88d) Update ghostfire to version 4.8.3 /Dockerfile
+- [d6a716e](https://github.com/firepress-org/ghostfire/commit/d6a716e) Update ghostfire to version 4.8.1 /Dockerfile
+
+### Major CI updates
+- [94e814d](https://github.com/firepress-org/ghostfire/commit/94e814d) CI: ENV optimisations
+- [90612f7](https://github.com/firepress-org/ghostfire/commit/90612f7) CI: Fix env BRANCH_NAME logic
+- [31b325f](https://github.com/firepress-org/ghostfire/commit/31b325f) CI: more details in job: review_myvars
+- [627841a](https://github.com/firepress-org/ghostfire/commit/627841a) CI: Move Update README on Dockerhub in step continuous_deployment
+- [276b338](https://github.com/firepress-org/ghostfire/commit/276b338) CI: Major syntax update to better manage ENVs between jobs
+- [65cf7d2](https://github.com/firepress-org/ghostfire/commit/65cf7d2) CI: Adding job: review_inspect
+- [bb5f911](https://github.com/firepress-org/ghostfire/commit/bb5f911) CI: remove qemu builds
+- [161eb7e](https://github.com/firepress-org/ghostfire/commit/161eb7e) Add timezone America/New_York
+- [5efa78d](https://github.com/firepress-org/ghostfire/commit/5efa78d) CI: syntax updates
+- [271320f](https://github.com/firepress-org/ghostfire/commit/271320f) CI: syntax updates
+- [08963bf](https://github.com/firepress-org/ghostfire/commit/08963bf) CI: update multi-arch
+- [815a29f](https://github.com/firepress-org/ghostfire/commit/815a29f) CI limit to amd64 on branch edge
+- [81e2dad](https://github.com/firepress-org/ghostfire/commit/81e2dad) CI Add login back
+- [42b11d1](https://github.com/firepress-org/ghostfire/commit/42b11d1) CI: multi-arch platform update
+
+### 🔍 Compare
+- ... with previous release: [4.7.0 <> 4.8.3](https://github.com/firepress-org/ghostfire/compare/4.7.0...4.8.3)
+
 ## 4.7.0 (2021-06-08)
 ### ⚡️ Updates
 - [2c0ed5c](https://github.com/firepress-org/ghostfire/commit/2c0ed5c) Update ghostfire to version 4.7.0 /Dockerfile

@@ -10,7 +10,7 @@ Status template:
 # Releases
 
 ## 4.8.3 (2021-06-26)
-### ⚡️ Updates
+### ⚡️ Update
 - [b5dd88d](https://github.com/firepress-org/ghostfire/commit/b5dd88d) Update ghostfire to version 4.8.3 /Dockerfile
 - [d6a716e](https://github.com/firepress-org/ghostfire/commit/d6a716e) Update ghostfire to version 4.8.1 /Dockerfile
 

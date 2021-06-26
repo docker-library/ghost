@@ -40,7 +40,7 @@ jobs:
         with:
           timezone: America/Montreal
       -
-        name: Github Action system status
+        name: Github Actions system status
         uses: crazy-max/ghaction-github-status@v2
         with:
           overall_threshold: minor
@@ -128,12 +128,8 @@ jobs:
       - uses: zcong1993/setup-timezone@v1.1.1
         with:
           timezone: America/Montreal
-      -
-        name: Docker QEMU
-        uses: docker/setup-qemu-action@v1
-      - 
-        name: Docker buildx
-        uses: docker/setup-buildx-action@v1
+      - uses: docker/setup-qemu-action@v1
+      - uses: docker/setup-buildx-action@v1
       -
         name: Docker layers
         id: docker-cache
@@ -143,16 +139,12 @@ jobs:
           key: ${{ runner.os }}-buildx-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-buildx-
-      - 
-        name: DockerHub registry login
-        if: github.event_name != 'pull_request'
+      - if: github.event_name != 'pull_request'
         uses: docker/login-action@v1
         with:
           username: ${{ needs.myvars.outputs.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
-      - 
-        name: GitHub registry login
-        if: github.event_name != 'pull_request'
+      - if: github.event_name != 'pull_request'
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
@@ -223,12 +215,8 @@ jobs:
       - uses: zcong1993/setup-timezone@v1.1.1
         with:
           timezone: America/Montreal
-      -
-        name: Docker QEMU
-        uses: docker/setup-qemu-action@v1
-      - 
-        name: Docker buildx
-        uses: docker/setup-buildx-action@v1
+      - uses: docker/setup-qemu-action@v1
+      - uses: docker/setup-buildx-action@v1
       -
         name: Docker layers
         id: docker-cache
@@ -238,16 +226,12 @@ jobs:
           key: ${{ runner.os }}-buildx-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-buildx-
-      - 
-        name: DockerHub registry login
-        if: github.event_name != 'pull_request'
+      - if: github.event_name != 'pull_request'
         uses: docker/login-action@v1
         with:
           username: ${{ needs.myvars.outputs.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
-      - 
-        name: GitHub registry login
-        if: github.event_name != 'pull_request'
+      - if: github.event_name != 'pull_request'
         uses: docker/login-action@v1
         with:
           registry: ghcr.io

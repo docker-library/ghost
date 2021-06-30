@@ -13,9 +13,6 @@ ARG DOCKERHUB_USER="devmtl"
 ARG GITHUB_ORG="firepress-org"
 ARG GITHUB_REGISTRY="registry"
 
-ARG GIT_REPO_DOCKERFILE="https://github.com/firepress-org/ghostfire"
-ARG GIT_REPO_SOURCE="https://github.com/TryGhost/Ghost"
-
 # ----------------------------------------------
 # Start your Dockerfile from here
 #   https://docs.ghost.org/faq/node-versions/

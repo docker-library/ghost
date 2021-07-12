@@ -4,8 +4,8 @@
 #   Dockerfile required by our Github Actions CI
 # ----------------------------------------------
 ARG APP_NAME="ghostfire"
-ARG VERSION="4.9.3"
-ARG RELEASE="4.9.3"
+ARG VERSION="4.9.4"
+ARG RELEASE="4.9.4"
 ARG GITHUB_USER="firepress-org"
 
 ARG GIT_PROJECT_NAME="ghostfire"

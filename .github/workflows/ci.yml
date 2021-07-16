@@ -370,7 +370,11 @@ jobs:
         # github/super-linter@v4
         # docker://ghcr.io/github/super-linter:slim-v4
         env:
+          DISABLE_ERRORS: true          # Flag to have the linter complete with exit code 0 even if errors were detected.
+          VALIDATE_ALL_CODEBASE: false
           VALIDATE_MARKDOWN: false
+          VALIDATE_DOCKERFILE: false
+          VALIDATE_JSCPD: false
           DEFAULT_BRANCH: edge
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

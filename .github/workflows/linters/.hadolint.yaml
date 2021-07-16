@@ -1,6 +1,9 @@
 ignored:
+  - SC2128 #Expanding an array without an index only gives the first element.
   - DL3006 #image pin versions
   - DL3008 #apt pin versions
-  - DL3018 #apk add pin versions
+  - DL3017 #Do not use apk upgrade
+  - DL3018 #Pin versions in apk add. Instead of `apk add <package>` use `apk add <package>=<version>`
   - DL3022 #outdated rule for COPY --from
   - DL3028 #gem install pin versions
+  

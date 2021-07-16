@@ -9,6 +9,20 @@ Status template:
 
 # Releases
 
+## 4.9.4 (2021-07-16)
+### ⚡️ Updates
+- [d0cee07](https://github.com/firepress-org/ghostfire/commit/d0cee07) Update ghostfire to version 4.9.4 /Dockerfile
+- [578612f](https://github.com/firepress-org/ghostfire/commit/578612f) Update ghostfire to version 4.9.3 /Dockerfile
+- [df83a7d](https://github.com/firepress-org/ghostfire/commit/df83a7d) Update ghostfire to version 4.9.2 /Dockerfile
+- [7a06127](https://github.com/firepress-org/ghostfire/commit/7a06127) Update to Node 14-alpine3.13
+- [db0c6f0](https://github.com/firepress-org/ghostfire/commit/db0c6f0) Update ghostfire to version 4.9.1 /Dockerfile
+- [4441be8](https://github.com/firepress-org/ghostfire/commit/4441be8) Update ghostfire to version 4.9.0 /Dockerfile
+- [ae2fa90](https://github.com/firepress-org/ghostfire/commit/ae2fa90) Remove unsed VAR from Dockerfile
+- [420e560](https://github.com/firepress-org/ghostfire/commit/420e560) Update ghostfire to version 4.8.4 /Dockerfile
+
+### 🔍 Compare
+- ... with previous release: [4.8.3 <> 4.9.4](https://github.com/firepress-org/ghostfire/compare/4.8.3...4.9.4)
+
 ## 4.8.3 (2021-06-26)
 ### ⚡️ Update
 - [b5dd88d](https://github.com/firepress-org/ghostfire/commit/b5dd88d) Update ghostfire to version 4.8.3 /Dockerfile

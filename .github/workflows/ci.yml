@@ -464,6 +464,11 @@ jobs:
         run: |
           docker image inspect ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_DATE }}
           docker image inspect ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_DATE }}
+      -
+        name: Checkpoint | docker images --digests
+        if: github.event_name != 'pull_request'
+        run: |
+          docker images --digests
 
 # ----------------------------------------------
 # continuous_deployment after build

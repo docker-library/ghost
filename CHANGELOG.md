@@ -9,6 +9,27 @@ Status template:
 
 # Releases
 
+## 4.16.0 (2021-09-24)
+### ⚡️ Updates
+- [94e7f8e](https://github.com/firepress-org/ghostfire/commit/94e7f8e) CI update - treosh/lighthouse-ci-action@8.0.0
+- [d73903c](https://github.com/firepress-org/ghostfire/commit/d73903c) Update to node:14-alpine3.14 + alpine3.14
+- [525c420](https://github.com/firepress-org/ghostfire/commit/525c420) Update ghostfire to version 4.16.0 /Dockerfile
+- [94ee673](https://github.com/firepress-org/ghostfire/commit/94ee673) Update ghostfire to version 4.15.1 /Dockerfile
+- [3c3d8e1](https://github.com/firepress-org/ghostfire/commit/3c3d8e1) Update ghostfire to version 4.15.0 /Dockerfile
+- [a0f1e70](https://github.com/firepress-org/ghostfire/commit/a0f1e70) Update ghostfire to version 4.14.0 /Dockerfile
+- [6c30e05](https://github.com/firepress-org/ghostfire/commit/6c30e05) Update ghostfire to version 4.13.0 /Dockerfile
+- [bfbc741](https://github.com/firepress-org/ghostfire/commit/bfbc741) Update ghostfire to version 4.12.1 /Dockerfile
+- [d07d19d](https://github.com/firepress-org/ghostfire/commit/d07d19d) Update ghostfire to version 4.12.0 /Dockerfile
+- [8ae6ef0](https://github.com/firepress-org/ghostfire/commit/8ae6ef0) Update ghostfire to version 4.11.0 /Dockerfile
+- [9c18940](https://github.com/firepress-org/ghostfire/commit/9c18940) CI: add step docker images --digests
+- [18fa49b](https://github.com/firepress-org/ghostfire/commit/18fa49b) Update ghostfire to version 4.10.2 /Dockerfile
+- [3310d90](https://github.com/firepress-org/ghostfire/commit/3310d90) Update ghostfire to version 4.10.1 /Dockerfile
+- [4a62333](https://github.com/firepress-org/ghostfire/commit/4a62333) Update ghostfire to version 4.10.0 /Dockerfile
+- [ed32a99](https://github.com/firepress-org/ghostfire/commit/ed32a99) CI: Update super-linter false negative errors
+
+### 🔍 Compare
+- ... with previous release: [4.9.4 <> 4.16.0](https://github.com/firepress-org/ghostfire/compare/4.9.4...4.16.0)
+
 ## 4.9.4 (2021-07-16)
 ### ⚡️ Updates
 - [d0cee07](https://github.com/firepress-org/ghostfire/commit/d0cee07) Update ghostfire to version 4.9.4 /Dockerfile

@@ -11,12 +11,12 @@ on:
       - 'stg'
       - 'edge'
     paths-ignore:
-      - '**.md'
+      - 'README.md'
       - '.github/workflows/linter.yml'
       - '.github/linters/**'
   pull_request:
     paths-ignore:
-      - '**.md'
+      - 'README.md'
       - '.github/workflows/linter.yml'
       - '.github/linters/**'
   schedule:

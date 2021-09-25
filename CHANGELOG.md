@@ -9,9 +9,19 @@ Status template:
 
 # Releases
 
-## 4.16.0 (2021-09-24)
+## 4.16.0 (2021-09-25)
 ### ⚡️ Updates
+- [4c0f5ac](https://github.com/firepress-org/ghostfire/commit/4c0f5ac) CI for branch master, limit build to linux/amd64
+- [1b1040b](https://github.com/firepress-org/ghostfire/commit/1b1040b) CI add Show image digest
+- [f874407](https://github.com/firepress-org/ghostfire/commit/f874407) CI fix cache paths
+- [8949d47](https://github.com/firepress-org/ghostfire/commit/8949d47) CI rename Cache Docker layers
+- [cb9b416](https://github.com/firepress-org/ghostfire/commit/cb9b416) CI add Move Cache
+- [df8f8d4](https://github.com/firepress-org/ghostfire/commit/df8f8d4) CI add paths-ignore
+- [7c32077](https://github.com/firepress-org/ghostfire/commit/7c32077) CI optimize the way we define branch name
+- [7ed2f9b](https://github.com/firepress-org/ghostfire/commit/7ed2f9b) Update to node 14-alpine3.14
+- [ccd7115](https://github.com/firepress-org/ghostfire/commit/ccd7115) Update README
 - [dc7109e](https://github.com/firepress-org/ghostfire/commit/dc7109e) rollback to node 14-alpine3.13
+- [cb5c164](https://github.com/firepress-org/ghostfire/commit/cb5c164) Update ghostfire to version 4.16.0 /CHANGELOG
 - [94e7f8e](https://github.com/firepress-org/ghostfire/commit/94e7f8e) CI update - treosh/lighthouse-ci-action@8.0.0
 - [d73903c](https://github.com/firepress-org/ghostfire/commit/d73903c) Update to node:14-alpine3.14 + alpine3.14
 - [525c420](https://github.com/firepress-org/ghostfire/commit/525c420) Update ghostfire to version 4.16.0 /Dockerfile
@@ -26,7 +36,6 @@ Status template:
 - [18fa49b](https://github.com/firepress-org/ghostfire/commit/18fa49b) Update ghostfire to version 4.10.2 /Dockerfile
 - [3310d90](https://github.com/firepress-org/ghostfire/commit/3310d90) Update ghostfire to version 4.10.1 /Dockerfile
 - [4a62333](https://github.com/firepress-org/ghostfire/commit/4a62333) Update ghostfire to version 4.10.0 /Dockerfile
-- [ed32a99](https://github.com/firepress-org/ghostfire/commit/ed32a99) CI: Update super-linter false negative errors
 
 ### 🔍 Compare
 - ... with previous release: [4.9.4 <> 4.16.0](https://github.com/firepress-org/ghostfire/compare/4.9.4...4.16.0)

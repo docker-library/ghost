@@ -133,18 +133,21 @@ jobs:
           key: ${{ runner.os }}-buildx-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-buildx-
-      - if: github.event_name != 'pull_request'
+      - 
+        if: github.event_name != 'pull_request'
         uses: docker/login-action@v1
         with:
           username: ${{ needs.myvars.outputs.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
-      - if: github.event_name != 'pull_request'
+      - 
+        if: github.event_name != 'pull_request'
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
           username: ${{ needs.myvars.outputs.GITHUB_ORG }}
           password: ${{ secrets.TOKEN_GPR }}
       -
+        # Granular build for each images as it's annoying to search which arch is causing trouble
         name: Build A) linux/amd64
         id: docker_build_a
         uses: docker/build-push-action@v2
@@ -156,8 +159,8 @@ jobs:
           tags: |
             ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}
             ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new
+          cache-from: type=local,src=/tmp/.buildx-cache,scope=${{ github.workflow }}
+          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max,scope=${{ github.workflow }}
       -
         name: Build B) linux/arm64
         if: github.ref == 'refs/heads/master'
@@ -168,8 +171,8 @@ jobs:
           file: ./${{ env.DOCKERFILE }}
           platforms: linux/arm64
           push: false
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new
+          cache-from: type=local,src=/tmp/.buildx-cache,scope=${{ github.workflow }}
+          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max,scope=${{ github.workflow }}
       -
         name: Build C) linux/arm/v7
         if: github.ref == 'refs/heads/master'
@@ -180,8 +183,8 @@ jobs:
           file: ./${{ env.DOCKERFILE }}
           platforms: linux/arm/v7
           push: false
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new
+          cache-from: type=local,src=/tmp/.buildx-cache,scope=${{ github.workflow }}
+          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max,scope=${{ github.workflow }}
       -
         name: Build D) linux/arm/v6
         if: github.ref == 'refs/heads/master'
@@ -192,8 +195,8 @@ jobs:
           file: ./${{ env.DOCKERFILE }}
           platforms: linux/arm/v6
           push: false
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new
+          cache-from: type=local,src=/tmp/.buildx-cache,scope=${{ github.workflow }}
+          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max,scope=${{ github.workflow }}
       - 
         name: Checkpoint | Wait for container to run
         timeout-minutes: 2
@@ -234,6 +237,14 @@ jobs:
         name: Checkpoint | uname
         run: |
           uname -a && echo && echo
+      -
+        # Temp fix
+        # https://github.com/docker/build-push-action/issues/252
+        # https://github.com/moby/buildkit/issues/1896
+        name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
 # ----------------------------------------------
 # build
@@ -289,8 +300,8 @@ jobs:
             ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_ONLY }}
             ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_DATE }}
           #The order for <docker push -tag> matters for our CD down the line.
-          cache-from: type=local,src=/tmp/.buildx-cache-new
-          cache-to: type=local,dest=/tmp/.buildx-cache-new
+          cache-from: type=local,src=/tmp/.buildx-cache,scope=${{ github.workflow }}
+          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max,scope=${{ github.workflow }}
       -
         name: MASTER | build image and push tags
         if: github.ref == 'refs/heads/master'
@@ -313,8 +324,8 @@ jobs:
             ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_BRANCH }}
             ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_ONLY }}
             ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_DATE }}
-          cache-from: type=local,src=/tmp/.buildx-cache-new
-          cache-to: type=local,dest=/tmp/.buildx-cache-new
+          cache-from: type=local,src=/tmp/.buildx-cache,scope=${{ github.workflow }}
+          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max,scope=${{ github.workflow }}
       -
         # Temp fix
         # https://github.com/docker/build-push-action/issues/252

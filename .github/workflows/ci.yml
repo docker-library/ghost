@@ -7,9 +7,14 @@ name: ci
 on:
   push:
     branches:
+      - 'edge'
+    paths-ignore:
+      - '*.md'
+      - '.github/workflows/linter.yml'
+      - '.github/linters/**'
+    branches:
       - 'master'
       - 'stg'
-      - 'edge'
     paths-ignore:
       - 'README.md'
       - '.github/workflows/linter.yml'

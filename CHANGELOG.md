@@ -10,7 +10,7 @@ Status template:
 # Releases
 
 ### ⚡️ Updates
-- [34ebcaf](https://github.com/firepress-org/ghostfire/commit/34ebcaf) CI add branch v3
+- [34ebcaf](https://github.com/firepress-org/ghostfire/commit/34ebcaf) CI add more branch
 - [2070b39](https://github.com/firepress-org/ghostfire/commit/2070b39) CI update paths-ignore
 - [698b0cf](https://github.com/firepress-org/ghostfire/commit/698b0cf) Add details about security issue: Member account takeover
 

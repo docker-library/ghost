@@ -145,8 +145,8 @@ jobs:
           username: ${{ needs.myvars.outputs.GITHUB_ORG }}
           password: ${{ secrets.TOKEN_GPR }}
       -
-        name: Build uat container (limited to ARCH linux/amd64)
-        id: docker_build
+        name: Build A) linux/amd64
+        id: docker_build_a
         uses: docker/build-push-action@v2
         with:
           context: .
@@ -156,6 +156,42 @@ jobs:
           tags: |
             ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}
             ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new
+      -
+        name: Build B) linux/arm64
+        if: github.ref == 'refs/heads/master'
+        id: docker_build_b
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./${{ env.DOCKERFILE }}
+          platforms: linux/arm64
+          push: false
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new
+      -
+        name: Build C) linux/arm/v7
+        if: github.ref == 'refs/heads/master'
+        id: docker_build_c
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./${{ env.DOCKERFILE }}
+          platforms: linux/arm/v7
+          push: false
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new
+      -
+        name: Build D) linux/arm/v6
+        if: github.ref == 'refs/heads/master'
+        id: docker_build_d
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./${{ env.DOCKERFILE }}
+          platforms: linux/arm/v6
+          push: false
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
       - 
@@ -171,6 +207,8 @@ jobs:
           echo "--- ghostUAT is running! --->"
       -
         name: Checkpoint | docker-library tests
+        # Ghost V4 grep "Thoughts, stories and ideas"
+        # Ghost V3 grep "The professional publishing platform"
         run: |
           curl http://localhost:2368 | grep "Thoughts, stories and ideas"
           git clone --depth 1 https://github.com/docker-library/official-images.git official-images
@@ -233,7 +271,7 @@ jobs:
           password: ${{ secrets.TOKEN_GPR }}
       -
         name: EDGE | build image and push tags
-        if: github.ref == 'refs/heads/edge'
+        if: github.ref != 'refs/heads/master'
         uses: docker/build-push-action@v2
         with:
           context: .
@@ -488,7 +526,7 @@ jobs:
           timezone: America/Montreal
       - 
         name: EDGE | Continuous Deployment
-        if: github.ref == 'refs/heads/edge'
+        if: github.ref != 'refs/heads/master'
         uses: appleboy/ssh-action@v0.1.4
         with:
           host: ${{ secrets.NODE1 }}

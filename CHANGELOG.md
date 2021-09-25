@@ -11,6 +11,7 @@ Status template:
 
 ## 4.16.0 (2021-09-24)
 ### ⚡️ Updates
+- [dc7109e](https://github.com/firepress-org/ghostfire/commit/dc7109e) rollback to node 14-alpine3.13
 - [94e7f8e](https://github.com/firepress-org/ghostfire/commit/94e7f8e) CI update - treosh/lighthouse-ci-action@8.0.0
 - [d73903c](https://github.com/firepress-org/ghostfire/commit/d73903c) Update to node:14-alpine3.14 + alpine3.14
 - [525c420](https://github.com/firepress-org/ghostfire/commit/525c420) Update ghostfire to version 4.16.0 /Dockerfile

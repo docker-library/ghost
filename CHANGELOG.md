@@ -10,6 +10,12 @@ Status template:
 # Releases
 
 ## 4.16.0 (2021-09-25)
+
+### 🔑 Security
+This release also fix a the security issue "Member account takeover". CVSS Score is 6.5 Moderate. CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:N
+
+[More details here](https://github.com/TryGhost/Ghost/security/advisories/GHSA-65p7-pjj8-ggmr).
+
 ### ⚡️ Updates
 - [4c0f5ac](https://github.com/firepress-org/ghostfire/commit/4c0f5ac) CI for branch master, limit build to linux/amd64
 - [1b1040b](https://github.com/firepress-org/ghostfire/commit/1b1040b) CI add Show image digest

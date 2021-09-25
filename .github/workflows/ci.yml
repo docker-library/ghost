@@ -12,12 +12,15 @@ on:
       - 'edge'
     paths-ignore:
       - '**.md'
+      - '.github/workflows/linter.yml'
+      - '.github/linters/**'
   pull_request:
     paths-ignore:
       - '**.md'
+      - '.github/workflows/linter.yml'
+      - '.github/linters/**'
   schedule:
     - cron: '0 8 * * *'
-
   workflow_dispatch:
 
 defaults:
@@ -48,9 +51,20 @@ jobs:
           git_threshold: degraded_performance
           actions_threshold: operational
       -
+        name: EDGE | Set BRANCH_NAME
+        if: github.ref == 'refs/heads/edge'
+        run: |
+          mkdir -pv ~/varz
+          echo "edge" > ~/varz/BRANCH_NAME
+      -
+        name: MASTER | Set BRANCH_NAME
+        if: github.ref == 'refs/heads/master'
+        run: |
+          mkdir -pv ~/varz
+          echo "stable" > ~/varz/BRANCH_NAME
+      -
         name: Define and save variables to disk
         run: |
-          cat $(echo "${{ github.ref }}" | sed 's#^refs/heads/#') > ~/varz/BRANCH_NAME
           cat ${{ env.DOCKERFILE }} | grep APP_NAME= | head -n 1 | grep -o '".*"' | sed 's/"//g' > ~/varz/APP_NAME
           cat ${{ env.DOCKERFILE }} | grep DOCKERHUB_USER= | head -n 1 | grep -o '".*"' | sed 's/"//g' > ~/varz/DOCKERHUB_USER
           cat ${{ env.DOCKERFILE }} | grep GITHUB_ORG= | head -n 1 | grep -o '".*"' | sed 's/"//g' > ~/varz/GITHUB_ORG

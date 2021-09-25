@@ -10,6 +10,9 @@ Status template:
 # Releases
 
 ### ⚡️ Updates
+- [acf3614](https://github.com/firepress-org/ghostfire/commit/acf3614) CI optimize caching between jobs
+- [efbaef5](https://github.com/firepress-org/ghostfire/commit/efbaef5) CI: UAT steps have more granular builds for multi-archs
+- [d069eb6](https://github.com/firepress-org/ghostfire/commit/d069eb6) Changelog update
 - [8c83b27](https://github.com/firepress-org/ghostfire/commit/8c83b27) A cleaner way to define the branch name
 - [44c1536](https://github.com/firepress-org/ghostfire/commit/44c1536) Changelog update
 - [34ebcaf](https://github.com/firepress-org/ghostfire/commit/34ebcaf) CI add branch v3

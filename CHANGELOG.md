@@ -10,6 +10,8 @@ Status template:
 # Releases
 
 ### ⚡️ Updates
+- [d0e985f](https://github.com/firepress-org/ghostfire/commit/d0e985f) CI: new ci build: catch if multiarch builds have issue on branch edge
+- [fb34c5b](https://github.com/firepress-org/ghostfire/commit/fb34c5b) Changelog update
 - [acf3614](https://github.com/firepress-org/ghostfire/commit/acf3614) CI optimize caching between jobs
 - [efbaef5](https://github.com/firepress-org/ghostfire/commit/efbaef5) CI: UAT steps have more granular builds for multi-archs
 - [d069eb6](https://github.com/firepress-org/ghostfire/commit/d069eb6) Changelog update

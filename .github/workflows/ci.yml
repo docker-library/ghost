@@ -12,6 +12,7 @@ on:
       - 'edge'
       - 'v3'
     paths-ignore:
+      - '*.md'
       - '.github/workflows/linter.yml'
       - '.github/linters/**'
   pull_request:
@@ -147,9 +148,8 @@ jobs:
           username: ${{ needs.myvars.outputs.GITHUB_ORG }}
           password: ${{ secrets.TOKEN_GPR }}
       -
-        # Granular build for each images as it's annoying to search which arch is causing trouble
-        name: Build A) linux/amd64
-        id: docker_build_a
+        name: UAT build linux/amd64
+        id: docker_build
         uses: docker/build-push-action@v2
         with:
           context: .
@@ -159,42 +159,6 @@ jobs:
           tags: |
             ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}
             ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}
-          cache-from: type=local,src=/tmp/.buildx-cache,scope=${{ github.workflow }}
-          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max,scope=${{ github.workflow }}
-      -
-        name: Build B) linux/arm64
-        if: github.ref == 'refs/heads/master'
-        id: docker_build_b
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          file: ./${{ env.DOCKERFILE }}
-          platforms: linux/arm64
-          push: false
-          cache-from: type=local,src=/tmp/.buildx-cache,scope=${{ github.workflow }}
-          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max,scope=${{ github.workflow }}
-      -
-        name: Build C) linux/arm/v7
-        if: github.ref == 'refs/heads/master'
-        id: docker_build_c
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          file: ./${{ env.DOCKERFILE }}
-          platforms: linux/arm/v7
-          push: false
-          cache-from: type=local,src=/tmp/.buildx-cache,scope=${{ github.workflow }}
-          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max,scope=${{ github.workflow }}
-      -
-        name: Build D) linux/arm/v6
-        if: github.ref == 'refs/heads/master'
-        id: docker_build_d
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          file: ./${{ env.DOCKERFILE }}
-          platforms: linux/arm/v6
-          push: false
           cache-from: type=local,src=/tmp/.buildx-cache,scope=${{ github.workflow }}
           cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max,scope=${{ github.workflow }}
       - 

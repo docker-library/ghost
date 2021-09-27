@@ -10,6 +10,8 @@ Status template:
 # Releases
 
 ### ⚡️ Updates
+- [7b42275](https://github.com/firepress-org/ghostfire/commit/7b42275) CI: ensure schduled ci builds work only from branch edge
+- [ffa8cf7](https://github.com/firepress-org/ghostfire/commit/ffa8cf7) changelog update
 - [d0e985f](https://github.com/firepress-org/ghostfire/commit/d0e985f) CI: new ci build: catch if multiarch builds have issue on branch edge
 - [fb34c5b](https://github.com/firepress-org/ghostfire/commit/fb34c5b) Changelog update
 - [acf3614](https://github.com/firepress-org/ghostfire/commit/acf3614) CI optimize caching between jobs

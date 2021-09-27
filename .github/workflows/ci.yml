@@ -173,11 +173,11 @@ jobs:
           done;
           echo "--- ghostUAT is running! --->"
       -
-        name: Checkpoint | docker-library tests
         # Ghost V4 grep "Thoughts, stories and ideas"
         # Ghost V3 grep "The professional publishing platform"
+        name: Checkpoint | docker-library tests
         run: |
-          curl http://localhost:2368 | grep "Thoughts, stories and ideas"
+          curl http://localhost:2368 | grep "The professional publishing platform"
           git clone --depth 1 https://github.com/docker-library/official-images.git official-images
           cp ./test/config.sh official-images/test/config.sh
           official-images/test/run.sh ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}

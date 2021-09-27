@@ -28,6 +28,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
+          # this checkout to this branch
           ref: edge
       - uses: zcong1993/setup-timezone@v1.1.1
         with:
@@ -109,6 +110,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
+          # this checkout to this branch
           ref: edge
       - uses: zcong1993/setup-timezone@v1.1.1
         with:
@@ -140,7 +142,6 @@ jobs:
       -
         # The goal is the catch if multiarch builds have issue on branch edge without slowing down the dev UX.
         name: UAT multiarch build
-        if: github.ref == 'refs/heads/edge'
         uses: docker/build-push-action@v2
         with:
           context: .
@@ -180,6 +181,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
+          # this checkout to this branch
           ref: edge
       - uses: zcong1993/setup-timezone@v1.1.1
         with:

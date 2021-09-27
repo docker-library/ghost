@@ -26,6 +26,8 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
+        with:
+          ref: edge
       - uses: zcong1993/setup-timezone@v1.1.1
         with:
           timezone: America/Montreal
@@ -105,6 +107,8 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
+        with:
+          ref: edge
       - uses: zcong1993/setup-timezone@v1.1.1
         with:
           timezone: America/Montreal
@@ -133,7 +137,7 @@ jobs:
           username: ${{ needs.myvars.outputs.GITHUB_ORG }}
           password: ${{ secrets.TOKEN_GPR }}
       -
-        # The goal is the catch if multi-arch build have issue on branch edge without slowing down the dev UX.
+        # The goal is the catch if multiarch builds have issue on branch edge without slowing down the dev UX.
         name: UAT multiarch build
         if: github.ref == 'refs/heads/edge'
         uses: docker/build-push-action@v2
@@ -174,6 +178,8 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
+        with:
+          ref: edge
       - uses: zcong1993/setup-timezone@v1.1.1
         with:
           timezone: America/Montreal

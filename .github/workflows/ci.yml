@@ -165,7 +165,8 @@ jobs:
         with:
           context: .
           file: ./${{ env.DOCKERFILE }}
-          platforms: linux/amd64
+          # Docs: list archs https://github.com/firepress-org/ghostfire/issues/57
+          platforms: linux/amd64,linux/arm64/v8
           push: ${{ github.event_name != 'pull_request' }}
           tags: |
             ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}

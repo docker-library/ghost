@@ -116,16 +116,7 @@ jobs:
           timezone: America/Montreal
       - uses: docker/setup-qemu-action@v1
       - uses: docker/setup-buildx-action@v1
-      -
-        name: Cache Docker layers
-        id: docker-cache
-        uses: actions/cache@v2.1.6
-        with:
-          # non-standard cache directory
-          path: /tmp/.buildx-cache-ma
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
+      # bypass cache as I feel we reach the cache limit https://github.com/marketplace/actions/cache#cache-limits
       - 
         if: github.event_name != 'pull_request'
         uses: docker/login-action@v1
@@ -152,8 +143,7 @@ jobs:
             linux/arm/v7
           # linux/arm/v6
           push: false
-          cache-from: type=local,src=/tmp/.buildx-cache-ma,scope=${{ github.workflow }}
-          cache-to: type=local,dest=/tmp/.buildx-cache-new-ma,mode=max,scope=${{ github.workflow }}
+          # bypass cache
       -
         # Temp fix
         # https://github.com/docker/build-push-action/issues/252

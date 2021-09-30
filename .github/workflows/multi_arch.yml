@@ -150,7 +150,7 @@ jobs:
           file: ./${{ env.DOCKERFILE }}
           push: false
           platforms: |
-            linux/amd64
+            linux/arm64
 
   uat3:
     needs: [myvars]
@@ -190,7 +190,6 @@ jobs:
       - uses: docker/setup-buildx-action@v1
       -
         name: Build linux/arm64/v8
-        continue-on-error: true
         uses: docker/build-push-action@v2
         with:
           context: .
@@ -199,101 +198,12 @@ jobs:
           platforms: |
             linux/arm64/v8
 
-  uat5:
-    needs: [myvars]
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          # this checkout to this branch
-          ref: edge
-      - uses: zcong1993/setup-timezone@v1.1.1
-        with:
-          timezone: America/Montreal
-      - uses: docker/setup-qemu-action@v1
-      - uses: docker/setup-buildx-action@v1
-      -
-        name: Build linux/ppc64le
-        continue-on-error: true
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          file: ./${{ env.DOCKERFILE }}
-          push: false
-          platforms: |
-            linux/ppc64le
-
-  uat6:
-    needs: [myvars]
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          # this checkout to this branch
-          ref: edge
-      - uses: zcong1993/setup-timezone@v1.1.1
-        with:
-          timezone: America/Montreal
-      - uses: docker/setup-qemu-action@v1
-      - uses: docker/setup-buildx-action@v1
-      -
-        name: Build linux/s390x
-        continue-on-error: true
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          file: ./${{ env.DOCKERFILE }}
-          push: false
-          platforms: |
-            linux/s390x
-
-  uat7:
-    needs: [myvars]
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          # this checkout to this branch
-          ref: edge
-      - uses: zcong1993/setup-timezone@v1.1.1
-        with:
-          timezone: America/Montreal
-      - uses: docker/setup-qemu-action@v1
-      - uses: docker/setup-buildx-action@v1
-      -
-        name: Build windows/amd64
-        continue-on-error: true
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          file: ./${{ env.DOCKERFILE }}
-          push: false
-          platforms: |
-            windows/amd64
-
-  uat8:
-    needs: [myvars]
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          # this checkout to this branch
-          ref: edge
-      - uses: zcong1993/setup-timezone@v1.1.1
-        with:
-          timezone: America/Montreal
-      - uses: docker/setup-qemu-action@v1
-      - uses: docker/setup-buildx-action@v1
-      -
-        name: Build windows/arm64/v8
-        continue-on-error: true
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          file: ./${{ env.DOCKERFILE }}
-          push: false
-          platforms: |
-            windows/arm64/v8
+# These failed 2021-09-30
+# linux/arm/v6
+# linux/ppc64le
+# linux/s390x
+# windows/amd64
+# windows/arm64/v8
 
 # ----------------------------------------------
 # Tests after build

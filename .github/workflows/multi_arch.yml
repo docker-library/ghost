@@ -132,7 +132,7 @@ jobs:
           password: ${{ secrets.TOKEN_GPR }}
       -
         # The goal is the catch if multiarch builds have issue on branch edge without slowing down the dev UX.
-        name: UAT multiarch build
+        name: Build UAT on multiarch, no push
         uses: docker/build-push-action@v2
         with:
           context: .
@@ -143,15 +143,8 @@ jobs:
             linux/arm/v7
           # linux/arm/v6
           push: false
+          load: true
           # bypass cache
-      -
-        # Temp fix
-        # https://github.com/docker/build-push-action/issues/252
-        # https://github.com/moby/buildkit/issues/1896
-        name: Move cache
-        run: |
-          rm -rf /tmp/.buildx-cache-ma
-          mv /tmp/.buildx-cache-new-ma /tmp/.buildx-cache-ma
 
 # ----------------------------------------------
 # Tests after build

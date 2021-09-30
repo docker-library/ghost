@@ -101,9 +101,9 @@ jobs:
       _NOTI_MESSAGE: ${{ steps.myvars.outputs._NOTI_MESSAGE }}
 
 # ----------------------------------------------
-# UAT multiarch
+# UAT
 # ----------------------------------------------
-  uat:
+  uat1:
     needs: [myvars]
     runs-on: ubuntu-20.04
     steps:
@@ -117,39 +117,189 @@ jobs:
       - uses: docker/setup-qemu-action@v1
       - uses: docker/setup-buildx-action@v1
       # bypass cache as I feel we reach the cache limit https://github.com/marketplace/actions/cache#cache-limits
-      - 
-        if: github.event_name != 'pull_request'
-        uses: docker/login-action@v1
-        with:
-          username: ${{ needs.myvars.outputs.DOCKERHUB_USER }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
-      - 
-        if: github.event_name != 'pull_request'
-        uses: docker/login-action@v1
-        with:
-          registry: ghcr.io
-          username: ${{ needs.myvars.outputs.GITHUB_ORG }}
-          password: ${{ secrets.TOKEN_GPR }}
       -
         # The goal is the catch if multiarch builds have issue on branch edge without slowing down the dev UX.
-        name: Build UAT on multiarch, no push
+        # Docs: list archs https://github.com/firepress-org/ghostfire/issues/57
+        name: Build linux/amd64
         uses: docker/build-push-action@v2
         with:
           context: .
           file: ./${{ env.DOCKERFILE }}
+          push: false
           platforms: |
             linux/amd64
-            linux/arm64
-            linux/arm/v7
-          # linux/arm/v6
+
+  uat2:
+    needs: [myvars]
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          # this checkout to this branch
+          ref: edge
+      - uses: zcong1993/setup-timezone@v1.1.1
+        with:
+          timezone: America/Montreal
+      - uses: docker/setup-qemu-action@v1
+      - uses: docker/setup-buildx-action@v1
+      -
+        name: Build linux/arm64
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./${{ env.DOCKERFILE }}
           push: false
-          # bypass cache
+          platforms: |
+            linux/amd64
+
+  uat3:
+    needs: [myvars]
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          # this checkout to this branch
+          ref: edge
+      - uses: zcong1993/setup-timezone@v1.1.1
+        with:
+          timezone: America/Montreal
+      - uses: docker/setup-qemu-action@v1
+      - uses: docker/setup-buildx-action@v1
+      -
+        name: Build linux/arm/v7
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./${{ env.DOCKERFILE }}
+          push: false
+          platforms: |
+            linux/arm/v7
+
+  uat4:
+    needs: [myvars]
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          # this checkout to this branch
+          ref: edge
+      - uses: zcong1993/setup-timezone@v1.1.1
+        with:
+          timezone: America/Montreal
+      - uses: docker/setup-qemu-action@v1
+      - uses: docker/setup-buildx-action@v1
+      -
+        name: Build linux/arm64/v8
+        continue-on-error: true
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./${{ env.DOCKERFILE }}
+          push: false
+          platforms: |
+            linux/arm64/v8
+
+  uat5:
+    needs: [myvars]
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          # this checkout to this branch
+          ref: edge
+      - uses: zcong1993/setup-timezone@v1.1.1
+        with:
+          timezone: America/Montreal
+      - uses: docker/setup-qemu-action@v1
+      - uses: docker/setup-buildx-action@v1
+      -
+        name: Build linux/ppc64le
+        continue-on-error: true
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./${{ env.DOCKERFILE }}
+          push: false
+          platforms: |
+            linux/ppc64le
+
+  uat6:
+    needs: [myvars]
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          # this checkout to this branch
+          ref: edge
+      - uses: zcong1993/setup-timezone@v1.1.1
+        with:
+          timezone: America/Montreal
+      - uses: docker/setup-qemu-action@v1
+      - uses: docker/setup-buildx-action@v1
+      -
+        name: Build linux/s390x
+        continue-on-error: true
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./${{ env.DOCKERFILE }}
+          push: false
+          platforms: |
+            linux/s390x
+
+  uat7:
+    needs: [myvars]
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          # this checkout to this branch
+          ref: edge
+      - uses: zcong1993/setup-timezone@v1.1.1
+        with:
+          timezone: America/Montreal
+      - uses: docker/setup-qemu-action@v1
+      - uses: docker/setup-buildx-action@v1
+      -
+        name: Build windows/amd64
+        continue-on-error: true
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./${{ env.DOCKERFILE }}
+          push: false
+          platforms: |
+            windows/amd64
+
+  uat8:
+    needs: [myvars]
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          # this checkout to this branch
+          ref: edge
+      - uses: zcong1993/setup-timezone@v1.1.1
+        with:
+          timezone: America/Montreal
+      - uses: docker/setup-qemu-action@v1
+      - uses: docker/setup-buildx-action@v1
+      -
+        name: Build windows/arm64/v8
+        continue-on-error: true
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./${{ env.DOCKERFILE }}
+          push: false
+          platforms: |
+            windows/arm64/v8
 
 # ----------------------------------------------
 # Tests after build
 # ----------------------------------------------
   review_myvars:
-    needs: [myvars,uat]
+    needs: [myvars,uat1]
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2

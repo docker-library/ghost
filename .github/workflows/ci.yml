@@ -394,7 +394,7 @@ jobs:
         name: Checkpoint | Github Actions cache size
         continue-on-error: true
         run: |
-          du -hs /tmp/.buildx-cache
+          du -hs ${GITHUB_WORKSPACE}/tmp/.buildx-cache
 
   review_snyk:
     needs: [myvars,build]

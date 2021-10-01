@@ -452,18 +452,11 @@ jobs:
         uses: aquasecurity/trivy-action@0.0.20
         with:
           image-ref: ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_DATE }}
-          format: 'table'
-          exit-code: '1'
+          exit-code: '0'
           ignore-unfixed: true
           vuln-type: 'os,library'
-          severity: 'CRITICAL,HIGH'
-          template: '@/contrib/sarif.tpl'
-          output: 'trivy-results-fs.sarif'
-      - 
-        name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v1
-        with:
-          sarif_file: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH' 
+          format: 'table'
 
   review_linter:
     needs: [myvars,build]

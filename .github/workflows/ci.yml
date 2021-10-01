@@ -53,7 +53,7 @@ jobs:
           actions_threshold: operational
       -
         name: EDGE | Set BRANCH_NAME
-        if: github.ref == 'refs/heads/edge'
+        if: github.ref != 'refs/heads/master'
         run: |
           mkdir -pv ~/varz
           echo "edge" > ~/varz/BRANCH_NAME

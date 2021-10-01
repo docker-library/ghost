@@ -286,8 +286,9 @@ jobs:
           file: ./${{ env.DOCKERFILE }}
           platforms: |
             linux/amd64
-            linux/arm64
-            linux/arm/v7
+          # bypass arch during CI test
+          #linux/arm64
+          #linux/arm/v7
           push: true
           tags: |
             ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.BRANCH_NAME }}

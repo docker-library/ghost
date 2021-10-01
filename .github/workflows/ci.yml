@@ -395,7 +395,7 @@ jobs:
         run: |
           du -hs /tmp/.buildx-cache
 
-  review_linter:
+  review_snyk:
     needs: [myvars,build]
     runs-on: ubuntu-20.04
     steps:
@@ -404,19 +404,25 @@ jobs:
         with:
           timezone: America/Montreal
       - 
-        name: Checkpoint | Linter
+        name: Run Snyk to check Docker image for vulnerabilities
+        # https://github.com/snyk/actions/tree/master/docker
+        uses: snyk/actions/docker@0.3.0
+        # Snyk can be used to break the build when it detects vulnerabilities.
+        # In this case we want to upload the issues to GitHub Code Scanning
         continue-on-error: true
-        uses: docker://ghcr.io/github/super-linter:slim-v4
-        # github/super-linter@v4
-        # docker://ghcr.io/github/super-linter:slim-v4
         env:
-          DISABLE_ERRORS: true          # Flag to have the linter complete with exit code 0 even if errors were detected.
-          VALIDATE_ALL_CODEBASE: false
-          VALIDATE_MARKDOWN: false
-          VALIDATE_DOCKERFILE: false
-          VALIDATE_JSCPD: false
-          DEFAULT_BRANCH: edge
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # In order to use the Snyk Action you will need to have a Snyk API token.
+          # More details in https://github.com/snyk/actions#getting-your-snyk-token
+          # or you can signup for free at https://snyk.io/login
+          SNYK_TOKEN: ${{ secrets.TOKEN_SNYK }}
+        with:
+          image: ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_DATE }}
+          args: --file=${{ env.DOCKERFILE }} --severity-threshold=high
+      - 
+        name: Upload result to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: snyk.sarif
 
   review_dockle:
     needs: [myvars,build]
@@ -444,11 +450,34 @@ jobs:
         continue-on-error: true
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: '${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_DATE }}'
+          image-ref: ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_DATE }}
           format: 'table'
           exit-code: '0'
           ignore-unfixed: true
           severity: 'LOW,MEDIUM,HIGH,CRITICAL'
+
+  review_linter:
+    needs: [myvars,build]
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: zcong1993/setup-timezone@v1.1.1
+        with:
+          timezone: America/Montreal
+      - 
+        name: Checkpoint | Linter
+        continue-on-error: true
+        uses: docker://ghcr.io/github/super-linter:slim-v4
+        # github/super-linter@v4
+        # docker://ghcr.io/github/super-linter:slim-v4
+        env:
+          DISABLE_ERRORS: true          # Flag to have the linter complete with exit code 0 even if errors were detected.
+          VALIDATE_ALL_CODEBASE: false
+          VALIDATE_MARKDOWN: false
+          VALIDATE_DOCKERFILE: false
+          VALIDATE_JSCPD: false
+          DEFAULT_BRANCH: edge
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   review_arch:
     needs: [myvars,build]

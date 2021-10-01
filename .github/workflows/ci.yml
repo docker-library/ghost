@@ -405,7 +405,7 @@ jobs:
         with:
           timezone: America/Montreal
       - 
-        name: Run Snyk to check Docker image for vulnerabilities
+        name: Checkpoint | scanner by Snyk
         # https://github.com/snyk/actions/tree/master/docker
         uses: snyk/actions/docker@0.3.0
         # Snyk can be used to break the build when it detects vulnerabilities.
@@ -420,7 +420,7 @@ jobs:
           image: ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_DATE }}
           args: --file=${{ env.DOCKERFILE }} --severity-threshold=high
       - 
-        name: Upload result to GitHub Code Scanning
+        name: Checkpoint | Upload result to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v1
         with:
           sarif_file: snyk.sarif

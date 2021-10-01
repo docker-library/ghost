@@ -5,6 +5,8 @@ Dockerfile
 .git
 .gitignore
 .dockerignore
+docker-compose.yml
+docker-compose.yaml
 .cache
 coverage
 dist

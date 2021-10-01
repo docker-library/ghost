@@ -31,7 +31,6 @@ defaults:
 # This looks obvious, but we might build many different dockerfiles in the future.
 env:
   DOCKERFILE: Dockerfile
-  DOCKER_CONTENT_TRUST: 1
 
 jobs:
 

@@ -5,23 +5,22 @@
 name: ci
 
 on:
+  pull_request:
+    branches:
+      - 'master'
+    paths-ignore:
+      - '.github/workflows/linter.yml'
+      - '.github/linters/**'
   push:
     branches:
       - 'master'
-      - 'stg'
       - 'edge'
-      - 'v3'
-    paths-ignore:
-      - 'CHANGELOG.md'
-      - '.github/workflows/linter.yml'
-      - '.github/linters/**'
-  pull_request:
     paths-ignore:
       - 'CHANGELOG.md'
       - '.github/workflows/linter.yml'
       - '.github/linters/**'
   schedule:
-    - cron: '0 8 * * *'
+    - cron: '0 7 * * *'
   workflow_dispatch:
 
 defaults:

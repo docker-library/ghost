@@ -1,6 +1,10 @@
+node_modules
+npm-debug.log
+npm-debug
+Dockerfile
+.git
+.gitignore
+.dockerignore
 .cache
 coverage
 dist
-node_modules
-npm-debug
-.git

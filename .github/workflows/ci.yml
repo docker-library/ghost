@@ -422,9 +422,9 @@ jobs:
           severity: "CRITICAL,HIGH"
           format: "table"
 
-  review_superlinter_call:
-    needs: [myvars, build]
-    uses: firepress-org/reusable_workflows/.github/workflows/super-linter.yaml@master
+  # review_superlinter_call:
+  #   needs: [myvars, build]
+  #   uses: firepress-org/reusable_workflows/.github/workflows/super-linter.yaml@master
 
   review_arch:
     needs: [myvars, build]

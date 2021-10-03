@@ -12,7 +12,7 @@
     <a href="https://github.com/firepress-org/">GitHub</a> |
     <a href="https://twitter.com/askpascalandy">Twitter</a>
     <br /> <br />
-    [![build](https://github.com/firepress-org/ghostfire/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/firepress-org/ghostfire/actions/workflows/build.yml)
+    [![ci status](https://github.com/firepress-org/ghostfire/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/firepress-org/ghostfire/actions/workflows/ci.yml)
 </p>
 
 &nbsp;
@@ -23,44 +23,42 @@
 
 ## What is this?
 
-🐳 **Docker image** — This is a Docker image to run Ghost V4 in a container.
-
-**What is Ghost?** — Ghost is an open-source software that lets you create your website with a blog. See the [FAQ section](https://play-with-ghost.com/ghost-themes/faq/#what-is-ghost) for more details.
+**What is Ghost?** — Ghost is an open-source software that lets you create your website with a blog. See the [FAQ section](https://play-with-ghost.com/ghost-themes/faq/#what-is-ghost) for more details. This projects makes it running in Docker image.
 
 <br>
 
 ## Docker image features :
 
-- [x] **multi-stage builds**
-- [x] Add **`curl`** to support `healthchecks`
-- [x] **Config**: a better `config.production.json` **template**.
-- [x] Docker image based on **alpine** (we don't maintain debian)
-- [x] **Labels** based on the opencontainer standard
+- [x] multi-stage builds
+- [x] **`curl`** to support `healthchecks`
+- [x] a better `config.production.json` template
+- [x] Docker image based on alpine (we don't maintain debian)
+- [x] Labels based on the opencontainer standard
 
-We trim about 45MB on our Docker image. These are **uncompressed sizes** :
+We are trimming about 45MB. These are **uncompressed sizes** :
 
 ```
-devmtl/ghostfire:stable               320MB
-ghost:4.7.0-alpine                    366MB
+devmtl/ghostfire:stable                340MB
+ghost:4.16.0-alpine                    351MB
 ```
 
 <br>
 
 ## Github Actions CI/CD :
 
-- [x] **Extreme visibility** in the Graph.
-Support **Multi platforms**: `linux/amd64`, `linux/arm64`, `linux/arm/v7`, `linux/arm/v6`
-- [x] Great **logic** between jobs
-- [x] **Share variables** between jobs
-- [x] Builds use **cache** it’s much faster now
-- [x] **Continuous Deployment** the cluster (via SSH)
-- [x] **Slack notifications** when a build is successful
-- [x] Lighthouse **audit** (localhost and online)
-- [x] **Security** audit (Dockle, Trivy)
-- [x] **super-linter**
-- [x] Overall we apply [best practices](https://firepress.org/en/how-do-we-update-hundreds-of-ghosts-websites-on-docker-swarm/)
+- [x] Extreme visibility*in the Graph.
+- [x]  Support multi architecture platforms: `linux/amd64`, `linux/arm64`, `linux/arm/v7`
+- [x] Great logic between jobs
+- [x] Shared variables between jobs
+- [x] Builds use cache
+- [x] Continuous Deployment in the cluster for edge and stable
+- [x] Slack notifications when a build is successful
+- [x] Lighthouse audit(localhost and online)
+- [x] Security scanners (Snyk, Trivy, Dockle)
+- [x] super-linter
+- [x] Overall we do our best to apply [best practices](https://firepress.org/en/how-do-we-update-hundreds-of-ghosts-websites-on-docker-swarm/)
 
-![Screen Shot 2021-06-22 at 3 23 02 PM](https://user-images.githubusercontent.com/6694151/122986776-ddbd5180-d36d-11eb-9356-fa225b345bba.jpg)
+![CI_2021-10-03_17h42](https://user-images.githubusercontent.com/6694151/135772462-0c39fe73-be9e-4aa3-8103-b1c849c0c41f.jpg)
 
 <br>
 

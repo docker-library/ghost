@@ -40,6 +40,7 @@ ENV GHOST_INSTALL="/var/lib/ghost"          \
     GHOST_CONTENT="/var/lib/ghost/content"  \
     NODE_ENV="production"                   \
     USER="${USER}"                          \
+    NODE_VERSION="${NODE_VERSION}"          \
     VERSION="${VERSION}"                    \
     GHOST_CLI_VERSION="${GHOST_CLI_VERSION}"
 
@@ -48,7 +49,7 @@ LABEL org.opencontainers.image.authors="Pascal Andy https://firepress.org/en/con
       org.opencontainers.image.vendors="https://firepress.org/"                         \
       org.opencontainers.image.created="$(date "+%Y-%m-%d_%HH%Ms%S")"                   \
       org.opencontainers.image.commit="$(git rev-parse --short HEAD)"                   \
-      org.opencontainers.image.title="Ghost v${VERSION}"                                \
+      org.opencontainers.image.title="Ghost"                                            \
       org.opencontainers.image.description="Docker image for Ghost ${VERSION}"          \
       org.opencontainers.image.url="https://hub.docker.com/r/devmtl/ghostfire/tags/"    \
       org.opencontainers.image.source="https://github.com/firepress-org/ghostfire"      \
@@ -73,7 +74,7 @@ RUN set -eux && apk update && apk add --no-cache                  \
 
 # ----------------------------------------------
 # 3) LAYER debug
-#   If a package crash on layers 3-4, we don't know
+#   If a package crash on layers 4 or 5, we don't know
 #   which one crashed. This layer reveal package(s)
 #   versions and keep a trace in the CI's logs.
 # ----------------------------------------------

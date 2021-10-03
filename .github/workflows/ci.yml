@@ -5,38 +5,32 @@
 name: ci
 
 on:
-  pull_request:
-    branches:
-      - 'master'
-    paths-ignore:
-      - '.github/workflows/linter.yml'
-      - '.github/linters/**'
   push:
     branches:
-      - 'master'
-      - 'edge'
+      - "master"
+      - "edge"
     paths-ignore:
-      - 'CHANGELOG.md'
-      - '.github/workflows/linter.yml'
-      - '.github/linters/**'
+      - "CHANGELOG.md"
+      - ".github/workflows/linter.yml"
+      - ".github/linters/**"
+  pull_request:
   schedule:
-    - cron: '0 7 * * *'
+    - cron: "0 7 * * *"
   workflow_dispatch:
 
 defaults:
   run:
-    shell: 'bash -Eeuo pipefail -x {0}'
+    shell: "bash -Eeuo pipefail -x {0}"
 
 # This looks obvious, but we might build many different dockerfiles in the future.
 env:
   DOCKERFILE: Dockerfile
 
 jobs:
-
-# ----------------------------------------------
-# SET VARIABLES
-# More context about the way we set variables https://github.com/firepress-org/ghostfire/issues/46
-# ----------------------------------------------
+  # ----------------------------------------------
+  # SET VARIABLES
+  # More context about the way we set variables https://github.com/firepress-org/ghostfire/issues/46
+  # ----------------------------------------------
   myvars:
     runs-on: ubuntu-20.04
     steps:
@@ -44,28 +38,23 @@ jobs:
       - uses: zcong1993/setup-timezone@v1.1.1
         with:
           timezone: America/Montreal
-      -
-        name: Github Actions system status
+      - name: Github Actions system status
         uses: crazy-max/ghaction-github-status@v2
         with:
           overall_threshold: minor
           git_threshold: degraded_performance
           actions_threshold: operational
-      -
-        name: Create dir for our varz
+      - name: Create dir for our varz
         run: mkdir -pv ~/varz
-      -
-        name: EDGE | Set BRANCH_NAME
+      - name: EDGE | Set BRANCH_NAME
         if: github.ref != 'refs/heads/master'
         run: |
           echo "edge" > ~/varz/BRANCH_NAME
-      -
-        name: MASTER | Set BRANCH_NAME
+      - name: MASTER | Set BRANCH_NAME
         if: github.ref == 'refs/heads/master'
         run: |
           echo "stable" > ~/varz/BRANCH_NAME
-      -
-        name: Define and save variables to disk
+      - name: Define and save variables to disk
         run: |
           cat ${{ env.DOCKERFILE }} | grep APP_NAME= | head -n 1 | grep -o '".*"' | sed 's/"//g' > ~/varz/APP_NAME
           cat ${{ env.DOCKERFILE }} | grep DOCKERHUB_USER= | head -n 1 | grep -o '".*"' | sed 's/"//g' > ~/varz/DOCKERHUB_USER
@@ -81,14 +70,12 @@ jobs:
           echo "$(cat ~/varz/BRANCH_NAME)_$(cat ~/varz/VERSION)_$(cat ~/varz/SHORT_HASH_COMMIT)" > ~/varz/VERSION_HASH_ONLY
           echo "$(cat ~/varz/BRANCH_NAME)_$(cat ~/varz/VERSION)_$(cat ~/varz/SHORT_HASH_COMMIT)_$(cat ~/varz/DATE)" > ~/varz/VERSION_HASH_DATE
           echo "$(cat ~/varz/APP_NAME):$(cat ~/varz/BRANCH_NAME)_$(cat ~/varz/VERSION)_$(cat ~/varz/SHORT_HASH_COMMIT)" > ~/varz/_NOTI_MESSAGE
-      - 
-        name: Upload variables as artifact
+      - name: Upload variables as artifact
         uses: actions/upload-artifact@master
         with:
           name: variables_on_disk
           path: ~/varz
-      - 
-        name: Expose variables to all jobs
+      - name: Expose variables to all jobs
         id: myvars
         run: |
           echo "::set-output name=BRANCH_NAME::$(cat ~/varz/BRANCH_NAME)"
@@ -123,9 +110,9 @@ jobs:
       VERSION_HASH_DATE: ${{ steps.myvars.outputs.VERSION_HASH_DATE }}
       _NOTI_MESSAGE: ${{ steps.myvars.outputs._NOTI_MESSAGE }}
 
-# ----------------------------------------------
-# UAT
-# ----------------------------------------------
+  # ----------------------------------------------
+  # UAT
+  # ----------------------------------------------
   uat:
     needs: [myvars]
     runs-on: ubuntu-20.04
@@ -136,8 +123,7 @@ jobs:
           timezone: America/Montreal
       - uses: docker/setup-qemu-action@v1
       - uses: docker/setup-buildx-action@v1
-      -
-        name: Cache Docker layers
+      - name: Cache Docker layers
         id: docker-cache
         uses: actions/cache@v2.1.6
         with:
@@ -145,21 +131,18 @@ jobs:
           key: buildx-${{ github.sha }}
           restore-keys: |
             buildx-
-      - 
-        if: github.event_name != 'pull_request'
+      - if: github.event_name != 'pull_request'
         uses: docker/login-action@v1
         with:
           username: ${{ needs.myvars.outputs.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
-      - 
-        if: github.event_name != 'pull_request'
+      - if: github.event_name != 'pull_request'
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
           username: ${{ needs.myvars.outputs.GITHUB_ORG }}
           password: ${{ secrets.TOKEN_GPR }}
-      -
-        name: Build UAT on linux/amd64
+      - name: Build UAT on linux/amd64
         id: docker_build
         uses: docker/build-push-action@v2
         with:
@@ -172,8 +155,7 @@ jobs:
             ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,mode=max,dest=/tmp/.buildx-cache-new
-      - 
-        name: Checkpoint | Wait for container to run
+      - name: Checkpoint | Wait for container to run
         timeout-minutes: 2
         run: |
           docker run -d --name ghostUAT -p 2368:2368 -e WEB_URL=http://localhost:2368 -e NODE_ENV=production ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}
@@ -183,8 +165,7 @@ jobs:
             sleep 1
           done;
           echo "--- ghostUAT is running! --->"
-      -
-        name: Checkpoint | docker-library tests
+      - name: Checkpoint | docker-library tests
         # Ghost V4 grep "Thoughts, stories and ideas"
         # Ghost V3 grep "The professional publishing platform"
         run: |
@@ -192,28 +173,22 @@ jobs:
           git clone --depth 1 https://github.com/docker-library/official-images.git official-images
           cp ./test/config.sh official-images/test/config.sh
           official-images/test/run.sh ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}
-      -
-        name: Checkpoint | docker inspect
+      - name: Checkpoint | docker inspect
         run: |
           docker inspect ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }} && echo && echo
-      -
-        name: Checkpoint | docker history
+      - name: Checkpoint | docker history
         run: |
           docker history ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }} --no-trunc && echo && echo
-      -
-        name: Checkpoint | docker info
+      - name: Checkpoint | docker info
         run: |
           docker info && echo && echo
-      -
-        name: Checkpoint | docker version
+      - name: Checkpoint | docker version
         run: |
           docker version && echo && echo
-      -
-        name: Checkpoint | uname
+      - name: Checkpoint | uname
         run: |
           uname -a && echo && echo
-      -
-        # Temp fix
+      - # Temp fix
         # https://github.com/docker/build-push-action/issues/252
         # https://github.com/moby/buildkit/issues/1896
         name: Move cache
@@ -221,12 +196,12 @@ jobs:
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
-# ----------------------------------------------
-# build
-# Docs platforms QEMU setup-qemu-action https://github.com/firepress-org/ghostfire/issues/44
-# ----------------------------------------------
+  # ----------------------------------------------
+  # build
+  # Docs platforms QEMU setup-qemu-action https://github.com/firepress-org/ghostfire/issues/44
+  # ----------------------------------------------
   build:
-    needs: [myvars,uat]
+    needs: [myvars, uat]
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
@@ -235,8 +210,7 @@ jobs:
           timezone: America/Montreal
       - uses: docker/setup-qemu-action@v1
       - uses: docker/setup-buildx-action@v1
-      -
-        name: Cache Docker layers
+      - name: Cache Docker layers
         id: docker-cache
         uses: actions/cache@v2.1.6
         with:
@@ -255,8 +229,7 @@ jobs:
           registry: ghcr.io
           username: ${{ needs.myvars.outputs.GITHUB_ORG }}
           password: ${{ secrets.TOKEN_GPR }}
-      -
-        name: Build EDGE and push image
+      - name: Build EDGE and push image
         if: github.ref != 'refs/heads/master'
         uses: docker/build-push-action@v2
         with:
@@ -277,8 +250,7 @@ jobs:
           #The order for <docker push -tag> matters for our CD down the line.
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,mode=max,dest=/tmp/.buildx-cache-new
-      -
-        name: Build MASTER and push image
+      - name: Build MASTER and push image
         if: github.ref == 'refs/heads/master'
         uses: docker/build-push-action@v2
         with:
@@ -300,8 +272,7 @@ jobs:
             ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_DATE }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,mode=max,dest=/tmp/.buildx-cache-new
-      -
-        # Temp fix
+      - # Temp fix
         # https://github.com/docker/build-push-action/issues/252
         # https://github.com/moby/buildkit/issues/1896
         name: Move cache
@@ -309,19 +280,18 @@ jobs:
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
-# ----------------------------------------------
-# Tests after build
-# ----------------------------------------------
+  # ----------------------------------------------
+  # Tests after build
+  # ----------------------------------------------
   review_myvars:
-    needs: [myvars,build]
+    needs: [myvars, build]
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - uses: zcong1993/setup-timezone@v1.1.1
         with:
           timezone: America/Montreal
-      -
-        name: Show variables
+      - name: Show variables
         run: |
           echo "Final Docker image name:"
           echo "= = = = = = = = = ="
@@ -375,36 +345,34 @@ jobs:
           echo "${RUNNER_TOOL_CACHE} << RUNNER_TOOL_CACHE"
           echo "${GITHUB_ACTIONS} << GITHUB_ACTIONS"
 
-# https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#context-availability
-# if: github.event_name != 'pull_request'
-# if: ${{ github.ref == 'refs/heads/main' }}
-# $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID
+  # https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#context-availability
+  # if: github.event_name != 'pull_request'
+  # if: ${{ github.ref == 'refs/heads/main' }}
+  # $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID
 
   # cache limit https://github.com/marketplace/actions/cache#cache-limits
   review_cache_size:
-    needs: [myvars,build]
+    needs: [myvars, build]
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - uses: zcong1993/setup-timezone@v1.1.1
         with:
           timezone: America/Montreal
-      - 
-        name: Checkpoint | Github Actions cache size
+      - name: Checkpoint | Github Actions cache size
         continue-on-error: true
         run: |
           du -hs ${GITHUB_WORKSPACE}/tmp/.buildx-cache
 
   review_snyk:
-    needs: [myvars,build]
+    needs: [myvars, build]
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - uses: zcong1993/setup-timezone@v1.1.1
         with:
           timezone: America/Montreal
-      - 
-        name: Checkpoint | scanner by Snyk
+      - name: Checkpoint | scanner by Snyk
         # https://github.com/snyk/actions/tree/master/docker
         uses: snyk/actions/docker@0.3.0
         # Snyk can be used to break the build when it detects vulnerabilities.
@@ -418,61 +386,57 @@ jobs:
         with:
           image: ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_DATE }}
           args: --file=${{ env.DOCKERFILE }} --severity-threshold=high
-      - 
-        name: Checkpoint | Upload result to GitHub Code Scanning
+      - name: Checkpoint | Upload result to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v1
         with:
           sarif_file: snyk.sarif
 
   review_dockle:
-    needs: [myvars,build]
+    needs: [myvars, build]
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - uses: zcong1993/setup-timezone@v1.1.1
         with:
           timezone: America/Montreal
-      - 
-        name: Checkpoint | scanner by Dockle
+      - name: Checkpoint | scanner by Dockle
         run: |
           docker run --rm goodwithtech/dockle:latest ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_DATE }}
 
   review_trivy:
-    needs: [myvars,build]
+    needs: [myvars, build]
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - uses: zcong1993/setup-timezone@v1.1.1
         with:
           timezone: America/Montreal
-      - 
-        name: Checkpoint | scanner by Trivy
+      - name: Checkpoint | scanner by Trivy
         continue-on-error: true
         uses: aquasecurity/trivy-action@0.0.20
         with:
           image-ref: ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_DATE }}
-          exit-code: '0'
+          exit-code: "0"
           ignore-unfixed: true
-          vuln-type: 'os,library'
-          severity: 'CRITICAL,HIGH' 
-          format: 'table'
+          vuln-type: "os,library"
+          severity: "CRITICAL,HIGH"
+          format: "table"
 
   review_linter:
-    needs: [myvars,build]
+    needs: [myvars, build]
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - uses: zcong1993/setup-timezone@v1.1.1
         with:
           timezone: America/Montreal
-      - 
-        name: Checkpoint | Linter
+      - name: Checkpoint | Linter
         continue-on-error: true
         uses: docker://ghcr.io/github/super-linter:slim-v4
         # github/super-linter@v4
         # docker://ghcr.io/github/super-linter:slim-v4
         env:
-          DISABLE_ERRORS: true          # Flag to have the linter complete with exit code 0 even if errors were detected.
+          DISABLE_ERRORS: true # Flag to have the linter complete with exit code 0 even if errors were detected.
           VALIDATE_ALL_CODEBASE: false
           VALIDATE_MARKDOWN: false
           VALIDATE_DOCKERFILE: false
@@ -481,81 +445,72 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   review_arch:
-    needs: [myvars,build]
+    needs: [myvars, build]
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - uses: zcong1993/setup-timezone@v1.1.1
         with:
           timezone: America/Montreal
-      - 
-        name: Checkpoint | platform(s)
+      - name: Checkpoint | platform(s)
         run: |
           docker run --rm mplatform/mquery ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_DATE }}
 
   review_inspect:
-    needs: [myvars,build]
+    needs: [myvars, build]
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - uses: zcong1993/setup-timezone@v1.1.1
         with:
           timezone: America/Montreal
-      - 
-        name: Login to DockerHub registry
+      - name: Login to DockerHub registry
         if: github.event_name != 'pull_request'
         uses: docker/login-action@v1
         with:
           username: ${{ needs.myvars.outputs.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
-      - 
-        name: Login to GitHub registry
+      - name: Login to GitHub registry
         if: github.event_name != 'pull_request'
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
           username: ${{ needs.myvars.outputs.GITHUB_ORG }}
           password: ${{ secrets.TOKEN_GPR }}
-      -
-        name: Checkpoint | pull image
+      - name: Checkpoint | pull image
         if: github.event_name != 'pull_request'
         run: |
           docker pull ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_DATE }}
           docker pull ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_DATE }}
-      -
-        name: Checkpoint | manifest
+      - name: Checkpoint | manifest
         if: github.event_name != 'pull_request'
         run: |
           docker buildx imagetools inspect ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_DATE }}
           docker buildx imagetools inspect ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_DATE }}
-      -
-        name: Checkpoint | inspect image
+      - name: Checkpoint | inspect image
         if: github.event_name != 'pull_request'
         run: |
           docker image inspect ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_DATE }}
           docker image inspect ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_DATE }}
-      -
-        name: Checkpoint | docker images --digests
+      - name: Checkpoint | docker images --digests
         if: github.event_name != 'pull_request'
         run: |
           docker images --digests
-      -
-        name: Checkpoint | Show image digest
+      - name: Checkpoint | Show image digest
         run: echo ${{ steps.docker_build_and_push.outputs.digest }}
 
-# ----------------------------------------------
-# continuous_deployment after build
-# ----------------------------------------------
+  # ----------------------------------------------
+  # continuous_deployment after build
+  # ----------------------------------------------
   continuous_deployment:
-    needs: [myvars,build]
+    needs: [myvars, build]
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - uses: zcong1993/setup-timezone@v1.1.1
         with:
           timezone: America/Montreal
-      - 
-        name: EDGE | Continuous Deployment
+      - name: EDGE | Continuous Deployment
         if: github.ref != 'refs/heads/master'
         uses: appleboy/ssh-action@v0.1.4
         with:
@@ -567,11 +522,10 @@ jobs:
           script: |
             ${{ secrets.SSH_CMD__UPDATE_DKR_IMG_EDGE }}
             hostname
-          #sync: true 
+          #sync: true
           #host: "${{ secrets.NODE1 }},${{ secrets.NODE2 }},${{ secrets.NODE3 }}"
           # alt projet: fifsky/ssh-action@master https://github.com/appleboy/ssh-action/issues/80#issuecomment-759473472
-      - 
-        name: MASTER | Continuous Deployment
+      - name: MASTER | Continuous Deployment
         if: github.ref == 'refs/heads/master'
         uses: appleboy/ssh-action@v0.1.4
         with:
@@ -583,8 +537,7 @@ jobs:
           script: |
             ${{ secrets.SSH_CMD__UPDATE_DKR_IMG_STABLE }}
             hostname
-      - 
-        name: Update README on Dockerhub
+      - name: Update README on Dockerhub
         run: |
           docker run --rm \
             -v $(pwd)/README.md:/data/README.md \
@@ -594,19 +547,18 @@ jobs:
             -e DOCKERHUB_REPO_NAME=${{ needs.myvars.outputs.APP_NAME }} \
             devmtl/readme-to-dockerhub:stable
 
-# ----------------------------------------------
-# Actions after continuous_deployment
-# ----------------------------------------------
+  # ----------------------------------------------
+  # Actions after continuous_deployment
+  # ----------------------------------------------
   review_lighthouse:
-    needs: [myvars,continuous_deployment]
+    needs: [myvars, continuous_deployment]
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - uses: zcong1993/setup-timezone@v1.1.1
         with:
           timezone: America/Montreal
-      - 
-        name: Checkpoint | Lighthouse
+      - name: Checkpoint | Lighthouse
         uses: treosh/lighthouse-ci-action@8.0.0
         with:
           urls: |
@@ -617,15 +569,14 @@ jobs:
           temporaryPublicStorage: true # upload lighthouse report to the temporary storage
 
   review_artillery:
-    needs: [myvars,continuous_deployment]
+    needs: [myvars, continuous_deployment]
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - uses: zcong1993/setup-timezone@v1.1.1
         with:
           timezone: America/Montreal
-      - 
-        name: Checkpoint | Artillery
+      - name: Checkpoint | Artillery
         id: load-test
         uses: kenju/github-actions-artillery@master
         with:
@@ -633,15 +584,14 @@ jobs:
           #            https://trial.firepress.link/edge
 
   notify_slack:
-    needs: [myvars,continuous_deployment]
+    needs: [myvars, continuous_deployment]
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - uses: zcong1993/setup-timezone@v1.1.1
         with:
           timezone: America/Montreal
-      -
-        name: Notify on Slack
+      - name: Notify on Slack
         run: |
           docker run --rm \
             --name noti \

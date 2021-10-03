@@ -29,34 +29,13 @@ ARG USER="node"
 # 1) LAYER to manage base image(s) versioning.
 #   Credit to Tõnis Tiigi https://bit.ly/2RoCmvG
 # ----------------------------------------------
-FROM alpine:${ALPINE_VERSION} AS myalpine
 FROM node:${NODE_VERSION} AS mynode
-
-# ----------------------------------------------
-# 2) LAYER version-debug
-#   If a package crash on layers 3-4, we don't know
-#   which one crashed. This layer reveal package(s)
-#   versions and keep a trace in the CI's logs.
-# ----------------------------------------------
-FROM myalpine AS version-debug
-# grab su-exec for easy step-down from root
-# add "bash" for "[["
-
-RUN set -eux && apk update && apk add --no-cache --virtual        \
-    'su-exec>=0.2' bash curl tzdata                               ;
-
-RUN apk upgrade
-
-# ----------------------------------------------
-# 3) LAYER ghost-builder
-#   from the official Ghost image https://bit.ly/2JWOTam
-# ----------------------------------------------
-FROM mynode AS ghost-builder
 
 ARG VERSION
 ARG GHOST_CLI_VERSION
 ARG USER
 ARG NODE_VERSION
+ARG ALPINE_VERSION
 
 ENV GHOST_INSTALL="/var/lib/ghost"                                \
     GHOST_CONTENT="/var/lib/ghost/content"                        \
@@ -65,9 +44,50 @@ ENV GHOST_INSTALL="/var/lib/ghost"                                \
     VERSION="${VERSION}"                                          \
     GHOST_CLI_VERSION="${GHOST_CLI_VERSION}"
 
+# credit to https://github.com/opencontainers/image-spec/blob/master/annotations.md
+LABEL org.opencontainers.image.authors="Pascal Andy https://firepress.org/en/contact/"  \
+      org.opencontainers.image.vendors="https://firepress.org/"                         \
+      org.opencontainers.image.created="$(date "+%Y-%m-%d_%HH%Ms%S")"                   \
+      org.opencontainers.image.commit="$(git rev-parse --short HEAD)"                   \
+      org.opencontainers.image.title="Ghost v${VERSION}"                                \
+      org.opencontainers.image.description="Docker image for Ghost ${VERSION}"          \
+      org.opencontainers.image.url="https://hub.docker.com/r/devmtl/ghostfire/tags/"    \
+      org.opencontainers.image.source="https://github.com/firepress-org/ghostfire"      \
+      org.opencontainers.image.licenses="GNUv3 https://github.com/pascalandy/GNU-GENERAL-PUBLIC-LICENSE/blob/master/LICENSE.md" \
+      org.firepress.image.ghost_cli_version="${GHOST_CLI_VERSION}"                      \
+      org.firepress.image.user="${USER}"                                                \
+      org.firepress.image.node_env="${NODE_ENV}"                                        \
+      org.firepress.image.node_version="${NODE_VERSION}"                                \
+      org.firepress.image.alpine_version="${ALPINE_VERSION}"                            \
+      org.firepress.image.schema_version="1.0"
+
+# grab su-exec for easy step-down from root
+# add "bash" for "[["
+
 RUN set -eux && apk update && apk add --no-cache                  \
-    'su-exec>=0.2' bash curl                                      &&\
-    \
+    'su-exec>=0.2' bash curl tzdata                               &&\
+# set up timezone
+    cp /usr/share/zoneinfo/America/New_York /etc/localtime        &&\
+    echo "America/New_York" > /etc/timezone                       &&\
+    apk del tzdata                                                &&\
+    rm -rvf /var/cache/apk/* /tmp/*                               ;
+
+# ----------------------------------------------
+# 2) LAYER debug
+#   If a package crash on layers 3-4, we don't know
+#   which one crashed. This layer reveal package(s)
+#   versions and keep a trace in the CI's logs.
+# ----------------------------------------------
+FROM mynode AS debug
+RUN apk upgrade
+
+# ----------------------------------------------
+# 3) LAYER builder
+#   from the official Ghost image https://bit.ly/2JWOTam
+# ----------------------------------------------
+FROM mynode AS builder
+
+RUN set -eux                                                      &&\
 # install Ghost CLI
     npm install --production -g "ghost-cli@${GHOST_CLI_VERSION}"  &&\
     npm cache clean --force                                       &&\
@@ -102,11 +122,12 @@ RUN set -eux && apk update && apk add --no-cache                  \
 # sanity check to ensure knex-migrator was installed
     "${GHOST_INSTALL}/current/node_modules/knex-migrator/bin/knex-migrator" --version &&\
 # sanity check to list all packages
-    npm config list                                               &&\
-    \
+    npm config list                                               ;
+
 # force install "sqlite3" manually since it's an optional dependency of "ghost"
 # (which means that if it fails to install, like on ARM/ppc64le/s390x, the failure will be silently ignored and thus turn into a runtime error instead)
 # see https://github.com/TryGhost/Ghost/pull/7677 for more details
+RUN set -eux                                                      &&\
     cd "${GHOST_INSTALL}/current"                                 &&\
 # scrape the expected version of sqlite3 directly from Ghost itself
 # WARNING: crash when using node:14.16-alpine3.13
@@ -128,56 +149,14 @@ RUN set -eux && apk update && apk add --no-cache                  \
     rm -rv /tmp/yarn* /tmp/v8*                                    ;
 
 # ----------------------------------------------
-# 4) LAYER ghost-final
+# 4) LAYER production
 #   HEALTHCHECK CMD wget -q -s http://localhost:2368 || exit 1
 #   HEALTHCHECK attributes are passed during runtime <docker service create>
 # ----------------------------------------------
-FROM mynode AS ghost-final
-
-ARG VERSION
-ARG GHOST_CLI_VERSION
-ARG USER
-ARG NODE_VERSION
-ARG ALPINE_VERSION
-
-ENV GHOST_INSTALL="/var/lib/ghost"                                \
-    GHOST_CONTENT="/var/lib/ghost/content"                        \
-    NODE_ENV="production"                                         \
-    USER="${USER}"                                                \
-    VERSION="${VERSION}"                                          \
-    GHOST_CLI_VERSION="${GHOST_CLI_VERSION}"
-
-RUN set -eux && apk update && apk add --no-cache                  \
-    'su-exec>=0.2' bash curl tzdata                               &&\
-# set up timezone
-    cp /usr/share/zoneinfo/America/New_York /etc/localtime        &&\
-    echo "America/New_York" > /etc/timezone                       &&\
-    apk del tzdata                                                &&\
-    rm -rvf /var/cache/apk/* /tmp/*                               ;
+FROM mynode AS production
 
 COPY --chown="${USER}":"${USER}" docker-entrypoint.sh /usr/local/bin
-COPY --from=ghost-builder --chown="${USER}":"${USER}" "${GHOST_INSTALL}" "${GHOST_INSTALL}"
-
-# add knex-migrator bins into PATH
-# we want these from the context of Ghost's "node_modules" directory (instead of doing "npm install -g knex-migrator") so they can share the DB driver modules
-# ENV PATH $PATH:${GHOST_INSTALL}/current/node_modules/knex-migrator/bin
-
-# credit to https://github.com/opencontainers/image-spec/blob/master/annotations.md
-LABEL org.opencontainers.image.authors="Pascal Andy https://firepress.org/en/contact/"  \
-      org.opencontainers.image.vendors="https://firepress.org/"                         \
-      org.opencontainers.image.created="$(date "+%Y-%m-%d_%HH%Ms%S")"                   \
-      org.opencontainers.image.commit="$(git rev-parse --short HEAD)"                   \
-      org.opencontainers.image.title="Ghost v${VERSION}"                                \
-      org.opencontainers.image.description="Docker image for Ghost ${VERSION}"          \
-      org.opencontainers.image.url="https://hub.docker.com/r/devmtl/ghostfire/tags/"    \
-      org.opencontainers.image.source="https://github.com/firepress-org/ghostfire"      \
-      org.opencontainers.image.licenses="GNUv3 https://github.com/pascalandy/GNU-GENERAL-PUBLIC-LICENSE/blob/master/LICENSE.md" \
-      org.firepress.image.ghost_cli_version="${GHOST_CLI_VERSION}"                      \
-      org.firepress.image.user="${USER}"                                                \
-      org.firepress.image.node_env="${NODE_ENV}"                                        \
-      org.firepress.image.node_version="${NODE_VERSION}"                                \
-      org.firepress.image.alpine_version="${ALPINE_VERSION}"                            \
-      org.firepress.image.schema_version="1.0"
+COPY --from=builder --chown="${USER}":"${USER}" "${GHOST_INSTALL}" "${GHOST_INSTALL}"
 
 WORKDIR "${GHOST_INSTALL}"
 VOLUME "${GHOST_CONTENT}"

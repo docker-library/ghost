@@ -14,19 +14,18 @@ ARG GITHUB_ORG="firepress-org"
 ARG GITHUB_REGISTRY="registry"
 
 # ----------------------------------------------
-# Start your Dockerfile from here
+# 1) Start your Dockerfile from here
 #   https://docs.ghost.org/faq/node-versions/
 #   https://github.com/nodejs/Release (looking for "LTS")
 #   https://github.com/TryGhost/Ghost/blob/v4.1.2/package.json#L38
 # ----------------------------------------------
 ARG GHOST_CLI_VERSION="1.17.3"
 ARG NODE_VERSION="14-alpine3.14"
-ARG ALPINE_VERSION="3.14"
-ARG OS="alpine"
+ARG BASE_OS="alpine"
 ARG USER="node"
 
 # ----------------------------------------------
-# 1) LAYER to manage base image(s) versioning.
+# 2) LAYER to manage base image(s) versioning.
 #   Credit to Tõnis Tiigi https://bit.ly/2RoCmvG
 # ----------------------------------------------
 FROM node:${NODE_VERSION} AS mynode
@@ -37,11 +36,11 @@ ARG USER
 ARG NODE_VERSION
 ARG ALPINE_VERSION
 
-ENV GHOST_INSTALL="/var/lib/ghost"                                \
-    GHOST_CONTENT="/var/lib/ghost/content"                        \
-    NODE_ENV="production"                                         \
-    USER="${USER}"                                                \
-    VERSION="${VERSION}"                                          \
+ENV GHOST_INSTALL="/var/lib/ghost"          \
+    GHOST_CONTENT="/var/lib/ghost/content"  \
+    NODE_ENV="production"                   \
+    USER="${USER}"                          \
+    VERSION="${VERSION}"                    \
     GHOST_CLI_VERSION="${GHOST_CLI_VERSION}"
 
 # credit to https://github.com/opencontainers/image-spec/blob/master/annotations.md
@@ -58,7 +57,7 @@ LABEL org.opencontainers.image.authors="Pascal Andy https://firepress.org/en/con
       org.firepress.image.user="${USER}"                                                \
       org.firepress.image.node_env="${NODE_ENV}"                                        \
       org.firepress.image.node_version="${NODE_VERSION}"                                \
-      org.firepress.image.alpine_version="${ALPINE_VERSION}"                            \
+      org.firepress.image.base_os="${BASE_OS}"                                          \
       org.firepress.image.schema_version="1.0"
 
 # grab su-exec for easy step-down from root
@@ -73,7 +72,7 @@ RUN set -eux && apk update && apk add --no-cache                  \
     rm -rvf /var/cache/apk/* /tmp/*                               ;
 
 # ----------------------------------------------
-# 2) LAYER debug
+# 3) LAYER debug
 #   If a package crash on layers 3-4, we don't know
 #   which one crashed. This layer reveal package(s)
 #   versions and keep a trace in the CI's logs.
@@ -82,7 +81,7 @@ FROM mynode AS debug
 RUN apk upgrade
 
 # ----------------------------------------------
-# 3) LAYER builder
+# 4) LAYER builder
 #   from the official Ghost image https://bit.ly/2JWOTam
 # ----------------------------------------------
 FROM mynode AS builder
@@ -149,11 +148,11 @@ RUN set -eux                                                      &&\
     rm -rv /tmp/yarn* /tmp/v8*                                    ;
 
 # ----------------------------------------------
-# 4) LAYER production
+# 5) LAYER final
 #   HEALTHCHECK CMD wget -q -s http://localhost:2368 || exit 1
 #   HEALTHCHECK attributes are passed during runtime <docker service create>
 # ----------------------------------------------
-FROM mynode AS production
+FROM mynode AS final
 
 COPY --chown="${USER}":"${USER}" docker-entrypoint.sh /usr/local/bin
 COPY --from=builder --chown="${USER}":"${USER}" "${GHOST_INSTALL}" "${GHOST_INSTALL}"

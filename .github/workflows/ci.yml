@@ -426,6 +426,28 @@ jobs:
   #   needs: [myvars, build]
   #   uses: firepress-org/reusable_workflows/.github/workflows/super-linter.yaml@master
 
+  review_linter:
+    needs: [myvars, build]
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: zcong1993/setup-timezone@v1.1.1
+        with:
+          timezone: America/Montreal
+      - name: Checkpoint | Linter
+        continue-on-error: true
+        uses: docker://ghcr.io/github/super-linter:slim-v4
+        # github/super-linter@v4
+        # docker://ghcr.io/github/super-linter:slim-v4
+        env:
+          DISABLE_ERRORS: true # Flag to have the linter complete with exit code 0 even if errors were detected.
+          VALIDATE_ALL_CODEBASE: false
+          VALIDATE_MARKDOWN: false
+          VALIDATE_DOCKERFILE: false
+          VALIDATE_JSCPD: false
+          DEFAULT_BRANCH: edge
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   review_arch:
     needs: [myvars, build]
     runs-on: ubuntu-20.04

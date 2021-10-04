@@ -1,0 +1,13 @@
+---
+name: Lint Code Base
+
+on:
+  push:
+    branches:
+      - "master"
+      - "edge"
+  pull_request:
+
+jobs:
+  call-super-linter:
+    uses: firepress-org/reusable_workflows/.github/workflows/super-linter.yaml@master

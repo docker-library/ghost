@@ -6,22 +6,21 @@ name: multi_arch
 
 on:
   schedule:
-    - cron: '0 6 * * *'
+    - cron: "0 6 * * *"
   workflow_dispatch:
 
 defaults:
   run:
-    shell: 'bash -Eeuo pipefail -x {0}'
+    shell: "bash -Eeuo pipefail -x {0}"
 
 env:
   DOCKERFILE: Dockerfile
 
 jobs:
-
-# ----------------------------------------------
-# SET VARIABLES
-# More context about the way we set variables https://github.com/firepress-org/ghostfire/issues/46
-# ----------------------------------------------
+  # ----------------------------------------------
+  # SET VARIABLES
+  # More context about the way we set variables https://github.com/firepress-org/ghostfire/issues/46
+  # ----------------------------------------------
   myvars:
     runs-on: ubuntu-20.04
     steps:
@@ -32,15 +31,13 @@ jobs:
       - uses: zcong1993/setup-timezone@v1.1.1
         with:
           timezone: America/Montreal
-      -
-        name: Github Actions system status
+      - name: Github Actions system status
         uses: crazy-max/ghaction-github-status@v2
         with:
           overall_threshold: minor
           git_threshold: degraded_performance
           actions_threshold: operational
-      -
-        name: Define and save variables to disk
+      - name: Define and save variables to disk
         run: |
           mkdir -pv ~/varz
           echo "edge" > ~/varz/BRANCH_NAME
@@ -58,14 +55,12 @@ jobs:
           echo "$(cat ~/varz/BRANCH_NAME)_$(cat ~/varz/VERSION)_$(cat ~/varz/SHORT_HASH_COMMIT)" > ~/varz/VERSION_HASH_ONLY
           echo "$(cat ~/varz/BRANCH_NAME)_$(cat ~/varz/VERSION)_$(cat ~/varz/SHORT_HASH_COMMIT)_$(cat ~/varz/DATE)" > ~/varz/VERSION_HASH_DATE
           echo "$(cat ~/varz/APP_NAME):$(cat ~/varz/BRANCH_NAME)_$(cat ~/varz/VERSION)_$(cat ~/varz/SHORT_HASH_COMMIT)" > ~/varz/_NOTI_MESSAGE
-      - 
-        name: Upload variables as artifact
+      - name: Upload variables as artifact
         uses: actions/upload-artifact@master
         with:
           name: variables_on_disk
           path: ~/varz
-      - 
-        name: Expose variables to all jobs
+      - name: Expose variables to all jobs
         id: myvars
         run: |
           echo "::set-output name=BRANCH_NAME::$(cat ~/varz/BRANCH_NAME)"
@@ -100,9 +95,9 @@ jobs:
       VERSION_HASH_DATE: ${{ steps.myvars.outputs.VERSION_HASH_DATE }}
       _NOTI_MESSAGE: ${{ steps.myvars.outputs._NOTI_MESSAGE }}
 
-# ----------------------------------------------
-# UAT
-# ----------------------------------------------
+  # ----------------------------------------------
+  # UAT
+  # ----------------------------------------------
   uat1:
     needs: [myvars]
     runs-on: ubuntu-20.04
@@ -117,8 +112,7 @@ jobs:
       - uses: docker/setup-qemu-action@v1
       - uses: docker/setup-buildx-action@v1
       # bypass cache as I feel we reach the cache limit https://github.com/marketplace/actions/cache#cache-limits
-      -
-        # The goal is the catch if multiarch builds have issue on branch edge without slowing down the dev UX.
+      - # The goal is the catch if multiarch builds have issue on branch edge without slowing down the dev UX.
         # Docs: list archs https://github.com/firepress-org/ghostfire/issues/57
         name: Build linux/amd64
         uses: docker/build-push-action@v2
@@ -142,8 +136,7 @@ jobs:
           timezone: America/Montreal
       - uses: docker/setup-qemu-action@v1
       - uses: docker/setup-buildx-action@v1
-      -
-        name: Build linux/arm64
+      - name: Build linux/arm64
         uses: docker/build-push-action@v2
         with:
           context: .
@@ -165,8 +158,7 @@ jobs:
           timezone: America/Montreal
       - uses: docker/setup-qemu-action@v1
       - uses: docker/setup-buildx-action@v1
-      -
-        name: Build linux/arm/v7
+      - name: Build linux/arm/v7
         uses: docker/build-push-action@v2
         with:
           context: .
@@ -188,8 +180,7 @@ jobs:
           timezone: America/Montreal
       - uses: docker/setup-qemu-action@v1
       - uses: docker/setup-buildx-action@v1
-      -
-        name: Build linux/arm64/v8
+      - name: Build linux/arm64/v8
         uses: docker/build-push-action@v2
         with:
           context: .
@@ -198,18 +189,18 @@ jobs:
           platforms: |
             linux/arm64/v8
 
-# These failed 2021-09-30
-# linux/arm/v6
-# linux/ppc64le
-# linux/s390x
-# windows/amd64
-# windows/arm64/v8
+  # These failed 2021-09-30
+  # linux/arm/v6
+  # linux/ppc64le
+  # linux/s390x
+  # windows/amd64
+  # windows/arm64/v8
 
-# ----------------------------------------------
-# Tests after build
-# ----------------------------------------------
+  # ----------------------------------------------
+  # Tests after build
+  # ----------------------------------------------
   review_myvars:
-    needs: [myvars,uat1]
+    needs: [myvars, uat1]
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
@@ -219,8 +210,7 @@ jobs:
       - uses: zcong1993/setup-timezone@v1.1.1
         with:
           timezone: America/Montreal
-      -
-        name: Show variables
+      - name: Show variables
         run: |
           echo "Final Docker image name:"
           echo "= = = = = = = = = ="

@@ -1,5 +1,10 @@
-version: 2
+version:2
+  # you can add other package ecosystems here for granular control of security updates
+  # https://docs.github.com/en/code-security/supply-chain-security/keeping-your-dependencies-updated-automatically/configuration-options-for-dependency-updates
+  # bundler, docker (FROM image), git submodules, go, npm, pip, terraform, all supported
+
 updates:
+  # Maintain dependencies for Actions
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
@@ -9,9 +14,14 @@ updates:
     labels:
       - ":game_die: dependencies"
       - ":robot: bot"
+
+  # Maintain dependencies for Docker
   - package-ecosystem: "docker"
     directory: "/"
     schedule:
       interval: "weekly"
       time: "07:00"
       timezone: "America/New_York"
+    labels:
+      - ":game_die: dependencies"
+      - ":robot: bot"

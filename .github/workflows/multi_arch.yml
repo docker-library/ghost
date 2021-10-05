@@ -27,9 +27,6 @@ jobs:
       - uses: actions/checkout@v2.3.4
         with:
           fetch-depth: 0
-        with:
-          # this checkout to this branch
-          ref: edge
       - uses: zcong1993/setup-timezone@v1.1.1
         with:
           timezone: America/Montreal
@@ -39,7 +36,7 @@ jobs:
           overall_threshold: minor
           git_threshold: degraded_performance
           actions_threshold: operational
-      - name: Define and save variables to disk
+      - name: Create dir for our varz
         run: |
           mkdir -pv ~/varz
           echo "edge" > ~/varz/BRANCH_NAME

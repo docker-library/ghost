@@ -32,7 +32,7 @@ jobs:
   # More context about the way we set variables https://github.com/firepress-org/ghostfire/issues/46
   # ----------------------------------------------
   myvars:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.3.4
         with:
@@ -117,7 +117,7 @@ jobs:
   # ----------------------------------------------
   uat:
     needs: [myvars]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.3.4
         with:
@@ -206,7 +206,7 @@ jobs:
   # ----------------------------------------------
   build:
     needs: [myvars, uat]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.3.4
         with:
@@ -291,7 +291,7 @@ jobs:
   # ----------------------------------------------
   review_myvars:
     needs: [myvars, build]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.3.4
         with:
@@ -361,7 +361,7 @@ jobs:
   # cache limit https://github.com/marketplace/actions/cache#cache-limits
   review_cache_size:
     needs: [myvars, build]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.3.4
         with:
@@ -376,7 +376,7 @@ jobs:
 
   review_snyk:
     needs: [myvars, build]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.3.4
         with:
@@ -405,7 +405,7 @@ jobs:
 
   review_dockle:
     needs: [myvars, build]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.3.4
         with:
@@ -419,7 +419,7 @@ jobs:
 
   review_trivy:
     needs: [myvars, build]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.3.4
         with:
@@ -444,7 +444,7 @@ jobs:
 
   review_linter:
     needs: [myvars, build]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.3.4
         with:
@@ -468,7 +468,7 @@ jobs:
 
   review_arch:
     needs: [myvars, build]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.3.4
         with:
@@ -482,7 +482,7 @@ jobs:
 
   review_inspect:
     needs: [myvars, build]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.3.4
         with:
@@ -530,7 +530,7 @@ jobs:
   # ----------------------------------------------
   continuous_deployment:
     needs: [myvars, build]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.3.4
         with:
@@ -580,7 +580,7 @@ jobs:
   # ----------------------------------------------
   review_lighthouse:
     needs: [myvars, continuous_deployment]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.3.4
         with:
@@ -600,7 +600,7 @@ jobs:
 
   review_artillery:
     needs: [myvars, continuous_deployment]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.3.4
         with:
@@ -617,7 +617,7 @@ jobs:
 
   notify_slack:
     needs: [myvars, continuous_deployment]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.3.4
         with:

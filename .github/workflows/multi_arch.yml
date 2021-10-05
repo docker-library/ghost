@@ -22,7 +22,7 @@ jobs:
   # More context about the way we set variables https://github.com/firepress-org/ghostfire/issues/46
   # ----------------------------------------------
   myvars:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.3.4
         with:
@@ -102,7 +102,7 @@ jobs:
   # ----------------------------------------------
   uat1:
     needs: [myvars]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.3.4
         with:
@@ -129,7 +129,7 @@ jobs:
 
   uat2:
     needs: [myvars]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.3.4
         with:
@@ -153,7 +153,7 @@ jobs:
 
   uat3:
     needs: [myvars]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.3.4
         with:
@@ -177,7 +177,7 @@ jobs:
 
   uat4:
     needs: [myvars]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.3.4
         with:
@@ -211,7 +211,7 @@ jobs:
   # ----------------------------------------------
   review_myvars:
     needs: [myvars, uat1]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.3.4
         with:

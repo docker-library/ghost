@@ -243,7 +243,8 @@ jobs:
           file: ./${{ env.DOCKERFILE }}
           platforms: |
             linux/amd64
-          push: true
+          # don't push during a pull_request, only build
+          push: ${{ github.event_name != 'pull_request' }}
           tags: |
             ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.BRANCH_NAME }}
             ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_BRANCH }}
@@ -266,7 +267,8 @@ jobs:
             linux/amd64
             linux/arm64
             linux/arm/v7
-          push: true
+          # don't push during a pull_request, only build
+          push: ${{ github.event_name != 'pull_request' }}
           tags: |
             ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.BRANCH_NAME }}
             ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_BRANCH }}

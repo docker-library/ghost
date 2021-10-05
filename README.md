@@ -12,7 +12,7 @@
     <a href="https://github.com/firepress-org/">GitHub</a> |
     <a href="https://twitter.com/askpascalandy">Twitter</a>
     <br /> <br />
-    [![ci status](https://github.com/firepress-org/ghostfire/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/firepress-org/ghostfire/actions/workflows/ci.yml)
+    ![status branch parameter](https://github.com/firepress-org/ghostfire/actions/workflows/ci.yml/badge.svg?branch=master)
 </p>
 
 &nbsp;
@@ -46,8 +46,8 @@ ghost:4.16.0-alpine                    351MB
 
 ## Github Actions CI/CD :
 
-- [x] Extreme visibility*in the Graph.
-- [x]  Support multi architecture platforms: `linux/amd64`, `linux/arm64`, `linux/arm/v7`
+- [x] Extreme visibility\*in the Graph.
+- [x] Support multi architecture platforms: `linux/amd64`, `linux/arm64`, `linux/arm/v7`
 - [x] Great logic between jobs
 - [x] Shared variables between jobs
 - [x] Builds use cache
@@ -78,6 +78,7 @@ In short, you can try Ghost on the spot without having to sign-up!
 <br>
 
 #### Continuous integration
+
 See [Github Actions sections](https://github.com/firepress-org/ghostfire/actions)
 
 At this point, this docker image has been pulled more than **11 millions of time**!
@@ -122,7 +123,7 @@ devmtl/ghostfire:stable_4.6.4
 devmtl/ghostfire:stable
 ```
 
-Find the latest tags on **DockerHub** here: 
+Find the latest tags on **DockerHub** here:
 [https://hub.docker.com/r/devmtl/ghostfire/tags/](https://hub.docker.com/r/devmtl/ghostfire/tags/)
 
 #### edge branch (dev) tags 🐳
@@ -181,7 +182,7 @@ We follow the latest Node supported version. See this in the Dockerfile.
 docker exec <container-id> node --version
 ```
 
-You can also see this information in the CI logs. 
+You can also see this information in the CI logs.
 
 <br>
 

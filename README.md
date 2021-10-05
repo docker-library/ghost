@@ -38,7 +38,7 @@ We are trimming about 45MB. These are **uncompressed sizes** :
 
 ```
 devmtl/ghostfire:stable                340MB
-ghost:4.16.0-alpine                    351MB
+ghost:4.16.0-alpine                    384MB
 ```
 
 <br>

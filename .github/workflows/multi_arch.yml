@@ -24,7 +24,9 @@ jobs:
   myvars:
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.3.4
+        with:
+          fetch-depth: 0
         with:
           # this checkout to this branch
           ref: edge
@@ -102,7 +104,9 @@ jobs:
     needs: [myvars]
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.3.4
+        with:
+          fetch-depth: 0
         with:
           # this checkout to this branch
           ref: edge
@@ -127,7 +131,9 @@ jobs:
     needs: [myvars]
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.3.4
+        with:
+          fetch-depth: 0
         with:
           # this checkout to this branch
           ref: edge
@@ -149,7 +155,9 @@ jobs:
     needs: [myvars]
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.3.4
+        with:
+          fetch-depth: 0
         with:
           # this checkout to this branch
           ref: edge
@@ -171,7 +179,9 @@ jobs:
     needs: [myvars]
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.3.4
+        with:
+          fetch-depth: 0
         with:
           # this checkout to this branch
           ref: edge
@@ -203,7 +213,9 @@ jobs:
     needs: [myvars, uat1]
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.3.4
+        with:
+          fetch-depth: 0
         with:
           # this checkout to this branch
           ref: edge

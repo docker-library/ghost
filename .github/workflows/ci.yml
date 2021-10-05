@@ -34,7 +34,9 @@ jobs:
   myvars:
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.3.4
+        with:
+          fetch-depth: 0
       - uses: zcong1993/setup-timezone@v1.1.1
         with:
           timezone: America/Montreal
@@ -117,7 +119,9 @@ jobs:
     needs: [myvars]
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.3.4
+        with:
+          fetch-depth: 0
       - uses: zcong1993/setup-timezone@v1.1.1
         with:
           timezone: America/Montreal
@@ -204,7 +208,9 @@ jobs:
     needs: [myvars, uat]
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.3.4
+        with:
+          fetch-depth: 0
       - uses: zcong1993/setup-timezone@v1.1.1
         with:
           timezone: America/Montreal
@@ -287,7 +293,9 @@ jobs:
     needs: [myvars, build]
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.3.4
+        with:
+          fetch-depth: 0
       - uses: zcong1993/setup-timezone@v1.1.1
         with:
           timezone: America/Montreal
@@ -355,7 +363,9 @@ jobs:
     needs: [myvars, build]
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.3.4
+        with:
+          fetch-depth: 0
       - uses: zcong1993/setup-timezone@v1.1.1
         with:
           timezone: America/Montreal
@@ -368,7 +378,9 @@ jobs:
     needs: [myvars, build]
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.3.4
+        with:
+          fetch-depth: 0
       - uses: zcong1993/setup-timezone@v1.1.1
         with:
           timezone: America/Montreal
@@ -395,7 +407,9 @@ jobs:
     needs: [myvars, build]
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.3.4
+        with:
+          fetch-depth: 0
       - uses: zcong1993/setup-timezone@v1.1.1
         with:
           timezone: America/Montreal
@@ -407,7 +421,9 @@ jobs:
     needs: [myvars, build]
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.3.4
+        with:
+          fetch-depth: 0
       - uses: zcong1993/setup-timezone@v1.1.1
         with:
           timezone: America/Montreal
@@ -430,7 +446,9 @@ jobs:
     needs: [myvars, build]
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.3.4
+        with:
+          fetch-depth: 0
       - uses: zcong1993/setup-timezone@v1.1.1
         with:
           timezone: America/Montreal
@@ -452,7 +470,9 @@ jobs:
     needs: [myvars, build]
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.3.4
+        with:
+          fetch-depth: 0
       - uses: zcong1993/setup-timezone@v1.1.1
         with:
           timezone: America/Montreal
@@ -464,7 +484,9 @@ jobs:
     needs: [myvars, build]
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.3.4
+        with:
+          fetch-depth: 0
       - uses: zcong1993/setup-timezone@v1.1.1
         with:
           timezone: America/Montreal
@@ -510,7 +532,9 @@ jobs:
     needs: [myvars, build]
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.3.4
+        with:
+          fetch-depth: 0
       - uses: zcong1993/setup-timezone@v1.1.1
         with:
           timezone: America/Montreal
@@ -558,7 +582,9 @@ jobs:
     needs: [myvars, continuous_deployment]
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.3.4
+        with:
+          fetch-depth: 0
       - uses: zcong1993/setup-timezone@v1.1.1
         with:
           timezone: America/Montreal
@@ -576,7 +602,9 @@ jobs:
     needs: [myvars, continuous_deployment]
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.3.4
+        with:
+          fetch-depth: 0
       - uses: zcong1993/setup-timezone@v1.1.1
         with:
           timezone: America/Montreal
@@ -591,7 +619,9 @@ jobs:
     needs: [myvars, continuous_deployment]
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.3.4
+        with:
+          fetch-depth: 0
       - uses: zcong1993/setup-timezone@v1.1.1
         with:
           timezone: America/Montreal

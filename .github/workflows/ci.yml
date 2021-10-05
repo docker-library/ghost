@@ -610,7 +610,7 @@ jobs:
       - uses: zcong1993/setup-timezone@v1.1.1
         with:
           timezone: America/Montreal
-=
+
       - name: Checkpoint | Artillery
         if: github.event_name != 'pull_request'
         id: load-test

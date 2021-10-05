@@ -12,7 +12,6 @@
     <a href="https://github.com/firepress-org/">GitHub</a> |
     <a href="https://twitter.com/askpascalandy">Twitter</a>
     <br /> <br />
-    ![status branch parameter](https://github.com/firepress-org/ghostfire/actions/workflows/ci.yml/badge.svg?branch=master)
 </p>
 
 &nbsp;
@@ -45,6 +44,8 @@ ghost:4.16.0-alpine                    351MB
 <br>
 
 ## Github Actions CI/CD :
+
+[![ci status](https://github.com/firepress-org/ghostfire/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/firepress-org/ghostfire/actions/workflows/ci.yml)
 
 - [x] Extreme visibility\*in the Graph.
 - [x] Support multi architecture platforms: `linux/amd64`, `linux/arm64`, `linux/arm/v7`

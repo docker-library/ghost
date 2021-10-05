@@ -9,3 +9,9 @@ updates:
     labels:
       - ":game_die: dependencies"
       - ":robot: bot"
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      time: "07:00"
+      timezone: "America/New_York"

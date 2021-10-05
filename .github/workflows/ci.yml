@@ -537,7 +537,7 @@ jobs:
         with:
           timezone: America/Montreal
       - name: EDGE | Continuous Deployment
-        if: github.ref != 'refs/heads/master'
+        if: github.ref != 'refs/heads/master' || github.event_name != 'pull_request'
         uses: appleboy/ssh-action@v0.1.4
         with:
           host: ${{ secrets.NODE1 }}
@@ -551,8 +551,9 @@ jobs:
           #sync: true
           #host: "${{ secrets.NODE1 }},${{ secrets.NODE2 }},${{ secrets.NODE3 }}"
           # alt projet: fifsky/ssh-action@master https://github.com/appleboy/ssh-action/issues/80#issuecomment-759473472
+
       - name: MASTER | Continuous Deployment
-        if: github.ref == 'refs/heads/master'
+        if: github.ref == 'refs/heads/master' || github.event_name != 'pull_request'
         uses: appleboy/ssh-action@v0.1.4
         with:
           host: ${{ secrets.NODE1 }}
@@ -563,6 +564,7 @@ jobs:
           script: |
             ${{ secrets.SSH_CMD__UPDATE_DKR_IMG_STABLE }}
             hostname
+
       - name: Update README on Dockerhub
         run: |
           docker run --rm \
@@ -586,7 +588,9 @@ jobs:
       - uses: zcong1993/setup-timezone@v1.1.1
         with:
           timezone: America/Montreal
+
       - name: Checkpoint | Lighthouse
+        if: github.event_name != 'pull_request'
         uses: treosh/lighthouse-ci-action@8.0.0
         with:
           urls: |
@@ -606,7 +610,9 @@ jobs:
       - uses: zcong1993/setup-timezone@v1.1.1
         with:
           timezone: America/Montreal
+=
       - name: Checkpoint | Artillery
+        if: github.event_name != 'pull_request'
         id: load-test
         uses: kenju/github-actions-artillery@master
         with:
@@ -623,7 +629,9 @@ jobs:
       - uses: zcong1993/setup-timezone@v1.1.1
         with:
           timezone: America/Montreal
+
       - name: Notify on Slack
+        if: github.event_name != 'pull_request'
         run: |
           docker run --rm \
             --name noti \

@@ -133,13 +133,11 @@ jobs:
           key: buildx-${{ github.sha }}
           restore-keys: |
             buildx-
-      - if: github.event_name != 'pull_request'
-        uses: docker/login-action@v1
+      - uses: docker/login-action@v1
         with:
           username: ${{ needs.myvars.outputs.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
-      - if: github.event_name != 'pull_request'
-        uses: docker/login-action@v1
+      - uses: docker/login-action@v1
         with:
           registry: ghcr.io
           username: ${{ needs.myvars.outputs.GITHUB_ORG }}
@@ -151,7 +149,7 @@ jobs:
           context: .
           file: ./${{ env.DOCKERFILE }}
           platforms: linux/amd64
-          push: ${{ github.event_name != 'pull_request' }}
+          push: true
           tags: |
             ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}
             ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}

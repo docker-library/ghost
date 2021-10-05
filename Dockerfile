@@ -1,7 +1,6 @@
 # ----------------------------------------------
-# At FirePress we run virtually everything in Docker
-#   Dockerfile required by https://github.com/firepress-org/bashlava
-#   Dockerfile required by our Github Actions CI
+# At FirePress we run most things in Docker containers.
+# These ARG are required during the Github Actions CI
 # ----------------------------------------------
 ARG APP_NAME="ghostfire"
 ARG VERSION="4.17.0"
@@ -14,7 +13,7 @@ ARG GITHUB_ORG="firepress-org"
 ARG GITHUB_REGISTRY="registry"
 
 # ----------------------------------------------
-# 1) Start your Dockerfile from here
+# 1) Start your Dockerfile from here 
 #   https://docs.ghost.org/faq/node-versions/
 #   https://github.com/nodejs/Release (looking for "LTS")
 #   https://github.com/TryGhost/Ghost/blob/v4.1.2/package.json#L38
@@ -25,8 +24,7 @@ ARG BASE_OS="alpine"
 ARG USER="node"
 
 # ----------------------------------------------
-# 2) LAYER to manage base image(s) versioning.
-#   Credit to Tõnis Tiigi https://bit.ly/2RoCmvG
+# 2) LAYER to manage base image versioning. Credentials Tõnis Tiigi https://bit.ly/2RoCmvG
 # ----------------------------------------------
 FROM node:${NODE_VERSION} AS mynode
 
@@ -63,7 +61,6 @@ LABEL org.opencontainers.image.authors="Pascal Andy https://firepress.org/en/con
 
 # grab su-exec for easy step-down from root
 # add "bash" for "[["
-
 RUN set -eux && apk update && apk add --no-cache                  \
     'su-exec>=0.2' bash curl tzdata                               &&\
 # set up timezone
@@ -74,9 +71,8 @@ RUN set -eux && apk update && apk add --no-cache                  \
 
 # ----------------------------------------------
 # 3) LAYER debug
-#   If a package crash on layers 4 or 5, we don't know
-#   which one crashed. This layer reveal package(s)
-#   versions and keep a trace in the CI's logs.
+#   If a package crash on layers 4 or 5, we don't know which one crashed.
+#   This layer reveal package(s) versions and keep a trace in the CI's logs.
 # ----------------------------------------------
 FROM mynode AS debug
 RUN apk upgrade
@@ -86,7 +82,6 @@ RUN apk upgrade
 #   from the official Ghost image https://bit.ly/2JWOTam
 # ----------------------------------------------
 FROM mynode AS builder
-
 RUN set -eux                                                      &&\
 # install Ghost CLI
     npm install --production -g "ghost-cli@${GHOST_CLI_VERSION}"  &&\

@@ -1,4 +1,4 @@
-# The beauty of our CI setup is that it will build Dockerfile and set variables from the Dockerfile.
+# The beauty of our CI setup is that it will build Dockerfile and set variables from the Dockerfile
 # by https://pascalandy.com at https://firepress.org
 # GNU v3 https://github.com/firepress-org/ghostfire/blob/master/LICENSE
 
@@ -11,8 +11,6 @@ on:
       - "edge"
     paths-ignore:
       - "CHANGELOG.md"
-      - ".github/workflows/linter.yml"
-      - ".github/linters/**"
   pull_request:
   schedule:
     - cron: "0 5 * * *"

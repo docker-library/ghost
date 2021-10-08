@@ -29,7 +29,7 @@
 ## Docker image features :
 
 - [x] multi-stage builds
-- [x] **`curl`** to support `healthchecks`
+- [x] `curl`* to support `healthchecks`
 - [x] a better `config.production.json` template
 - [x] Docker image based on alpine (we don't maintain debian)
 - [x] Labels based on the opencontainer standard
@@ -47,7 +47,7 @@ ghost:4.16.0-alpine                    384MB
 
 [![ci status](https://github.com/firepress-org/ghostfire/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/firepress-org/ghostfire/actions/workflows/ci.yml)
 
-- [x] Extreme visibility\*in the Graph.
+- [x] Extreme visibility in the Graph.
 - [x] Support multi architecture platforms: `linux/amd64`, `linux/arm64`, `linux/arm/v7`
 - [x] Great logic between jobs
 - [x] Shared variables between jobs

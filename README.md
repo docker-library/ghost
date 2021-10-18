@@ -29,9 +29,9 @@
 ## Docker image features :
 
 - [x] multi-stage builds
-- [x] `curl`* to support `healthchecks`
-- [x] a better `config.production.json` template
-- [x] Docker image based on alpine (we don't maintain debian)
+- [x] `curl` to support `healthchecks`
+- [x] `config.production.json` template
+- [x] Docker image based on `alpine` (we don't maintain debian)
 - [x] Labels based on the opencontainer standard
 
 We are trimming about 45MB. These are **uncompressed sizes** :
@@ -47,7 +47,6 @@ ghost:4.16.0-alpine                    384MB
 
 [![ci status](https://github.com/firepress-org/ghostfire/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/firepress-org/ghostfire/actions/workflows/ci.yml)
 
-- [x] Extreme visibility in the Graph.
 - [x] Support multi architecture platforms: `linux/amd64`, `linux/arm64`, `linux/arm/v7`
 - [x] Great logic between jobs
 - [x] Shared variables between jobs
@@ -55,9 +54,10 @@ ghost:4.16.0-alpine                    384MB
 - [x] Continuous Deployment in the cluster for edge and stable
 - [x] Slack notifications when a build is successful
 - [x] Lighthouse audit(localhost and online)
-- [x] Security scanners (Snyk, Trivy, Dockle)
-- [x] super-linter
+- [x] Security scanners (Snyk, Dockle, Trivy)
+- [x] Linting using `super-linter`
 - [x] Overall we do our best to apply [best practices](https://firepress.org/en/how-do-we-update-hundreds-of-ghosts-websites-on-docker-swarm/)
+- [x] Extreme visibility during our build in Github Actions (screenshot below)
 
 ![CI_2021-10-03_17h42](https://user-images.githubusercontent.com/6694151/135772462-0c39fe73-be9e-4aa3-8103-b1c849c0c41f.jpg)
 

@@ -8,6 +8,7 @@ on:
   push:
     branches:
       - "master"
+      - "edge"
     paths-ignore:
       - "CHANGELOG.md"
   pull_request:

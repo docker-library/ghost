@@ -489,35 +489,29 @@ jobs:
         with:
           timezone: America/Montreal
       - name: Login to DockerHub registry
-        if: github.event_name != 'pull_request'
         uses: docker/login-action@v1.10.0
         with:
           username: ${{ needs.myvars.outputs.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
       - name: Login to GitHub registry
-        if: github.event_name != 'pull_request'
         uses: docker/login-action@v1.10.0
         with:
           registry: ghcr.io
           username: ${{ needs.myvars.outputs.GITHUB_ORG }}
           password: ${{ secrets.TOKEN_GPR }}
       - name: Checkpoint | pull image
-        if: github.event_name != 'pull_request'
         run: |
           docker pull ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}
           docker pull ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}
       - name: Checkpoint | manifest
-        if: github.event_name != 'pull_request'
         run: |
           docker buildx imagetools inspect ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}
           docker buildx imagetools inspect ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}
       - name: Checkpoint | inspect image
-        if: github.event_name != 'pull_request'
         run: |
           docker image inspect ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}
           docker image inspect ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}
       - name: Checkpoint | docker images --digests
-        if: github.event_name != 'pull_request'
         run: |
           docker images --digests
       - name: Checkpoint | Show image digest
@@ -537,7 +531,7 @@ jobs:
         with:
           timezone: America/Montreal
       - name: EDGE | Continuous Deployment
-        if: github.ref != 'refs/heads/master' || github.event_name != 'pull_request'
+        if: github.ref != 'refs/heads/master'
         uses: appleboy/ssh-action@v0.1.4
         with:
           host: ${{ secrets.NODE1 }}
@@ -590,7 +584,6 @@ jobs:
           timezone: America/Montreal
 
       - name: Checkpoint | Lighthouse
-        if: github.event_name != 'pull_request'
         uses: treosh/lighthouse-ci-action@8.0.0
         with:
           urls: |
@@ -612,7 +605,6 @@ jobs:
           timezone: America/Montreal
 
       - name: Checkpoint | Artillery
-        if: github.event_name != 'pull_request'
         id: load-test
         uses: kenju/github-actions-artillery@master
         with:
@@ -631,7 +623,6 @@ jobs:
           timezone: America/Montreal
 
       - name: Notify on Slack
-        if: github.event_name != 'pull_request'
         run: |
           docker run --rm \
             --name noti \

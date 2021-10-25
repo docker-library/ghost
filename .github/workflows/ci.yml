@@ -150,9 +150,12 @@ jobs:
           file: ./${{ env.DOCKERFILE }}
           platforms: linux/amd64
           push: true
+          # VERSION_BRANCH => even on PR we push branch as "edge"
           tags: |
             ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}
             ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}
+            ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_BRANCH }}
+            ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_BRANCH }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,mode=max,dest=/tmp/.buildx-cache-new
       - name: Checkpoint | Wait for container to run

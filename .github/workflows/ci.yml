@@ -237,8 +237,7 @@ jobs:
           file: ./${{ env.DOCKERFILE }}
           platforms: |
             linux/amd64
-          # don't push during a pull_request, only build
-          push: ${{ github.event_name != 'pull_request' }}
+          push: true
           tags: |
             ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.BRANCH_NAME }}
             ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_BRANCH }}

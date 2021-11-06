@@ -3,8 +3,8 @@
 # These ARG are required during the Github Actions CI
 # ----------------------------------------------
 ARG APP_NAME="ghostfire"
-ARG VERSION="4.20.4"
-ARG RELEASE="4.20.4"
+ARG VERSION="4.22.0"
+ARG RELEASE="4.22.0"
 ARG GITHUB_USER="firepress-org"
 
 ARG GIT_PROJECT_NAME="ghostfire"
@@ -19,7 +19,7 @@ ARG GITHUB_REGISTRY="registry"
 #   https://github.com/TryGhost/Ghost/blob/v4.1.2/package.json#L38
 # ----------------------------------------------
 ARG GHOST_CLI_VERSION="1.18.0"
-ARG NODE_VERSION="14-alpine3.14"
+ARG NODE_VERSION="16-alpine3.14"
 ARG BASE_OS="alpine"
 ARG USER="node"
 

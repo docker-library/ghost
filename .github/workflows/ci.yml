@@ -35,7 +35,7 @@ jobs:
       - uses: actions/checkout@v2.3.5
         with:
           fetch-depth: 0
-      - uses: zcong1993/setup-timezone@v1.1.1
+      - uses: zcong1993/setup-timezone@v1.1.2
         with:
           timezone: America/Montreal
       - name: Github Actions system status
@@ -120,7 +120,7 @@ jobs:
       - uses: actions/checkout@v2.3.5
         with:
           fetch-depth: 0
-      - uses: zcong1993/setup-timezone@v1.1.1
+      - uses: zcong1993/setup-timezone@v1.1.2
         with:
           timezone: America/Montreal
       - uses: docker/setup-qemu-action@v1
@@ -208,7 +208,7 @@ jobs:
       - uses: actions/checkout@v2.3.5
         with:
           fetch-depth: 0
-      - uses: zcong1993/setup-timezone@v1.1.1
+      - uses: zcong1993/setup-timezone@v1.1.2
         with:
           timezone: America/Montreal
       - uses: docker/setup-qemu-action@v1
@@ -292,7 +292,7 @@ jobs:
       - uses: actions/checkout@v2.3.5
         with:
           fetch-depth: 0
-      - uses: zcong1993/setup-timezone@v1.1.1
+      - uses: zcong1993/setup-timezone@v1.1.2
         with:
           timezone: America/Montreal
       - name: Show variables
@@ -362,7 +362,7 @@ jobs:
       - uses: actions/checkout@v2.3.5
         with:
           fetch-depth: 0
-      - uses: zcong1993/setup-timezone@v1.1.1
+      - uses: zcong1993/setup-timezone@v1.1.2
         with:
           timezone: America/Montreal
       - name: Checkpoint | Github Actions cache size
@@ -377,7 +377,7 @@ jobs:
       - uses: actions/checkout@v2.3.5
         with:
           fetch-depth: 0
-      - uses: zcong1993/setup-timezone@v1.1.1
+      - uses: zcong1993/setup-timezone@v1.1.2
         with:
           timezone: America/Montreal
       - name: Checkpoint | scanner by Snyk
@@ -406,7 +406,7 @@ jobs:
       - uses: actions/checkout@v2.3.5
         with:
           fetch-depth: 0
-      - uses: zcong1993/setup-timezone@v1.1.1
+      - uses: zcong1993/setup-timezone@v1.1.2
         with:
           timezone: America/Montreal
       - name: Checkpoint | scanner by Dockle
@@ -420,7 +420,7 @@ jobs:
       - uses: actions/checkout@v2.3.5
         with:
           fetch-depth: 0
-      - uses: zcong1993/setup-timezone@v1.1.1
+      - uses: zcong1993/setup-timezone@v1.1.2
         with:
           timezone: America/Montreal
       - name: Checkpoint | scanner by Trivy
@@ -445,7 +445,7 @@ jobs:
       - uses: actions/checkout@v2.3.5
         with:
           fetch-depth: 0
-      - uses: zcong1993/setup-timezone@v1.1.1
+      - uses: zcong1993/setup-timezone@v1.1.2
         with:
           timezone: America/Montreal
       - name: Checkpoint | Linter
@@ -469,7 +469,7 @@ jobs:
       - uses: actions/checkout@v2.3.5
         with:
           fetch-depth: 0
-      - uses: zcong1993/setup-timezone@v1.1.1
+      - uses: zcong1993/setup-timezone@v1.1.2
         with:
           timezone: America/Montreal
       - name: Checkpoint | platform(s)
@@ -483,7 +483,7 @@ jobs:
       - uses: actions/checkout@v2.3.5
         with:
           fetch-depth: 0
-      - uses: zcong1993/setup-timezone@v1.1.1
+      - uses: zcong1993/setup-timezone@v1.1.2
         with:
           timezone: America/Montreal
       - name: Login to DockerHub registry
@@ -525,7 +525,7 @@ jobs:
       - uses: actions/checkout@v2.3.5
         with:
           fetch-depth: 0
-      - uses: zcong1993/setup-timezone@v1.1.1
+      - uses: zcong1993/setup-timezone@v1.1.2
         with:
           timezone: America/Montreal
       - name: EDGE | Continuous Deployment
@@ -577,7 +577,7 @@ jobs:
       - uses: actions/checkout@v2.3.5
         with:
           fetch-depth: 0
-      - uses: zcong1993/setup-timezone@v1.1.1
+      - uses: zcong1993/setup-timezone@v1.1.2
         with:
           timezone: America/Montreal
 
@@ -598,7 +598,7 @@ jobs:
       - uses: actions/checkout@v2.3.5
         with:
           fetch-depth: 0
-      - uses: zcong1993/setup-timezone@v1.1.1
+      - uses: zcong1993/setup-timezone@v1.1.2
         with:
           timezone: America/Montreal
 
@@ -616,7 +616,7 @@ jobs:
       - uses: actions/checkout@v2.3.5
         with:
           fetch-depth: 0
-      - uses: zcong1993/setup-timezone@v1.1.1
+      - uses: zcong1993/setup-timezone@v1.1.2
         with:
           timezone: America/Montreal
 

@@ -425,7 +425,7 @@ jobs:
           timezone: America/Montreal
       - name: Checkpoint | scanner by Trivy
         continue-on-error: true
-        uses: aquasecurity/trivy-action@0.0.22
+        uses: aquasecurity/trivy-action@0.1.0
         with:
           image-ref: ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}
           exit-code: "0"

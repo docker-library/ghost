@@ -127,7 +127,7 @@ jobs:
       - uses: docker/setup-buildx-action@v1
       - name: Cache Docker layers
         id: docker-cache
-        uses: actions/cache@v2.1.6
+        uses: actions/cache@v2.1.7
         with:
           path: /tmp/.buildx-cache
           key: buildx-${{ github.sha }}
@@ -215,7 +215,7 @@ jobs:
       - uses: docker/setup-buildx-action@v1
       - name: Cache Docker layers
         id: docker-cache
-        uses: actions/cache@v2.1.6
+        uses: actions/cache@v2.1.7
         with:
           path: /tmp/.buildx-cache
           key: buildx-${{ github.sha }}
@@ -425,7 +425,7 @@ jobs:
           timezone: America/Montreal
       - name: Checkpoint | scanner by Trivy
         continue-on-error: true
-        uses: aquasecurity/trivy-action@0.1.0
+        uses: aquasecurity/trivy-action@0.2.0
         with:
           image-ref: ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}
           exit-code: "0"

@@ -582,7 +582,7 @@ jobs:
           timezone: America/Montreal
 
       - name: Checkpoint | Lighthouse
-        uses: treosh/lighthouse-ci-action@8.0.0
+        uses: treosh/lighthouse-ci-action@8.2.0
         with:
           urls: |
             https://trial.firepress.link/edge/welcome/

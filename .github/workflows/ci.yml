@@ -133,11 +133,11 @@ jobs:
           key: buildx-${{ github.sha }}
           restore-keys: |
             buildx-
-      - uses: docker/login-action@v1.10.0
+      - uses: docker/login-action@v1.12.0
         with:
           username: ${{ needs.myvars.outputs.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
-      - uses: docker/login-action@v1.10.0
+      - uses: docker/login-action@v1.12.0
         with:
           registry: ghcr.io
           username: ${{ needs.myvars.outputs.GITHUB_ORG }}
@@ -221,11 +221,11 @@ jobs:
           key: buildx-${{ github.sha }}
           restore-keys: |
             buildx-
-      - uses: docker/login-action@v1.10.0
+      - uses: docker/login-action@v1.12.0
         with:
           username: ${{ needs.myvars.outputs.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
-      - uses: docker/login-action@v1.10.0
+      - uses: docker/login-action@v1.12.0
         with:
           registry: ghcr.io
           username: ${{ needs.myvars.outputs.GITHUB_ORG }}
@@ -487,12 +487,12 @@ jobs:
         with:
           timezone: America/Montreal
       - name: Login to DockerHub registry
-        uses: docker/login-action@v1.10.0
+        uses: docker/login-action@v1.12.0
         with:
           username: ${{ needs.myvars.outputs.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
       - name: Login to GitHub registry
-        uses: docker/login-action@v1.10.0
+        uses: docker/login-action@v1.12.0
         with:
           registry: ghcr.io
           username: ${{ needs.myvars.outputs.GITHUB_ORG }}

@@ -5,6 +5,7 @@
 ARG APP_NAME="ghostfire"
 ARG VERSION="4.32.0"
 ARG RELEASE="4.32.0"
+
 ARG GITHUB_USER="firepress-org"
 
 ARG GIT_PROJECT_NAME="ghostfire"

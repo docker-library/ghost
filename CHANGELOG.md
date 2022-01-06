@@ -9,6 +9,37 @@ Status template:
 
 # Releases
 
+## 4.32.0 (2022-01-06)
+### ⚡️ Updates
+- [a85c4cf](https://github.com/firepress-org/ghostfire/commit/a85c4cf) multi-arch, remove uat4
+- [980b641](https://github.com/firepress-org/ghostfire/commit/980b641) Merge pull request #121 from firepress-org/edge
+- [3b0b208](https://github.com/firepress-org/ghostfire/commit/3b0b208) Merge branch 'master' into edge
+- [fc93d92](https://github.com/firepress-org/ghostfire/commit/fc93d92) Update ghostfire to version 4.32.0 /Dockerfile
+- [7a8bb63](https://github.com/firepress-org/ghostfire/commit/7a8bb63) update to 4.28.0
+- [dec5b4e](https://github.com/firepress-org/ghostfire/commit/dec5b4e) update to 4.28.0
+- [7cb4ca6](https://github.com/firepress-org/ghostfire/commit/7cb4ca6) Update to 4.27.2
+- [d048f94](https://github.com/firepress-org/ghostfire/commit/d048f94) Merge branch 'master' into edge
+- [6ae61bc](https://github.com/firepress-org/ghostfire/commit/6ae61bc) update to 4.27.2
+- [17154a2](https://github.com/firepress-org/ghostfire/commit/17154a2) update CLI to 1.18.1
+- [b3fb18a](https://github.com/firepress-org/ghostfire/commit/b3fb18a) update to 4.27.1
+- [18988cd](https://github.com/firepress-org/ghostfire/commit/18988cd) update to 4.27.0
+- [b4ef174](https://github.com/firepress-org/ghostfire/commit/b4ef174) update to 4.26.1
+- [4ea8384](https://github.com/firepress-org/ghostfire/commit/4ea8384) Update ghostfire to version 4.23.0 /Dockerfile
+- [d6c325d](https://github.com/firepress-org/ghostfire/commit/d6c325d) update to 4.27.1
+- [5fa3f49](https://github.com/firepress-org/ghostfire/commit/5fa3f49) update to 4.27.0
+- [daa64a4](https://github.com/firepress-org/ghostfire/commit/daa64a4) update to 4.26.1
+- [dbb0ad7](https://github.com/firepress-org/ghostfire/commit/dbb0ad7) Build: Bump actions/cache from 2.1.6 to 2.1.7
+- [8666d53](https://github.com/firepress-org/ghostfire/commit/8666d53) Build: Bump aquasecurity/trivy-action from 0.1.0 to 0.2.0
+- [f1ddff3](https://github.com/firepress-org/ghostfire/commit/f1ddff3) Update ghostfire to version 4.23.0 /Dockerfile
+- [da1bcc7](https://github.com/firepress-org/ghostfire/commit/da1bcc7) Update ghostfire to version 4.22.4 /Dockerfile
+- [6a04934](https://github.com/firepress-org/ghostfire/commit/6a04934) Build: Bump actions/checkout from 2.3.5 to 2.4.0
+- [723e8b6](https://github.com/firepress-org/ghostfire/commit/723e8b6) Build: Bump zcong1993/setup-timezone from 1.1.1 to 1.1.2
+- [6ad7eee](https://github.com/firepress-org/ghostfire/commit/6ad7eee) Build: Bump aquasecurity/trivy-action from 0.0.22 to 0.1.0
+- [aabd2c9](https://github.com/firepress-org/ghostfire/commit/aabd2c9) Update ghostfire to version 4.22.3 /Dockerfile
+
+### 🔍 Compare
+- ... with previous release: [4.16.0 <> 4.32.0](https://github.com/firepress-org/ghostfire/compare/4.16.0...4.32.0)
+
 ### ⚡️ Updates
 - [7b42275](https://github.com/firepress-org/ghostfire/commit/7b42275) CI: ensure schduled ci builds work only from branch edge
 - [ffa8cf7](https://github.com/firepress-org/ghostfire/commit/ffa8cf7) changelog update

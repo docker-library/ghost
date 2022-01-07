@@ -259,8 +259,8 @@ jobs:
           file: ./${{ env.DOCKERFILE }}
           platforms: |
             linux/amd64
-            linux/arm64
-            linux/arm/v7
+          # linux/arm64
+          # linux/arm/v7
           # don't push during a pull_request, only build
           push: ${{ github.event_name != 'pull_request' }}
           tags: |

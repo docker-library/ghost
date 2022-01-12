@@ -1,7 +1,7 @@
 # https://docs.ghost.org/faq/node-versions/
 # https://github.com/nodejs/Release (looking for "LTS")
 # https://github.com/TryGhost/Ghost/blob/v4.1.2/package.json#L38
-FROM node:14-buster-slim
+FROM node:14-bullseye-slim
 
 # grab gosu for easy step-down from root
 # https://github.com/tianon/gosu/releases
@@ -77,10 +77,10 @@ RUN set -eux; \
 # must be some non-amd64 architecture pre-built binaries aren't published for, so let's install some build deps and do-it-all-over-again
 		savedAptMark="$(apt-mark showmanual)"; \
 		apt-get update; \
-		apt-get install -y --no-install-recommends g++ gcc libc-dev libvips-dev make python3; \
+		apt-get install -y --no-install-recommends g++ gcc libc-dev libvips-dev make python2; \
 		rm -rf /var/lib/apt/lists/*; \
 		\
-		npm_config_python='python3' gosu node yarn add "sqlite3@$sqlite3Version" --force --build-from-source --ignore-optional; \
+		npm_config_python='python2' gosu node yarn add "sqlite3@$sqlite3Version" --force --build-from-source --ignore-optional; \
 		\
 		apt-mark showmanual | xargs apt-mark auto > /dev/null; \
 		[ -z "$savedAptMark" ] || apt-mark manual $savedAptMark; \

@@ -30,7 +30,7 @@ RUN set -eux; \
 	\
 # Tell Ghost to listen on all ips and not prompt for additional configuration
 	cd "$GHOST_INSTALL"; \
-	su-exec node ghost config --ip 0.0.0.0 --port 2368 --no-prompt --db sqlite3 --url http://localhost:2368 --dbpath "$GHOST_CONTENT/data/ghost.db"; \
+	su-exec node ghost config --ip '::' --port 2368 --no-prompt --db sqlite3 --url http://localhost:2368 --dbpath "$GHOST_CONTENT/data/ghost.db"; \
 	su-exec node ghost config paths.contentPath "$GHOST_CONTENT"; \
 	\
 # make a config.json symlink for NODE_ENV=development (and sanity check that it's correct)

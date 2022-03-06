@@ -73,24 +73,46 @@ RUN set -eux; \
 	cd "$GHOST_INSTALL/current"; \
 # scrape the expected version of sqlite3 directly from Ghost itself
 	sqlite3Version="$(node -p 'require("./package.json").optionalDependencies.sqlite3')"; \
-	if ! gosu node yarn add "sqlite3@$sqlite3Version" --force; then \
+	sharpVersion="$(node -p 'require("./node_modules/@tryghost/image-transform/package.json").optionalDependencies.sharp')"; \
+	gosu node yarn add "sqlite3@$sqlite3Version" --force && sqlite3Installed=Y || sqlite3Installed=N; \
+	gosu node yarn add "sharp@$sharpVersion" --force && sharpInstalled=Y || sharpInstalled=N; \
+	if [ "$sqlite3Installed" = "N" ] || [ "$sharpInstalled" = "N" ]; then \
 # must be some non-amd64 architecture pre-built binaries aren't published for, so let's install some build deps and do-it-all-over-again
 		savedAptMark="$(apt-mark showmanual)"; \
 		apt-get update; \
-		apt-get install -y --no-install-recommends g++ gcc libc-dev libvips-dev make python2; \
+		apt-get install -y --no-install-recommends g++ gcc libc-dev make python2; \
 		rm -rf /var/lib/apt/lists/*; \
 		\
-		npm_config_python='python2' gosu node yarn add "sqlite3@$sqlite3Version" --force --build-from-source --ignore-optional; \
-		\
+		[ "$sqlite3Installed" = "N" ] && npm_config_python='python2' gosu node yarn add "sqlite3@$sqlite3Version" --force --build-from-source --ignore-optional; \
+		[ "$sqlite3Installed" = "N" ] && \
+			# We need a recent copy of "libvips-dev". We're running Debian bullseye.
+			# So we build the bookworm version of "libvips-dev" against the existing bullseye runtime. This gives us best compatibility.
+			( mkdir -p /tmp/libvips-build; \
+			cd /tmp/libvips-build; \
+			# Add a repo source code entry for Debian bookworm.
+			echo "deb-src http://deb.debian.org/debian bookworm main" >> /etc/apt/sources.list; \
+			apt-get update; \
+			# First we build bookworm "libcgif-dev", a prerequisite for "libvips-dev" that's not in Debian bullseye
+			apt-get build-dep -y libcgif-dev; \
+			apt-get -b source libcgif-dev; \
+			dpkg -i libcgif0_*.deb libcgif-dev_*.deb; \
+			# Next we build bookworm "libvips-dev" against the rest of the bullseye packages.
+			apt-get build-dep -y libvips-dev; \
+			apt-get -b source libvips-dev; \
+			dpkg -i libvips42_*.deb gir1.2-vips-8.0_*.deb libvips-dev_*.deb; \
+			# We've finally got "libvips-dev" installed, now we can build sharp.
+			cd "$GHOST_INSTALL/current"; \
+			npm_config_python='python2' npm_config_build_from_source=true gosu node yarn add "sharp@$sharpVersion"; ) || echo "sharp@$sharpVersion: build failed, continuing..."; \
 		apt-mark showmanual | xargs apt-mark auto > /dev/null; \
 		[ -z "$savedAptMark" ] || apt-mark manual $savedAptMark; \
+		[ "$sharpInstalled" = "N" ] && apt-mark manual libvips42; \
 		apt-get purge -y --auto-remove; \
 	fi; \
 	\
 	gosu node yarn cache clean; \
 	gosu node npm cache clean --force; \
 	npm cache clean --force; \
-	rm -rv /tmp/yarn* /tmp/v8*
+	rm -rv /tmp/yarn* /tmp/v8* /tmp/libvips-build
 
 WORKDIR $GHOST_INSTALL
 VOLUME $GHOST_CONTENT

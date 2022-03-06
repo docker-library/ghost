@@ -1,7 +1,7 @@
 # https://docs.ghost.org/faq/node-versions/
 # https://github.com/nodejs/Release (looking for "LTS")
 # https://github.com/TryGhost/Ghost/blob/v4.1.2/package.json#L38
-FROM node:14-alpine3.14
+FROM node:14-alpine3.15
 
 # grab su-exec for easy step-down from root
 RUN apk add --no-cache 'su-exec>=0.2'
@@ -49,11 +49,16 @@ RUN set -eux; \
 	cd "$GHOST_INSTALL/current"; \
 # scrape the expected version of sqlite3 directly from Ghost itself
 	sqlite3Version="$(node -p 'require("./package.json").optionalDependencies.sqlite3')"; \
-	if ! su-exec node yarn add "sqlite3@$sqlite3Version" --force; then \
+	sharpVersion="$(node -p 'require("./node_modules/@tryghost/image-transform/package.json").optionalDependencies.sharp')"; \
+	su-exec node yarn add "sqlite3@$sqlite3Version" --force && sqlite3Installed=Y || sqlite3Installed=N; \
+	su-exec node yarn add "sharp@$sharpVersion" --force && sharpInstalled=Y || sharpInstalled=N; \
+	if [ "$sqlite3Installed" = "N" ] || [ "$sharpInstalled" = "N" ]; then \
 # must be some non-amd64 architecture pre-built binaries aren't published for, so let's install some build deps and do-it-all-over-again
+		[ "$sharpInstalled" = "N" ] && apk add --no-cache vips; \
 		apk add --no-cache --virtual .build-deps g++ gcc libc-dev make python2 vips-dev; \
 		\
-		npm_config_python='python2' su-exec node yarn add "sqlite3@$sqlite3Version" --force --build-from-source; \
+		[ "$sqlite3Installed" = "N" ] && npm_config_python='python2' su-exec node yarn add "sqlite3@$sqlite3Version" --force --build-from-source --ignore-optional; \
+		[ "$sharpInstalled" = "N" ] && ( npm_config_python='python2' npm_config_build_from_source=true su-exec node yarn add "sharp@$sharpVersion" || echo "sharp@$sharpVersion: build failed, continuing..." ); \
 		\
 		apk del --no-network .build-deps; \
 	fi; \

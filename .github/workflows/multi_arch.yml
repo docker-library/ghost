@@ -24,7 +24,7 @@ jobs:
   myvars:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2.4.0
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
           ref: edge
@@ -102,7 +102,7 @@ jobs:
     needs: [myvars]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2.4.0
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
           ref: edge
@@ -127,7 +127,7 @@ jobs:
     needs: [myvars]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2.4.0
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
           ref: edge
@@ -149,7 +149,7 @@ jobs:
     needs: [myvars]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2.4.0
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
           ref: edge
@@ -171,7 +171,7 @@ jobs:
     needs: [myvars]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2.4.0
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
           ref: edge
@@ -205,7 +205,7 @@ jobs:
     needs: [myvars, uat1_linux-amd64]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2.4.0
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
           ref: edge

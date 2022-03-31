@@ -136,23 +136,6 @@ jobs:
           registry: ghcr.io
           username: ${{ needs.myvars.outputs.GITHUB_ORG }}
           password: ${{ secrets.TOKEN_GPR }}
-
-      - name: Docker meta
-        # Introducing the image 2022-03-31_17h41
-        # We already use fancy tags
-        id: docker_meta
-        uses: docker/metadata-action@v3
-        with:
-          images: ${{ needs.myvars.outputs.DKR_PREFIX }}
-          flavor: |
-            latest=false
-          tags: |
-            type=raw,value=04
-            type=raw,value=latest,enable=${{ endsWith(github.ref, github.event.repository.default_branch) }}
-            type=ref,event=pr
-            type=ref,event=branch
-            type=semver,pattern={{version}}
-
       - name: Build UAT on linux/amd64
         id: docker_build
         uses: docker/build-push-action@v2
@@ -165,8 +148,6 @@ jobs:
           tags: |
             ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}
             ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}
-            ${{ steps.docker_meta.outputs.tags }}
-          labels: ${{ steps.docker_meta.outputs.labels }}
           cache-from: type=gha, scope=${{ github.workflow }}
           cache-to: type=gha, scope=${{ github.workflow }}, mode=max
           # cache issues https://github.com/docker/build-push-action/issues/252
@@ -230,23 +211,6 @@ jobs:
           registry: ghcr.io
           username: ${{ needs.myvars.outputs.GITHUB_ORG }}
           password: ${{ secrets.TOKEN_GPR }}
-
-      - name: Docker meta
-        # Introducing the image 2022-03-31_17h41
-        # We already use fancy tags
-        id: docker_meta
-        uses: docker/metadata-action@v3
-        with:
-          images: ${{ needs.myvars.outputs.DKR_PREFIX }}
-          flavor: |
-            latest=false
-          tags: |
-            type=raw,value=04
-            type=raw,value=latest,enable=${{ endsWith(github.ref, github.event.repository.default_branch) }}
-            type=ref,event=pr
-            type=ref,event=branch
-            type=semver,pattern={{version}}
-
       - name: Build EDGE and push image
         if: github.ref != 'refs/heads/master'
         uses: docker/build-push-action@v2
@@ -265,8 +229,6 @@ jobs:
             ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_BRANCH }}
             ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_ONLY }}
             ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_DATE }}
-            ${{ steps.docker_meta.outputs.tags }}
-          labels: ${{ steps.docker_meta.outputs.labels }}
           # The order for <docker push -tag> matters for our CD down the line
           cache-from: type=gha, scope=${{ github.workflow }}
           cache-to: type=gha, scope=${{ github.workflow }}, mode=max
@@ -294,8 +256,6 @@ jobs:
             ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_BRANCH }}
             ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_ONLY }}
             ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_DATE }}
-            ${{ steps.docker_meta.outputs.tags }}
-          labels: ${{ steps.docker_meta.outputs.labels }}
           cache-from: type=gha, scope=${{ github.workflow }}
           cache-to: type=gha, scope=${{ github.workflow }}, mode=max
 

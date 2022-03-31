@@ -476,42 +476,42 @@ jobs:
       - name: Checkpoint | Show image digest
         run: echo ${{ steps.docker_build_and_push.outputs.digest }}
 
-add_comment_to_pr:
-  needs: [myvars, build]
-  runs-on: ubuntu-latest
-  steps:
-    - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-    - uses: zcong1993/setup-timezone@v1.1.2
-      with:
-        timezone: America/Montreal
+  add_comment_to_pr:
+    needs: [myvars, build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: zcong1993/setup-timezone@v1.1.2
+        with:
+          timezone: America/Montreal
 
-    - name: Find comment for image tags
-      # If PR, put image tags in the PR comments
-      # from https://github.com/marketplace/actions/create-or-update-comment
-      uses: peter-evans/find-comment@v1
-      if: github.event_name == 'pull_request'
-      id: fc
-      with:
-        issue-number: ${{ github.event.pull_request.number }}
-        comment-author: "github-actions[bot]"
-        body-includes: Docker image tag(s) pushed
+      - name: Find comment for image tags
+        # If PR, put image tags in the PR comments
+        # from https://github.com/marketplace/actions/create-or-update-comment
+        uses: peter-evans/find-comment@v1
+        if: github.event_name == 'pull_request'
+        id: fc
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: "github-actions[bot]"
+          body-includes: Docker image tag(s) pushed
 
-      # If PR, put image tags in the PR comments
-    - name: Create or update comment for image tags
-      uses: peter-evans/create-or-update-comment@v1
-      if: github.event_name == 'pull_request'
-      with:
-        comment-id: ${{ steps.fc.outputs.comment-id }}
-        issue-number: ${{ github.event.pull_request.number }}
-        body: |
-          Docker image tag(s) pushed:
-          ```text
-          ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}
-          ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}
-          ```
-        edit-mode: replace
+        # If PR, put image tags in the PR comments
+      - name: Create or update comment for image tags
+        uses: peter-evans/create-or-update-comment@v1
+        if: github.event_name == 'pull_request'
+        with:
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            Docker image tag(s) pushed:
+            ```text
+            ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}
+            ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}
+            ```
+          edit-mode: replace
 
   # ----------------------------------------------
   # continuous_deployment after build

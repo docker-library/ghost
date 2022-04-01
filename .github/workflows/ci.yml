@@ -587,7 +587,7 @@ jobs:
   # Actions after continuous_deployment
   # ----------------------------------------------
   review_lighthouse:
-    needs: [myvars, continuous_deployment]
+    needs: [myvars, build, continuous_deployment]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -608,7 +608,7 @@ jobs:
           temporaryPublicStorage: true # upload lighthouse report to the temporary storage
 
   review_artillery:
-    needs: [myvars, continuous_deployment]
+    needs: [myvars, build, continuous_deployment]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -626,7 +626,7 @@ jobs:
           #            https://trial.firepress.link/edge
 
   notify_slack:
-    needs: [myvars, continuous_deployment]
+    needs: [myvars, build, continuous_deployment]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

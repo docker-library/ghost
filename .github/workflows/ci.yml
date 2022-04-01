@@ -333,6 +333,7 @@ jobs:
 
   review_snyk:
     needs: [myvars, build]
+
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -360,6 +361,40 @@ jobs:
         with:
           sarif_file: snyk.sarif
 
+  review_trivy:
+    needs: [myvars, build]
+
+    #permissions:
+    #  contents: read # for actions/checkout to fetch code
+    #  security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: zcong1993/setup-timezone@v1.1.2
+        with:
+          timezone: America/Montreal
+
+      - name: Checkpoint | scanner Trivy for HIGH,CRITICAL CVEs and report (blocking)
+        continue-on-error: true
+        uses: aquasecurity/trivy-action@0.2.2
+        with:
+          image-ref: ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}
+          exit-code: 0
+          format: table
+          ignore-unfixed: true
+          vuln-type: "os,library"
+          severity: "HIGH,CRITICAL"
+          #output: "trivy-results.sarif"
+
+      #- name: Upload Trivy scan results to GitHub Security tab
+      #  uses: github/codeql-action/upload-sarif@v1
+      #  if: always()
+      #  with:
+      #    sarif_file: "trivy-results.sarif"
+
   review_dockle:
     needs: [myvars, build]
     runs-on: ubuntu-latest
@@ -374,31 +409,9 @@ jobs:
         run: |
           docker run --rm goodwithtech/dockle:latest ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}
 
-  review_trivy:
-    needs: [myvars, build]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - uses: zcong1993/setup-timezone@v1.1.2
-        with:
-          timezone: America/Montreal
-      - name: Checkpoint | scanner by Trivy
-        continue-on-error: true
-        uses: aquasecurity/trivy-action@0.2.2
-        with:
-          image-ref: ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}
-          exit-code: "0"
-          ignore-unfixed: true
-          vuln-type: "os,library"
-          severity: "CRITICAL,HIGH"
-          format: "table"
-
   # review_superlinter_call:
   #   needs: [myvars, build]
   #   uses: firepress-org/reusable_workflows/.github/workflows/super-linter.yaml@master
-
   review_linter:
     needs: [myvars, build]
     runs-on: ubuntu-latest
@@ -478,6 +491,10 @@ jobs:
 
   add_comment_to_pr:
     needs: [myvars, build]
+
+    permissions:
+      pull-requests: write # needed to create and update comments in PRs
+
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

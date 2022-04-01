@@ -64,12 +64,21 @@ jobs:
           echo "ghcr.io/$(cat ~/varz/GITHUB_ORG)/$(cat ~/varz/GITHUB_REGISTRY)/$(cat ~/varz/APP_NAME)" > ~/varz/GPR_PREFIX
           cat ${{ env.DOCKERFILE }} | grep VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g' > ~/varz/VERSION
           git rev-parse --short HEAD > ~/varz/SHORT_HASH_COMMIT
-          date "+%Y-%m-%d_%HH%MM%S" > ~/varz/DATE
+          date "+%Y-%m-%d_%HH%M" > ~/varz/DATE
           echo "$(cat ~/varz/BRANCH_NAME)_$(cat ~/varz/VERSION)_ci_$(cat ~/varz/SHORT_HASH_COMMIT)" > ~/varz/VERSION_CI
           echo "$(cat ~/varz/BRANCH_NAME)_$(cat ~/varz/VERSION)" > ~/varz/VERSION_BRANCH
           echo "$(cat ~/varz/BRANCH_NAME)_$(cat ~/varz/VERSION)_$(cat ~/varz/SHORT_HASH_COMMIT)" > ~/varz/VERSION_HASH_ONLY
           echo "$(cat ~/varz/BRANCH_NAME)_$(cat ~/varz/VERSION)_$(cat ~/varz/SHORT_HASH_COMMIT)_$(cat ~/varz/DATE)" > ~/varz/VERSION_HASH_DATE
           echo "$(cat ~/varz/APP_NAME):$(cat ~/varz/BRANCH_NAME)_$(cat ~/varz/VERSION)_$(cat ~/varz/SHORT_HASH_COMMIT)" > ~/varz/_NOTI_MESSAGE
+          echo "$(cat ~/varz/DKR_PREFIX):$(cat ~/varz/BRANCH_NAME)" > ~/varz/TAG_DKR_BRANCH_NAME
+          echo "$(cat ~/varz/DKR_PREFIX):$(cat ~/varz/VERSION_BRANCH)" > ~/varz/TAG_DKR_VERSION_BRANCH
+          echo "$(cat ~/varz/DKR_PREFIX):$(cat ~/varz/VERSION_HASH_ONLY)" > ~/varz/TAG_DKR_VERSION_HASH_ONLY
+          echo "$(cat ~/varz/DKR_PREFIX):$(cat ~/varz/VERSION_HASH_DATE)" > ~/varz/TAG_DKR_VERSION_HASH_DATE
+          echo "$(cat ~/varz/GPR_PREFIX):$(cat ~/varz/BRANCH_NAME)" > ~/varz/TAG_GPR_BRANCH_NAME
+          echo "$(cat ~/varz/GPR_PREFIX):$(cat ~/varz/VERSION_BRANCH)" > ~/varz/TAG_GPR_VERSION_BRANCH
+          echo "$(cat ~/varz/GPR_PREFIX):$(cat ~/varz/VERSION_HASH_ONLY)" > ~/varz/TAG_GPR_VERSION_HASH_ONLY
+          echo "$(cat ~/varz/GPR_PREFIX):$(cat ~/varz/VERSION_HASH_DATE)" > ~/varz/TAG_GPR_VERSION_HASH_DATE
+
       - name: Upload variables as artifact
         uses: actions/upload-artifact@master
         with:
@@ -93,6 +102,14 @@ jobs:
           echo "::set-output name=VERSION_HASH_ONLY::$(cat ~/varz/VERSION_HASH_ONLY)"
           echo "::set-output name=VERSION_HASH_DATE::$(cat ~/varz/VERSION_HASH_DATE)"
           echo "::set-output name=_NOTI_MESSAGE::$(cat ~/varz/_NOTI_MESSAGE)"
+          echo "::set-output name=TAG_DKR_BRANCH_NAME::$(cat ~/varz/TAG_DKR_BRANCH_NAME)"
+          echo "::set-output name=TAG_DKR_VERSION_BRANCH::$(cat ~/varz/TAG_DKR_VERSION_BRANCH)"
+          echo "::set-output name=TAG_DKR_VERSION_HASH_ONLY::$(cat ~/varz/TAG_DKR_VERSION_HASH_ONLY)"
+          echo "::set-output name=TAG_DKR_VERSION_HASH_DATE::$(cat ~/varz/TAG_DKR_VERSION_HASH_DATE)"
+          echo "::set-output name=TAG_GPR_BRANCH_NAME::$(cat ~/varz/TAG_GPR_BRANCH_NAME)"
+          echo "::set-output name=TAG_GPR_VERSION_BRANCH::$(cat ~/varz/TAG_GPR_VERSION_BRANCH)"
+          echo "::set-output name=TAG_GPR_VERSION_HASH_ONLY::$(cat ~/varz/TAG_GPR_VERSION_HASH_ONLY)"
+          echo "::set-output name=TAG_GPR_VERSION_HASH_DATE::$(cat ~/varz/TAG_GPR_VERSION_HASH_DATE)"
     outputs:
       BRANCH_NAME: ${{ steps.myvars.outputs.BRANCH_NAME }}
       APP_NAME: ${{ steps.myvars.outputs.APP_NAME }}
@@ -109,6 +126,14 @@ jobs:
       VERSION_HASH_ONLY: ${{ steps.myvars.outputs.VERSION_HASH_ONLY }}
       VERSION_HASH_DATE: ${{ steps.myvars.outputs.VERSION_HASH_DATE }}
       _NOTI_MESSAGE: ${{ steps.myvars.outputs._NOTI_MESSAGE }}
+      TAG_DKR_BRANCH_NAME: ${{ steps.myvars.outputs.TAG_DKR_BRANCH_NAME }}
+      TAG_DKR_VERSION_BRANCH: ${{ steps.myvars.outputs.TAG_DKR_VERSION_BRANCH }}
+      TAG_DKR_VERSION_HASH_ONLY: ${{ steps.myvars.outputs.TAG_DKR_VERSION_HASH_ONLY }}
+      TAG_DKR_VERSION_HASH_DATE: ${{ steps.myvars.outputs.TAG_DKR_VERSION_HASH_DATE }}
+      TAG_GPR_BRANCH_NAME: ${{ steps.myvars.outputs.TAG_GPR_BRANCH_NAME }}
+      TAG_GPR_VERSION_BRANCH: ${{ steps.myvars.outputs.TAG_GPR_VERSION_BRANCH }}
+      TAG_GPR_VERSION_HASH_ONLY: ${{ steps.myvars.outputs.TAG_GPR_VERSION_HASH_ONLY }}
+      TAG_GPR_VERSION_HASH_DATE: ${{ steps.myvars.outputs.TAG_GPR_VERSION_HASH_DATE }}
 
   # ----------------------------------------------
   # UAT
@@ -211,6 +236,7 @@ jobs:
           registry: ghcr.io
           username: ${{ needs.myvars.outputs.GITHUB_ORG }}
           password: ${{ secrets.TOKEN_GPR }}
+
       - name: Build EDGE and push image
         if: github.ref != 'refs/heads/master'
         uses: docker/build-push-action@v2
@@ -221,18 +247,20 @@ jobs:
             linux/amd64
           push: true
           tags: |
-            ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.BRANCH_NAME }}
-            ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_BRANCH }}
-            ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_ONLY }}
-            ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_DATE }}
-            ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.BRANCH_NAME }}
-            ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_BRANCH }}
-            ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_ONLY }}
-            ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_DATE }}
+            ${{ needs.myvars.outputs.TAG_DKR_BRANCH_NAME }}
+            ${{ needs.myvars.outputs.TAG_DKR_VERSION_BRANCH }}
+            ${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_ONLY }}
+            ${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_DATE }}
+            ${{ needs.myvars.outputs.TAG_GPR_BRANCH_NAME }}
+            ${{ needs.myvars.outputs.TAG_GPR_VERSION_BRANCH }}
+            ${{ needs.myvars.outputs.TAG_GPR_VERSION_HASH_ONLY }}
+            ${{ needs.myvars.outputs.TAG_GPR_VERSION_HASH_DATE }}
           # The order for <docker push -tag> matters for our CD down the line
           cache-from: type=gha, scope=${{ github.workflow }}
           cache-to: type=gha, scope=${{ github.workflow }}, mode=max
+
       - name: Build MASTER and push image
+        # Master branch should build multi-platform
         if: github.ref == 'refs/heads/master'
         uses: docker/build-push-action@v2
         with:
@@ -248,14 +276,14 @@ jobs:
           # Don't push on a pull_request
           push: ${{ github.event_name != 'pull_request' }}
           tags: |
-            ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.BRANCH_NAME }}
-            ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_BRANCH }}
-            ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_ONLY }}
-            ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_DATE }}
-            ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.BRANCH_NAME }}
-            ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_BRANCH }}
-            ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_ONLY }}
-            ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_DATE }}
+            ${{ needs.myvars.outputs.TAG_DKR_BRANCH_NAME }}
+            ${{ needs.myvars.outputs.TAG_DKR_VERSION_BRANCH }}
+            ${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_ONLY }}
+            ${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_DATE }}
+            ${{ needs.myvars.outputs.TAG_GPR_BRANCH_NAME }}
+            ${{ needs.myvars.outputs.TAG_GPR_VERSION_BRANCH }}
+            ${{ needs.myvars.outputs.TAG_GPR_VERSION_HASH_ONLY }}
+            ${{ needs.myvars.outputs.TAG_GPR_VERSION_HASH_DATE }}
           cache-from: type=gha, scope=${{ github.workflow }}
           cache-to: type=gha, scope=${{ github.workflow }}, mode=max
 
@@ -276,14 +304,14 @@ jobs:
         run: |
           echo "Final Docker image name:"
           echo "= = = = = = = = = ="
-          echo ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.BRANCH_NAME }}
-          echo ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_BRANCH }}
-          echo ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_ONLY }}
-          echo ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_DATE }}
-          echo ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.BRANCH_NAME }}
-          echo ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_BRANCH }}
-          echo ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_ONLY }}
-          echo ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_HASH_DATE }}
+          echo ${{ needs.myvars.outputs.TAG_DKR_BRANCH_NAME }}
+          echo ${{ needs.myvars.outputs.TAG_DKR_VERSION_BRANCH }}
+          echo ${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_ONLY }}
+          echo ${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_DATE }}
+          echo ${{ needs.myvars.outputs.TAG_GPR_BRANCH_NAME }}
+          echo ${{ needs.myvars.outputs.TAG_GPR_VERSION_BRANCH }}
+          echo ${{ needs.myvars.outputs.TAG_GPR_VERSION_HASH_ONLY }}
+          echo ${{ needs.myvars.outputs.TAG_GPR_VERSION_HASH_DATE }}
           echo
           echo "Core environment variables:"
           echo "= = = = = = = = = ="

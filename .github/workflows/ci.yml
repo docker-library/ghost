@@ -263,7 +263,7 @@ jobs:
   # Tests after build
   # ----------------------------------------------
   review_myvars:
-    needs: [myvars, build]
+    needs: [myvars, uat, build]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -332,7 +332,7 @@ jobs:
   # $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID
 
   review_snyk:
-    needs: [myvars, build]
+    needs: [myvars, uat, build]
 
     runs-on: ubuntu-latest
     steps:
@@ -362,7 +362,7 @@ jobs:
           sarif_file: snyk.sarif
 
   review_trivy:
-    needs: [myvars, build]
+    needs: [myvars, uat, build]
 
     #permissions:
     #  contents: read # for actions/checkout to fetch code
@@ -396,7 +396,7 @@ jobs:
       #    sarif_file: "trivy-results.sarif"
 
   review_dockle:
-    needs: [myvars, build]
+    needs: [myvars, uat, build]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -413,7 +413,7 @@ jobs:
   #   needs: [myvars, build]
   #   uses: firepress-org/reusable_workflows/.github/workflows/super-linter.yaml@master
   review_linter:
-    needs: [myvars, build]
+    needs: [myvars, uat, build]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -437,7 +437,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   review_arch:
-    needs: [myvars, build]
+    needs: [myvars, uat, build]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -451,7 +451,7 @@ jobs:
           docker run --rm mplatform/mquery ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}
 
   review_inspect:
-    needs: [myvars, build]
+    needs: [myvars, uat, build]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -490,7 +490,7 @@ jobs:
         run: echo ${{ steps.docker_build_and_push.outputs.digest }}
 
   add_comment_to_pr:
-    needs: [myvars, build]
+    needs: [myvars, uat, build]
 
     permissions:
       pull-requests: write # needed to create and update comments in PRs
@@ -534,7 +534,7 @@ jobs:
   # continuous_deployment after build
   # ----------------------------------------------
   continuous_deployment:
-    needs: [myvars, build]
+    needs: [myvars, uat, build]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -587,7 +587,7 @@ jobs:
   # Actions after continuous_deployment
   # ----------------------------------------------
   review_lighthouse:
-    needs: [myvars, build, continuous_deployment]
+    needs: [myvars, uat, build, continuous_deployment]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -626,7 +626,7 @@ jobs:
           #            https://trial.firepress.link/edge
 
   notify_slack:
-    needs: [myvars, build, continuous_deployment]
+    needs: [myvars, uat, build, continuous_deployment]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

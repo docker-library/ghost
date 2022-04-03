@@ -165,21 +165,16 @@ jobs:
         id: docker_build
         uses: docker/build-push-action@v2
         with:
-          context: .
-          file: ./${{ env.DOCKERFILE }}
-          platforms: linux/amd64
-          push: true
-          # VERSION_BRANCH => even on PR we push branch as "edge"
-          tags: |
-            ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}
-            ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}
+          push: false
+          load: true # Export to Docker Engine rather than pushing to a registry
+          tags: ${{ github.run_id }}
           cache-from: type=gha, scope=${{ github.workflow }}
           cache-to: type=gha, scope=${{ github.workflow }}, mode=max
-          # cache issues https://github.com/docker/build-push-action/issues/252
+          platforms: linux/amd64
       - name: Checkpoint | Wait for container to run
         timeout-minutes: 2
         run: |
-          docker run -d --name ghostUAT -p 2368:2368 -e WEB_URL=http://localhost:2368 -e NODE_ENV=production ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}
+          docker run -d --name ghostUAT -p 2368:2368 -e WEB_URL=http://localhost:2368 -e NODE_ENV=production ${{ github.run_id }}
           echo "--- Wait for ghostUAT --->"
           until $(curl --output /dev/null --silent --head --fail http://localhost:2368); do
             echo "--- ghostUAT is starting..."
@@ -193,13 +188,13 @@ jobs:
           curl http://localhost:2368 | grep "Thoughts, stories and ideas"
           git clone --depth 1 https://github.com/docker-library/official-images.git official-images
           cp ./test/config.sh official-images/test/config.sh
-          official-images/test/run.sh ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}
+          official-images/test/run.sh ${{ github.run_id }}
       - name: Checkpoint | docker inspect
         run: |
-          docker inspect ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }} && echo && echo
+          docker inspect ${{ github.run_id }} && echo && echo
       - name: Checkpoint | docker history
         run: |
-          docker history ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }} --no-trunc && echo && echo
+          docker history ${{ github.run_id }} --no-trunc && echo && echo
       - name: Checkpoint | docker info
         run: |
           docker info && echo && echo
@@ -237,6 +232,7 @@ jobs:
           username: ${{ needs.myvars.outputs.GITHUB_ORG }}
           password: ${{ secrets.TOKEN_GPR }}
 
+      # The difference between EDGE and MASTER: Master branch should build multi-platform while MASTER is limited to linux/amd64
       - name: Build EDGE and push image
         if: github.ref != 'refs/heads/master'
         uses: docker/build-push-action@v2
@@ -260,7 +256,6 @@ jobs:
           cache-to: type=gha, scope=${{ github.workflow }}, mode=max
 
       - name: Build MASTER and push image
-        # Master branch should build multi-platform
         if: github.ref == 'refs/heads/master'
         uses: docker/build-push-action@v2
         with:
@@ -268,12 +263,9 @@ jobs:
           file: ./${{ env.DOCKERFILE }}
           platforms: |
             linux/amd64
-          # linux/arm64
+            linux/arm64
           # linux/arm/v8
           # linux/arm/v7
-          # It depends on multi_arch.yml
-          #
-          # Don't push on a pull_request
           push: ${{ github.event_name != 'pull_request' }}
           tags: |
             ${{ needs.myvars.outputs.TAG_DKR_BRANCH_NAME }}
@@ -291,7 +283,7 @@ jobs:
   # Tests after build
   # ----------------------------------------------
   review_myvars:
-    needs: [myvars, uat, build]
+    needs: [myvars]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -359,7 +351,7 @@ jobs:
   # if: ${{ github.ref == 'refs/heads/main' }}
   # $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID
 
-  review_snyk:
+  review_snyk_opt:
     needs: [myvars, uat, build]
 
     runs-on: ubuntu-latest
@@ -382,14 +374,14 @@ jobs:
           # or you can signup for free at https://snyk.io/login
           SNYK_TOKEN: ${{ secrets.TOKEN_SNYK }}
         with:
-          image: ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}
+          image: ${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_DATE }}
           args: --file=${{ env.DOCKERFILE }} --severity-threshold=high
       - name: Checkpoint | Upload result to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v1
         with:
           sarif_file: snyk.sarif
 
-  review_trivy:
+  review_trivy_opt:
     needs: [myvars, uat, build]
 
     #permissions:
@@ -409,7 +401,7 @@ jobs:
         continue-on-error: true
         uses: aquasecurity/trivy-action@0.2.2
         with:
-          image-ref: ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}
+          image-ref: ${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_DATE }}
           exit-code: 0
           format: table
           ignore-unfixed: true
@@ -435,13 +427,13 @@ jobs:
           timezone: America/Montreal
       - name: Checkpoint | scanner by Dockle
         run: |
-          docker run --rm goodwithtech/dockle:latest ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}
+          docker run --rm goodwithtech/dockle:latest ${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_DATE }}
 
   # review_superlinter_call:
   #   needs: [myvars, build]
   #   uses: firepress-org/reusable_workflows/.github/workflows/super-linter.yaml@master
-  review_linter:
-    needs: [myvars, uat, build]
+  review_linter_opt:
+    needs: [myvars]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -476,7 +468,7 @@ jobs:
           timezone: America/Montreal
       - name: Checkpoint | platform(s)
         run: |
-          docker run --rm mplatform/mquery ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}
+          docker run --rm mplatform/mquery ${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_DATE }}
 
   review_inspect:
     needs: [myvars, uat, build]
@@ -499,64 +491,18 @@ jobs:
           registry: ghcr.io
           username: ${{ needs.myvars.outputs.GITHUB_ORG }}
           password: ${{ secrets.TOKEN_GPR }}
-      - name: Checkpoint | pull image
-        run: |
-          docker pull ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}
-          docker pull ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}
       - name: Checkpoint | manifest
         run: |
-          docker buildx imagetools inspect ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}
-          docker buildx imagetools inspect ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}
+          docker buildx imagetools inspect ${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_DATE }}
       - name: Checkpoint | inspect image
         run: |
-          docker image inspect ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}
-          docker image inspect ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}
+          echo "bypass see https://github.com/firepress-org/ghostfire/issues/178"
+        #docker inspect ${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_DATE }}
       - name: Checkpoint | docker images --digests
         run: |
           docker images --digests
       - name: Checkpoint | Show image digest
         run: echo ${{ steps.docker_build_and_push.outputs.digest }}
-
-  add_comment_to_pr:
-    needs: [myvars, uat, build]
-
-    permissions:
-      pull-requests: write # needed to create and update comments in PRs
-
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - uses: zcong1993/setup-timezone@v1.1.2
-        with:
-          timezone: America/Montreal
-
-      - name: Find comment for image tags
-        # If PR, put image tags in the PR comments
-        # from https://github.com/marketplace/actions/create-or-update-comment
-        uses: peter-evans/find-comment@v1
-        if: github.event_name == 'pull_request'
-        id: fc
-        with:
-          issue-number: ${{ github.event.pull_request.number }}
-          comment-author: "github-actions[bot]"
-          body-includes: Docker image tag(s) pushed
-
-        # If PR, put image tags in the PR comments
-      - name: Create or update comment for image tags
-        uses: peter-evans/create-or-update-comment@v1
-        if: github.event_name == 'pull_request'
-        with:
-          comment-id: ${{ steps.fc.outputs.comment-id }}
-          issue-number: ${{ github.event.pull_request.number }}
-          body: |
-            Docker image tag(s) pushed:
-            ```text
-            ${{ needs.myvars.outputs.DKR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}
-            ${{ needs.myvars.outputs.GPR_PREFIX }}:${{ needs.myvars.outputs.VERSION_CI }}
-            ```
-          edit-mode: replace
 
   # ----------------------------------------------
   # continuous_deployment after build
@@ -614,6 +560,53 @@ jobs:
   # ----------------------------------------------
   # Actions after continuous_deployment
   # ----------------------------------------------
+  review_comment_pr:
+    needs: [myvars, uat, build, continuous_deployment]
+
+    permissions:
+      pull-requests: write # needed to create and update comments in PRs
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: zcong1993/setup-timezone@v1.1.2
+        with:
+          timezone: America/Montreal
+
+      - name: Find comment for image tags
+        # If PR, put image tags in the PR comments
+        # from https://github.com/marketplace/actions/create-or-update-comment
+        uses: peter-evans/find-comment@v1
+        if: github.event_name == 'pull_request'
+        id: fc
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: "github-actions[bot]"
+          body-includes: Docker image tag(s) pushed
+
+        # If PR, put image tags in the PR comments
+      - name: Create or update comment for image tags
+        uses: peter-evans/create-or-update-comment@v1
+        if: github.event_name == 'pull_request'
+        with:
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            Docker image tag(s) pushed:
+            ```text
+            ${{ needs.myvars.outputs.TAG_DKR_BRANCH_NAME }}
+            ${{ needs.myvars.outputs.TAG_DKR_VERSION_BRANCH }}
+            ${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_ONLY }}
+            ${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_DATE }}
+            ${{ needs.myvars.outputs.TAG_GPR_BRANCH_NAME }}
+            ${{ needs.myvars.outputs.TAG_GPR_VERSION_BRANCH }}
+            ${{ needs.myvars.outputs.TAG_GPR_VERSION_HASH_ONLY }}
+            ${{ needs.myvars.outputs.TAG_GPR_VERSION_HASH_DATE }}
+            ```
+          edit-mode: replace
+
   review_lighthouse:
     needs: [myvars, uat, build, continuous_deployment]
     runs-on: ubuntu-latest
@@ -636,7 +629,7 @@ jobs:
           temporaryPublicStorage: true # upload lighthouse report to the temporary storage
 
   review_artillery:
-    needs: [myvars, build, continuous_deployment]
+    needs: [myvars, uat, build, continuous_deployment]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -653,7 +646,7 @@ jobs:
           filepath: ./.github/load-test.yml
           #            https://trial.firepress.link/edge
 
-  notify_slack:
+  review_slack:
     needs: [myvars, uat, build, continuous_deployment]
     runs-on: ubuntu-latest
     steps:

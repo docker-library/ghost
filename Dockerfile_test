@@ -1,0 +1,32 @@
+###################################
+# REQUIRED for bashLaVa https://github.com/firepress-org/bashlava
+# REQUIRED for Github Action CI template https://github.com/firepress-org/ghostfire/tree/master/.github/workflows
+###################################
+ARG APP_NAME="buildtest"
+ARG VERSION="1.0.0"
+ARG RELEASE="1.0.0"
+ARG GITHUB_USER="firepress-org"
+
+###################################
+# REQUIRED BY OUR GITHUB ACTION CI
+###################################
+ARG GIT_PROJECT_NAME="ghostfire"
+ARG DOCKERHUB_USER="devmtl"
+ARG GITHUB_ORG="firepress-org"
+ARG GITHUB_REGISTRY="registry"
+ARG GIT_REPO_DOCKERFILE="https://github.com/firepress-org/ghostfire"
+ARG GIT_REPO_SOURCE="https://github.com/TryGhost/Ghost"
+
+# ----------------------------------------------
+# 1) Start your Dockerfile from here 
+#   https://docs.ghost.org/faq/node-versions/
+#   https://github.com/nodejs/Release (looking for "LTS")
+#   https://github.com/TryGhost/Ghost/blob/v4.1.2/package.json#L38 
+# ----------------------------------------------
+ARG BASE_OS="alpine"
+
+FROM alpine:${ALPINE_VERSION} AS myalpine
+
+FROM myalpine AS test
+RUN apk add --no-cache curl
+

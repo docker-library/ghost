@@ -44,7 +44,7 @@ RUN set -eux; \
 ENV GHOST_INSTALL /var/lib/ghost
 ENV GHOST_CONTENT /var/lib/ghost/content
 
-ENV GHOST_VERSION 4.43.1
+ENV GHOST_VERSION 4.44.0
 
 RUN set -eux; \
 	mkdir -p "$GHOST_INSTALL"; \
@@ -82,7 +82,7 @@ RUN set -eux; \
 		apt-get install -y --no-install-recommends g++ gcc libc-dev libvips-dev make python2; \
 		rm -rf /var/lib/apt/lists/*; \
 		\
-		npm_config_python='python2' gosu node yarn add "@vscode/sqlite3@$sqlite3Version" --force --build-from-source --ignore-optional; \
+		npm_config_python='python2' gosu node yarn add "@vscode/sqlite3@$sqlite3Version" --force --build-from-source; \
 		\
 		apt-mark showmanual | xargs apt-mark auto > /dev/null; \
 		[ -z "$savedAptMark" ] || apt-mark manual $savedAptMark; \

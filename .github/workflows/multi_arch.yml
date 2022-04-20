@@ -5,6 +5,10 @@
 name: multi_arch
 
 on:
+  push:
+    branches:
+      - "master"
+      - "main"
   schedule:
     - cron: "0 7 * * *"
   workflow_dispatch:

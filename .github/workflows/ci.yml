@@ -340,6 +340,24 @@ jobs:
   # if: ${{ github.ref == 'refs/heads/main' }}
   # $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID
 
+  review_azure_container_scan:
+    needs: [myvars, uat, build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: zcong1993/setup-timezone@v1.1.2
+        with:
+          timezone: America/Montreal
+      - name: Checkpoint | Azure Container Scan
+        continue-on-error: true
+        uses: azure/container-scan@v0
+        with:
+          image-name: ${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_DATE }}
+          exit-code: 0
+          format: table
+
   review_snyk_opt:
     needs: [myvars, uat, build]
     runs-on: ubuntu-latest
@@ -465,16 +483,18 @@ jobs:
           registry: ghcr.io
           username: ${{ needs.myvars.outputs.GITHUB_ORG }}
           password: ${{ secrets.TOKEN_GPR }}
+      - name: Checkpoint | docker pull
+        run: |
+          docker pull ${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_DATE }}
       - name: Checkpoint | See platforms
         run: |
           docker run --rm mplatform/mquery ${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_DATE }}
       - name: Checkpoint | docker history
         run: |
-          docker pull ${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_DATE }}
           docker history --human ${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_DATE }}
-      - name: Checkpoint | docker inspect
+      - name: Checkpoint | docker image inspect
         run: |
-          docker inspect ${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_DATE }}
+          docker image inspect ${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_DATE }}
       - name: Checkpoint | docker info
         run: |
           docker info

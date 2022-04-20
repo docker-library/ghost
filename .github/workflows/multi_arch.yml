@@ -171,48 +171,7 @@ jobs:
           cp ./test/config.sh official-images/test/config.sh
           official-images/test/run.sh ${{ github.run_id }}
 
-  uat2_linux-arm64:
-    needs: [myvars]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          ref: master
-      - uses: zcong1993/setup-timezone@v1.1.2
-        with:
-          timezone: America/Montreal
-      - uses: docker/setup-qemu-action@v1
-      - uses: docker/setup-buildx-action@v1
-
-      - name: Build linux/arm64
-        id: docker_build
-        uses: docker/build-push-action@v2
-        with:
-          push: false
-          load: true # Export to Docker Engine rather than pushing to a registry
-          tags: ${{ github.run_id }}
-          platforms: linux/arm64
-
-      - name: Checkpoint | Wait for container to run
-        timeout-minutes: 2
-        run: |
-          docker run -d --name ghostUAT -p 2368:2368 -e WEB_URL=http://localhost:2368 -e NODE_ENV=production ${{ github.run_id }}
-          echo "--- Wait for ghostUAT --->"
-          until $(curl --output /dev/null --silent --head --fail http://localhost:2368); do
-            echo "--- ghostUAT is starting..."
-            sleep 1
-          done;
-          echo "--- ghostUAT is running! --->"
-
-      - name: Checkpoint | docker-library tests
-        run: |
-          curl http://localhost:2368 | grep "Thoughts, stories and ideas"
-          git clone --depth 1 https://github.com/docker-library/official-images.git official-images
-          cp ./test/config.sh official-images/test/config.sh
-          official-images/test/run.sh ${{ github.run_id }}
-
-  uat3_linux-arm-v8:
+  uat2_linux-arm64-v8:
     needs: [myvars]
     runs-on: ubuntu-latest
     steps:
@@ -253,7 +212,7 @@ jobs:
           cp ./test/config.sh official-images/test/config.sh
           official-images/test/run.sh ${{ github.run_id }}
 
-  uat4_linux-arm-v7:
+  uat3_linux-arm-v7:
     needs: [myvars]
     runs-on: ubuntu-latest
     steps:
@@ -294,7 +253,7 @@ jobs:
           cp ./test/config.sh official-images/test/config.sh
           official-images/test/run.sh ${{ github.run_id }}
 
-  uat5_linux-arm-v6:
+  uat4_linux-arm-v6:
     needs: [myvars]
     runs-on: ubuntu-latest
     steps:

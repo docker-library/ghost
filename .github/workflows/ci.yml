@@ -340,24 +340,6 @@ jobs:
   # if: ${{ github.ref == 'refs/heads/main' }}
   # $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID
 
-  review_azure_container_scan:
-    needs: [myvars, uat, build]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - uses: zcong1993/setup-timezone@v1.1.2
-        with:
-          timezone: America/Montreal
-      - name: Checkpoint | Azure Container Scan
-        continue-on-error: true
-        uses: azure/container-scan@v0
-        with:
-          image-name: ${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_DATE }}
-          exit-code: 0
-          format: table
-
   review_snyk_opt:
     needs: [myvars, uat, build]
     runs-on: ubuntu-latest

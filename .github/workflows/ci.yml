@@ -171,6 +171,7 @@ jobs:
           cache-from: type=gha, scope=${{ github.workflow }}
           cache-to: type=gha, scope=${{ github.workflow }}, mode=max
           platforms: linux/amd64
+
       - name: Checkpoint | Wait for container to run
         timeout-minutes: 2
         run: |
@@ -189,21 +190,6 @@ jobs:
           git clone --depth 1 https://github.com/docker-library/official-images.git official-images
           cp ./test/config.sh official-images/test/config.sh
           official-images/test/run.sh ${{ github.run_id }}
-      - name: Checkpoint | docker inspect
-        run: |
-          docker inspect ${{ github.run_id }} && echo && echo
-      - name: Checkpoint | docker history
-        run: |
-          docker history ${{ github.run_id }} --no-trunc && echo && echo
-      - name: Checkpoint | docker info
-        run: |
-          docker info && echo && echo
-      - name: Checkpoint | docker version
-        run: |
-          docker version && echo && echo
-      - name: Checkpoint | uname
-        run: |
-          uname -a && echo && echo
 
   # ----------------------------------------------
   # build | QEMU docs setup-qemu-action https://github.com/firepress-org/ghostfire/issues/44
@@ -263,7 +249,7 @@ jobs:
           file: ./${{ env.DOCKERFILE }}
           platforms: |
             linux/amd64
-            linux/arm64
+            linux/arm64/v8
           # linux/arm/v8
           # linux/arm/v7
           push: ${{ github.event_name != 'pull_request' }}
@@ -278,6 +264,9 @@ jobs:
             ${{ needs.myvars.outputs.TAG_GPR_VERSION_HASH_DATE }}
           cache-from: type=gha, scope=${{ github.workflow }}
           cache-to: type=gha, scope=${{ github.workflow }}, mode=max
+
+      - name: Checkpoint | docker image ls
+        run: docker image ls
 
   # ----------------------------------------------
   # Tests after build
@@ -353,7 +342,6 @@ jobs:
 
   review_snyk_opt:
     needs: [myvars, uat, build]
-
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -362,7 +350,7 @@ jobs:
       - uses: zcong1993/setup-timezone@v1.1.2
         with:
           timezone: America/Montreal
-      - name: Checkpoint | scanner by Snyk
+      - name: Checkpoint | Scanner by Snyk
         # https://github.com/snyk/actions/tree/master/docker
         uses: snyk/actions/docker@0.3.0
         # Snyk can be used to break the build when it detects vulnerabilities.
@@ -397,7 +385,7 @@ jobs:
         with:
           timezone: America/Montreal
 
-      - name: Checkpoint | scanner Trivy for HIGH,CRITICAL CVEs and report (blocking)
+      - name: Checkpoint | Scanner Trivy for HIGH,CRITICAL CVEs and report (blocking)
         continue-on-error: true
         uses: aquasecurity/trivy-action@0.2.4
         with:
@@ -425,7 +413,7 @@ jobs:
       - uses: zcong1993/setup-timezone@v1.1.2
         with:
           timezone: America/Montreal
-      - name: Checkpoint | scanner by Dockle
+      - name: Checkpoint | Scanner by Dockle
         run: |
           docker run --rm goodwithtech/dockle:latest ${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_DATE }}
 
@@ -456,20 +444,6 @@ jobs:
           DEFAULT_BRANCH: edge
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  review_arch:
-    needs: [myvars, uat, build]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - uses: zcong1993/setup-timezone@v1.1.2
-        with:
-          timezone: America/Montreal
-      - name: Checkpoint | platform(s)
-        run: |
-          docker run --rm mplatform/mquery ${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_DATE }}
-
   review_inspect:
     needs: [myvars, uat, build]
     runs-on: ubuntu-latest
@@ -491,18 +465,25 @@ jobs:
           registry: ghcr.io
           username: ${{ needs.myvars.outputs.GITHUB_ORG }}
           password: ${{ secrets.TOKEN_GPR }}
-      - name: Checkpoint | manifest
+      - name: Checkpoint | See platforms
         run: |
-          docker buildx imagetools inspect ${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_DATE }}
-      - name: Checkpoint | inspect image
+          docker run --rm mplatform/mquery ${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_DATE }}
+      - name: Checkpoint | docker history
         run: |
-          echo "bypass see https://github.com/firepress-org/ghostfire/issues/178"
-        #docker inspect ${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_DATE }}
-      - name: Checkpoint | docker images --digests
+          docker pull ${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_DATE }}
+          docker history --human ${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_DATE }}
+      - name: Checkpoint | docker inspect
         run: |
-          docker images --digests
-      - name: Checkpoint | Show image digest
-        run: echo ${{ steps.docker_build_and_push.outputs.digest }}
+          docker inspect ${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_DATE }}
+      - name: Checkpoint | docker info
+        run: |
+          docker info
+      - name: Checkpoint | docker version
+        run: |
+          docker version
+      - name: Checkpoint | uname
+        run: |
+          uname -a && echo && echo
 
   # ----------------------------------------------
   # continuous_deployment after build

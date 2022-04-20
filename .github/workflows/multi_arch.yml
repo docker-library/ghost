@@ -137,7 +137,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          ref: master
+          #ref: master
       - uses: zcong1993/setup-timezone@v1.1.2
         with:
           timezone: America/Montreal
@@ -178,7 +178,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          ref: master
+          #ref: master
       - uses: zcong1993/setup-timezone@v1.1.2
         with:
           timezone: America/Montreal
@@ -219,7 +219,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          ref: master
+          #ref: master
       - uses: zcong1993/setup-timezone@v1.1.2
         with:
           timezone: America/Montreal
@@ -294,14 +294,14 @@ jobs:
           cp ./test/config.sh official-images/test/config.sh
           official-images/test/run.sh ${{ github.run_id }}
 
-  uat5_linux/arm/v6:
+  uat5_linux-arm-v6:
     needs: [myvars]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          ref: master
+          #ref: master
       - uses: zcong1993/setup-timezone@v1.1.2
         with:
           timezone: America/Montreal

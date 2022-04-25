@@ -1,14 +1,15 @@
-# ALPINE
-
-###################################
-# REQUIRED for bashLaVa https://github.com/firepress-org/bashlava
-# REQUIRED for Github Action CI template https://github.com/firepress-org/ghostfire/tree/master/.github/workflows
-###################################
-
+# ----------------------------------------------
+# At FirePress we run most things in Docker containers.
+# These ARG are required during the Github Actions CI
+# ----------------------------------------------
 ARG APP_NAME="ghostfire"
-ARG VERSION="3.34.0"
-ARG RELEASE="3.34.0"
+ARG VERSION="4.45.0"
+ARG RELEASE="4.45.0"
 ARG GITHUB_USER="firepress-org"
+ARG DEFAULT_BRANCH="master"
+ARG GITHUB_ORG="firepress-org"
+ARG DOCKERHUB_USER="devmtl"
+ARG GITHUB_REGISTRY="registry"
 
 ###################################
 # REQUIRED BY OUR GITHUB ACTION CI

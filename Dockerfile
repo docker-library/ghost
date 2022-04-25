@@ -6,10 +6,9 @@ ARG APP_NAME="ghostfire"
 ARG VERSION="4.44.0"
 ARG RELEASE="4.44.0"
 ARG GITHUB_USER="firepress-org"
-
-ARG GIT_PROJECT_NAME="ghostfire"
-ARG DOCKERHUB_USER="devmtl"
+ARG DEFAULT_BRANCH="master"
 ARG GITHUB_ORG="firepress-org"
+ARG DOCKERHUB_USER="devmtl"
 ARG GITHUB_REGISTRY="registry"
 
 # ----------------------------------------------

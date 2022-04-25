@@ -31,7 +31,7 @@ jobs:
         with:
           timezone: America/Montreal
       - name: Github Actions system status
-        uses: crazy-max/ghaction-github-status@v2.2.0
+        uses: crazy-max/ghaction-github-status@v2.3.0
         with:
           overall_threshold: minor
           git_threshold: degraded_performance

@@ -20,7 +20,7 @@ RUN set -eux; \
 ENV GHOST_INSTALL /var/lib/ghost
 ENV GHOST_CONTENT /var/lib/ghost/content
 
-ENV GHOST_VERSION 4.44.0
+ENV GHOST_VERSION 4.46.0
 
 RUN set -eux; \
 	mkdir -p "$GHOST_INSTALL"; \
@@ -48,14 +48,14 @@ RUN set -eux; \
 # see https://github.com/TryGhost/Ghost/pull/7677 for more details
 	cd "$GHOST_INSTALL/current"; \
 # scrape the expected version of sqlite3 directly from Ghost itself
-	sqlite3Version="$(node -p 'require("./package.json").optionalDependencies["@vscode/sqlite3"]')"; \
+	sqlite3Version="$(node -p 'require("./package.json").optionalDependencies["sqlite3"]')"; \
 	[ -n "$sqlite3Version" ]; \
 	[ "$sqlite3Version" != 'undefined' ]; \
-	if ! su-exec node yarn add "@vscode/sqlite3@$sqlite3Version" --force; then \
+	if ! su-exec node yarn add "sqlite3@$sqlite3Version" --force; then \
 # must be some non-amd64 architecture pre-built binaries aren't published for, so let's install some build deps and do-it-all-over-again
 		apk add --no-cache --virtual .build-deps g++ gcc libc-dev make python2 vips-dev; \
 		\
-		npm_config_python='python2' su-exec node yarn add "@vscode/sqlite3@$sqlite3Version" --force --build-from-source; \
+		npm_config_python='python2' su-exec node yarn add "sqlite3@$sqlite3Version" --force --build-from-source; \
 		\
 		apk del --no-network .build-deps; \
 	fi; \

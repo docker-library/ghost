@@ -128,22 +128,22 @@ RUN set -eux                                                    &&\
 RUN set -eux                                                      &&\
 	cd "$GHOST_INSTALL/current"; \
 # scrape the expected version of sqlite3 directly from Ghost itself
-	sqlite3Version="$(node -p 'require("./package.json").optionalDependencies["@vscode/sqlite3"]')"; \
+	sqlite3Version="$(node -p 'require("./package.json").optionalDependencies["sqlite3"]')"; \
 	[ -n "$sqlite3Version" ]; \
 	[ "$sqlite3Version" != 'undefined' ]; \
-	if ! su-exec node yarn add "@vscode/sqlite3@$sqlite3Version" --force; then \
+	if ! su-exec node yarn add "sqlite3@$sqlite3Version" --force; then \
 # must be some non-amd64 architecture pre-built binaries aren't published for, so let's install some build deps and do-it-all-over-again
 		apk add --no-cache --virtual .build-deps g++ gcc libc-dev make python2 vips-dev; \
 		\
-		npm_config_python='python2' su-exec node yarn add "@vscode/sqlite3@$sqlite3Version" --force --build-from-source; \
+		npm_config_python='python2' su-exec node yarn add "sqlite3@$sqlite3Version" --force --build-from-source; \
 		\
 		apk del --no-network .build-deps; \
 	fi; \
 	\
-  su-exec "${USER}" yarn cache clean                            &&\
-  su-exec "${USER}" npm cache clean --force                     &&\
-  npm cache clean --force                                       &&\
-  rm -rv /tmp/yarn* /tmp/v8*                                    ;
+	su-exec node yarn cache clean; \
+	su-exec node npm cache clean --force; \
+	npm cache clean --force; \
+	rm -rv /tmp/yarn* /tmp/v8*
 
 # ----------------------------------------------
 # 5) LAYER final

@@ -3,8 +3,8 @@
 # These ARG are required during the Github Actions CI
 # ----------------------------------------------
 ARG APP_NAME="ghostfire"
-ARG VERSION="4.44.0"
-ARG RELEASE="4.44.0"
+ARG VERSION="4.46.0"
+ARG RELEASE="4.46.0"
 ARG GITHUB_USER="firepress-org"
 ARG DEFAULT_BRANCH="master"
 ARG GITHUB_ORG="firepress-org"
@@ -111,21 +111,13 @@ RUN set -eux                                                    &&\
   mv "${GHOST_CONTENT}" "${GHOST_INSTALL}/content.orig"         &&\
   mkdir -p "${GHOST_CONTENT}"                                   &&\
   chown -R "${USER}":"${USER}" "${GHOST_CONTENT}"               &&\
-  chmod 1777 "${GHOST_CONTENT}"                                 &&\
-  \
-  # sanity check to ensure knex-migrator was installed
-  "${GHOST_INSTALL}/current/node_modules/knex-migrator/bin/knex-migrator" --version &&\
-  # sanity check to list all packages
-  npm config list                                               ;
+  chmod 1777 "${GHOST_CONTENT}"                                 ;
 
 # force install "sqlite3" manually since it's an optional dependency of "ghost"
 # (which means that if it fails to install, like on ARM/ppc64le/s390x, the failure will be silently ignored and thus turn into a runtime error instead)
 # see https://github.com/TryGhost/Ghost/pull/7677 for more details
-
-# force install "sqlite3" manually since it's an optional dependency of "ghost"
-# (which means that if it fails to install, like on ARM/ppc64le/s390x, the failure will be silently ignored and thus turn into a runtime error instead)
-# see https://github.com/TryGhost/Ghost/pull/7677 for more details
-RUN set -eux                                                      &&\
+RUN set -eux                                                    &&\
+# We have a RUN step here as sqlite cause trouble and it's easier to confirm where the build crash.
 	cd "$GHOST_INSTALL/current"; \
 # scrape the expected version of sqlite3 directly from Ghost itself
 	sqlite3Version="$(node -p 'require("./package.json").optionalDependencies["sqlite3"]')"; \
@@ -148,7 +140,7 @@ RUN set -eux                                                      &&\
 # ----------------------------------------------
 # 5) LAYER final
 #   HEALTHCHECK CMD wget -q -s http://localhost:2368 || exit 1
-#   HEALTHCHECK attributes are passed during runtime <docker service create>
+#   HEALTHCHECK attributes are passed during runtime <docker service create with var depending on the client IDs>
 # ----------------------------------------------
 FROM mynode AS final
 

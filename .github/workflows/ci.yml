@@ -6,13 +6,16 @@ name: ci
 
 on:
   push:
+    # We don't build on master or edge anymore. Only on PR and tags.
     branches:
       - "ci"
     # Sequence of patterns matched against TAGS
     tags:
+      - "[0-9]*"
+      - "ci_*"
     paths-ignore:
       - "CHANGELOG.md"
-    # Sequence of patterns matched against PR
+    # Sequence of patterns matched against every PR
   pull_request:
   schedule:
     - cron: "0 5 * * *"

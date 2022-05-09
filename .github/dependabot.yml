@@ -1,8 +1,4 @@
-version:2
-  # you can add other package ecosystems here for granular control of security updates
-  # https://docs.github.com/en/code-security/supply-chain-security/keeping-your-dependencies-updated-automatically/configuration-options-for-dependency-updates
-  # bundler, docker (FROM image), git submodules, go, npm, pip, terraform, all supported
-
+version: 2
 updates:
   # Maintain dependencies for Actions
   - package-ecosystem: "github-actions"

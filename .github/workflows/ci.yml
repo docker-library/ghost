@@ -7,11 +7,13 @@ name: ci
 on:
   push:
     branches:
-      - "master"
-      - "main"
+      - "ci"
     paths-ignore:
       - "CHANGELOG.md"
-  pull_request:
+    # Sequence of patterns matched against PR
+    pull_request:
+    # Sequence of patterns matched against TAGS
+    tags:
   schedule:
     - cron: "0 5 * * *"
   workflow_dispatch:

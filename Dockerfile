@@ -4,7 +4,6 @@
 # ----------------------------------------------
 ARG APP_NAME="ghostfire"
 ARG VERSION="4.47.0"
-ARG RELEASE="4.46.2"
 ARG GITHUB_USER="firepress-org"
 ARG DEFAULT_BRANCH="master"
 ARG GITHUB_ORG="firepress-org"

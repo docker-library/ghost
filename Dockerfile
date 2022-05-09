@@ -3,7 +3,7 @@
 # These ARG are required during the Github Actions CI
 # ----------------------------------------------
 ARG APP_NAME="ghostfire"
-ARG VERSION="4.47.1"
+ARG VERSION="4.47.0"
 ARG RELEASE="4.46.2"
 ARG GITHUB_USER="firepress-org"
 ARG DEFAULT_BRANCH="master"

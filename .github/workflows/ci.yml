@@ -8,12 +8,12 @@ on:
   push:
     branches:
       - "ci"
+    # Sequence of patterns matched against TAGS
+    tags:
     paths-ignore:
       - "CHANGELOG.md"
     # Sequence of patterns matched against PR
-    pull_request:
-    # Sequence of patterns matched against TAGS
-    tags:
+  pull_request:
   schedule:
     - cron: "0 5 * * *"
   workflow_dispatch:

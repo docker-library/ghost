@@ -9,7 +9,7 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-      time: "22:00"
+      time: "07:00"
       timezone: "America/New_York"
     labels:
       - ":game_die: dependencies"
@@ -20,7 +20,7 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-      time: "22:00"
+      time: "07:00"
       timezone: "America/New_York"
     labels:
       - ":game_die: dependencies"

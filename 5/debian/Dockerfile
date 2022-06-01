@@ -50,7 +50,16 @@ RUN set -eux; \
 	mkdir -p "$GHOST_INSTALL"; \
 	chown node:node "$GHOST_INSTALL"; \
 	\
-	gosu node ghost install "$GHOST_VERSION" --db sqlite3 --no-prompt --no-stack --no-setup --dir "$GHOST_INSTALL"; \
+	savedAptMark="$(apt-mark showmanual)"; \
+	aptPurge=; \
+	\
+	installCmd='gosu node ghost install "$GHOST_VERSION" --db sqlite3 --no-prompt --no-stack --no-setup --dir "$GHOST_INSTALL"'; \
+	if ! eval "$installCmd"; then \
+		aptPurge=1; \
+		apt-get update; \
+		apt-get install -y --no-install-recommends g++ make python3; \
+		eval "$installCmd"; \
+	fi; \
 	\
 # Tell Ghost to listen on all ips and not prompt for additional configuration
 	cd "$GHOST_INSTALL"; \
@@ -67,26 +76,41 @@ RUN set -eux; \
 	chown node:node "$GHOST_CONTENT"; \
 	chmod 1777 "$GHOST_CONTENT"; \
 	\
-# force install "sqlite3" manually since it's an optional dependency of "ghost"
+# force install a few extra packages manually since they're "optional" dependencies
 # (which means that if it fails to install, like on ARM/ppc64le/s390x, the failure will be silently ignored and thus turn into a runtime error instead)
 # see https://github.com/TryGhost/Ghost/pull/7677 for more details
 	cd "$GHOST_INSTALL/current"; \
-# scrape the expected version of sqlite3 directly from Ghost itself
-	sqlite3Version="$(node -p 'require("./package.json").optionalDependencies["sqlite3"]')"; \
-	[ -n "$sqlite3Version" ]; \
-	[ "$sqlite3Version" != 'undefined' ]; \
-	if ! gosu node yarn add "sqlite3@$sqlite3Version" --force; then \
+# scrape the expected versions directly from Ghost/dependencies
+	packages="$(node -p ' \
+		var ghost = require("./package.json"); \
+		var transform = require("./node_modules/@tryghost/image-transform/package.json"); \
+		[ \
+			"sharp@" + transform.optionalDependencies["sharp"], \
+			"sqlite3@" + ghost.optionalDependencies["sqlite3"], \
+		].join(" ") \
+	')"; \
+	if echo "$packages" | grep 'undefined'; then exit 1; fi; \
+	for package in $packages; do \
+		installCmd='gosu node yarn add "$package" --force'; \
+		if ! eval "$installCmd"; then \
 # must be some non-amd64 architecture pre-built binaries aren't published for, so let's install some build deps and do-it-all-over-again
-		savedAptMark="$(apt-mark showmanual)"; \
-		apt-get update; \
-		apt-get install -y --no-install-recommends g++ gcc libc-dev libvips-dev make python2; \
-		rm -rf /var/lib/apt/lists/*; \
-		\
-		npm_config_python='python2' gosu node yarn add "sqlite3@$sqlite3Version" --force --build-from-source; \
-		\
+			aptPurge=1; \
+			apt-get update; \
+			apt-get install -y --no-install-recommends g++ make python3; \
+			case "$package" in \
+				# TODO sharp@*) apt-get install -y --no-install-recommends libvips-dev ;; \
+				sharp@*) echo >&2 "sorry: libvips 8.10 in Debian bullseye is not new enough (8.12.2+) for sharp 0.30 😞"; continue ;; \
+			esac; \
+			\
+			eval "$installCmd --build-from-source"; \
+		fi; \
+	done; \
+	\
+	if [ -n "$aptPurge" ]; then \
 		apt-mark showmanual | xargs apt-mark auto > /dev/null; \
 		[ -z "$savedAptMark" ] || apt-mark manual $savedAptMark; \
 		apt-get purge -y --auto-remove; \
+		rm -rf /var/lib/apt/lists/*; \
 	fi; \
 	\
 	gosu node yarn cache clean; \

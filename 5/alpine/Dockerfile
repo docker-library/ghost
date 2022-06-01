@@ -69,13 +69,13 @@ RUN set -eux; \
 		installCmd='su-exec node yarn add "$package" --force'; \
 		if ! eval "$installCmd"; then \
 # must be some non-amd64 architecture pre-built binaries aren't published for, so let's install some build deps and do-it-all-over-again
-			virtual=".build-deps-${package%%@*}"; \
-			apkDel="$apkDel $virtual"; \
 			virtualPackages='g++ make python3'; \
 			case "$package" in \
 				# TODO sharp@*) virtualPackages="$virtualPackages pkgconf vips-dev"; \
 				sharp@*) echo >&2 "sorry: libvips 8.12.1 in Alpine 3.15 is not new enough (8.12.2+) for sharp 0.30 😞"; continue ;; \
 			esac; \
+			virtual=".build-deps-${package%%@*}"; \
+			apkDel="$apkDel $virtual"; \
 			apk add --no-cache --virtual "$virtual" $virtualPackages; \
 			\
 			eval "$installCmd --build-from-source"; \

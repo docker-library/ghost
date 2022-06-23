@@ -3,7 +3,7 @@
 
 APP_NAME="ghostfire"
 GITHUB_USER="firepress-org"
-APP_VERSION="4.47.4-rc"
+APP_VERSION="4.48.2"
 
 ### function options
 CFG_USE_GPG_SIGNATURE="true"

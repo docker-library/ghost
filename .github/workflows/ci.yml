@@ -508,7 +508,7 @@ jobs:
 
       - name: EDGE | Continuous Deployment
         if: github.ref != 'refs/heads/master'
-        uses: appleboy/ssh-action@v0.1.4
+        uses: appleboy/ssh-action@v0.1.5
         with:
           host: ${{ secrets.NODE1 }}
           port: ${{ secrets.SSH_PORT }}
@@ -524,7 +524,7 @@ jobs:
 
       - name: MASTER | Continuous Deployment
         if: github.ref == 'refs/heads/master' || github.event_name != 'pull_request'
-        uses: appleboy/ssh-action@v0.1.4
+        uses: appleboy/ssh-action@v0.1.5
         with:
           host: ${{ secrets.NODE1 }}
           port: ${{ secrets.SSH_PORT }}

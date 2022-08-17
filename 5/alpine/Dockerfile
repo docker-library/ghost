@@ -28,7 +28,7 @@ RUN set -eux; \
 	\
 	apkDel=; \
 	\
-	installCmd='su-exec node ghost install "$GHOST_VERSION" --db sqlite3 --no-prompt --no-stack --no-setup --dir "$GHOST_INSTALL"'; \
+	installCmd='su-exec node ghost install "$GHOST_VERSION" --db mysql --dbhost mysql --no-prompt --no-stack --no-setup --dir "$GHOST_INSTALL"'; \
 	if ! eval "$installCmd"; then \
 		virtual='.build-deps-ghost'; \
 		apkDel="$apkDel $virtual"; \
@@ -38,7 +38,7 @@ RUN set -eux; \
 	\
 # Tell Ghost to listen on all ips and not prompt for additional configuration
 	cd "$GHOST_INSTALL"; \
-	su-exec node ghost config --ip '::' --port 2368 --no-prompt --db sqlite3 --url http://localhost:2368 --dbpath "$GHOST_CONTENT/data/ghost.db"; \
+	su-exec node ghost config --no-prompt --ip '::' --port 2368 --url 'http://localhost:2368'; \
 	su-exec node ghost config paths.contentPath "$GHOST_CONTENT"; \
 	\
 # make a config.json symlink for NODE_ENV=development (and sanity check that it's correct)

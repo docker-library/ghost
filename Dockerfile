@@ -3,7 +3,7 @@
 # These ARG are required during the Github Actions CI
 # ----------------------------------------------
 ARG APP_NAME="ghostfire"
-ARG VERSION="4.48.2"
+ARG VERSION="4.48.4"
 ARG GITHUB_USER="firepress-org"
 ARG DEFAULT_BRANCH="master"
 # remove ORG
@@ -18,7 +18,7 @@ ARG GITHUB_REGISTRY="registry"
 #   https://github.com/TryGhost/Ghost/blob/v4.1.2/package.json#L38
 # ----------------------------------------------
 ARG GHOST_CLI_VERSION="1.23.0"
-ARG NODE_VERSION="14-alpine3.15"
+ARG NODE_VERSION="14-alpine3.16"
 ARG BASE_OS="alpine"
 ARG USER="node"
 
@@ -125,9 +125,9 @@ RUN set -eux                                                    &&\
 	[ "$sqlite3Version" != 'undefined' ]; \
 	if ! su-exec node yarn add "sqlite3@$sqlite3Version" --force; then \
 # must be some non-amd64 architecture pre-built binaries aren't published for, so let's install some build deps and do-it-all-over-again
-		apk add --no-cache --virtual .build-deps g++ gcc libc-dev make python2 vips-dev; \
+		apk add --no-cache --virtual .build-deps g++ gcc libc-dev make python3 vips-dev; \
 		\
-		npm_config_python='python2' su-exec node yarn add "sqlite3@$sqlite3Version" --force --build-from-source; \
+		su-exec node yarn add "sqlite3@$sqlite3Version" --force --build-from-source; \
 		\
 		apk del --no-network .build-deps; \
 	fi; \

@@ -606,7 +606,9 @@ jobs:
           timezone: America/Montreal
 
       - name: Adding markdown
-        run: echo '### Hello world! :rocket:' >> $GITHUB_STEP_SUMMARY
+        run: |
+          echo '### Hello world! :rocket:' >> $GITHUB_STEP_SUMMARY
+          echo '${{ needs.myvars.outputs._NOTI_MESSAGE }}' >> $GITHUB_STEP_SUMMARY
 
   review_slack:
     needs: [myvars, uat, build, continuous_deployment]

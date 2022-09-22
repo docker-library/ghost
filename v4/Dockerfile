@@ -144,7 +144,7 @@ RUN set -eux                                                    &&\
 # ----------------------------------------------
 FROM mynode AS final
 
-COPY --chown="${USER}":"${USER}" docker-entrypoint.sh /usr/local/bin
+COPY --chown="${USER}":"${USER}" /v4/docker-entrypoint.sh /usr/local/bin
 COPY --from=builder --chown="${USER}":"${USER}" "${GHOST_INSTALL}" "${GHOST_INSTALL}"
 
 WORKDIR "${GHOST_INSTALL}"

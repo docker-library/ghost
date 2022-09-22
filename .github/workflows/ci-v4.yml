@@ -30,7 +30,6 @@ defaults:
 env:
   # needed to define path within 'uses'
   SUB_DIR: v4
-  DOCKERFILE: Dockerfile
 
 jobs:
   # ----------------------------------------------
@@ -55,11 +54,11 @@ jobs:
       - name: Define and save variables to disk
         run: |
           mkdir -pv ~/varz && echo "<=== We create DIR varz to store variables"
-          cat ${{ env.DOCKERFILE }} | grep APP_NAME= | head -n 1 | grep -o '".*"' | sed 's/"//g' > ~/varz/APP_NAME
-          cat ${{ env.DOCKERFILE }} | grep VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g' > ~/varz/VERSION
-          cat ${{ env.DOCKERFILE }} | grep DOCKERHUB_USER= | head -n 1 | grep -o '".*"' | sed 's/"//g' > ~/varz/DOCKERHUB_USER
-          cat ${{ env.DOCKERFILE }} | grep GITHUB_ORG= | head -n 1 | grep -o '".*"' | sed 's/"//g' > ~/varz/GITHUB_ORG
-          cat ${{ env.DOCKERFILE }} | grep GITHUB_REGISTRY= | head -n 1 | grep -o '".*"' | sed 's/"//g' > ~/varz/GITHUB_REGISTRY
+          cat Dockerfile | grep APP_NAME= | head -n 1 | grep -o '".*"' | sed 's/"//g' > ~/varz/APP_NAME
+          cat Dockerfile | grep VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g' > ~/varz/VERSION
+          cat Dockerfile | grep DOCKERHUB_USER= | head -n 1 | grep -o '".*"' | sed 's/"//g' > ~/varz/DOCKERHUB_USER
+          cat Dockerfile | grep GITHUB_ORG= | head -n 1 | grep -o '".*"' | sed 's/"//g' > ~/varz/GITHUB_ORG
+          cat Dockerfile | grep GITHUB_REGISTRY= | head -n 1 | grep -o '".*"' | sed 's/"//g' > ~/varz/GITHUB_REGISTRY
           echo "$(cat ~/varz/DOCKERHUB_USER)/$(cat ~/varz/APP_NAME)" > ~/varz/DKR_PREFIX
           echo "ghcr.io/$(cat ~/varz/GITHUB_ORG)/$(cat ~/varz/GITHUB_REGISTRY)/$(cat ~/varz/APP_NAME)" > ~/varz/GPR_PREFIX
           git rev-parse --short HEAD > ~/varz/SHORT_HASH_COMMIT
@@ -108,7 +107,6 @@ jobs:
       APP_NAME: ${{ steps.myvars.outputs.APP_NAME }}
       VERSION: ${{ steps.myvars.outputs.VERSION }}
       SUB_DIR: ${{ steps.myvars.outputs.SUB_DIR }}
-      DOCKERFILE: ${{ steps.myvars.outputs.DOCKERFILE }}
       DOCKERHUB_USER: ${{ steps.myvars.outputs.DOCKERHUB_USER }}
       GITHUB_ORG: ${{ steps.myvars.outputs.GITHUB_ORG }}
       GITHUB_REGISTRY: ${{ steps.myvars.outputs.GITHUB_REGISTRY }}
@@ -160,7 +158,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
-          file: ./${{ env.SUB_DIR }}/${{ env.DOCKERFILE }}
+          file: ./${{ env.SUB_DIR }}/Dockerfile
           push: false
           load: true # Export to Docker Engine rather than pushing to a registry
           tags: ${{ github.run_id }}
@@ -219,7 +217,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
-          file: ./${{ env.SUB_DIR }}/${{ env.DOCKERFILE }}
+          file: ./${{ env.SUB_DIR }}/Dockerfile
           platforms: |
             linux/amd64
           # linux/arm64/v8
@@ -267,7 +265,6 @@ jobs:
           echo "Core environment variables:"
           echo "= = = = = = = = = ="
           echo "${{ env.SUB_DIR }} << SUB_DIR"
-          echo "${{ env.DOCKERFILE }} << DOCKERFILE"
           echo "${{ needs.myvars.outputs.APP_NAME }} << APP_NAME"
           echo "${{ needs.myvars.outputs.DOCKERHUB_USER }} << DOCKERHUB_USER"
           echo "${{ needs.myvars.outputs.GITHUB_ORG }} << GITHUB_ORG"
@@ -333,7 +330,7 @@ jobs:
           SNYK_TOKEN: ${{ secrets.TOKEN_SNYK }}
         with:
           image: ${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_DATE }}
-          args: --file=./${{ env.SUB_DIR }}/${{ env.DOCKERFILE }} --severity-threshold=high
+          args: --file=./${{ env.SUB_DIR }}/Dockerfile --severity-threshold=high
       - name: Checkpoint | Upload result to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v2
         with:
@@ -596,6 +593,20 @@ jobs:
         with:
           filepath: ./.github/load-test.yml
           #            https://trial.firepress.link/edge
+
+  review_step_summary:
+    needs: [myvars, uat, build, continuous_deployment]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: zcong1993/setup-timezone@v1.1.2
+        with:
+          timezone: America/Montreal
+
+      - name: Adding markdown
+        run: echo '### Hello world! :rocket:' >> $GITHUB_STEP_SUMMARY
 
   review_slack:
     needs: [myvars, uat, build, continuous_deployment]

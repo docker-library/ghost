@@ -2,7 +2,7 @@
 # by https://pascalandy.com at https://firepress.org
 # GNU v3 https://github.com/firepress-org/ghostfire/blob/master/LICENSE
 
-name: ci-v4
+name: Ghost v4
 
 on:
   # bypass on pull request, just use schedule

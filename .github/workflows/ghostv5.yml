@@ -47,18 +47,19 @@ jobs:
           overall_threshold: minor
           git_threshold: degraded_performance
           actions_threshold: operational
+
+      # edge tags are from a PR or a commit in a PR
+      # stable is when a commits was tagged
       - name: Create dir for our varz
         run: mkdir -pv ~/varz
-      - name: EDGE | Set BRANCH_NAME
-        if: github.ref != 'refs/heads/master'
-        run: |
-          echo "edge" > ~/varz/BRANCH_NAME
-      - name: MASTER | Set BRANCH_NAME
-        if: github.ref == 'refs/heads/master'
-        run: |
-          echo "stable" > ~/varz/BRANCH_NAME
+      - name: edge | Set BRANCH_NAME
+        if: ${{ github.ref_type != 'tag' }}
+        run: echo "edge" > ~/varz/BRANCH_NAME
+      - name: stable | Set BRANCH_NAME
+        if: ${{ github.ref_type == 'tag' }}
+        run: echo "stable" > ~/varz/BRANCH_NAME
+
       - name: Define and save variables to disk
-        # we are forcing tag 'edge' while debugging the CI 0o0o
         run: |
           cat Dockerfile | grep APP_NAME= | head -n 1 | grep -o '".*"' | sed 's/"//g' > ~/varz/APP_NAME
           cat Dockerfile | grep VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g' > ~/varz/VERSION
@@ -135,10 +136,12 @@ jobs:
       TAG_GPR_VERSION_HASH_DATE: ${{ steps.myvars.outputs.TAG_GPR_VERSION_HASH_DATE }}
 
   # ----------------------------------------------
-  # UAT
+  # build / edge OR stable
+  # tags are not the same between edge or stable
   # ----------------------------------------------
-  uat:
+  build_edge:
     needs: [myvars]
+    if: ${{ github.ref_type != 'tag' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -161,33 +164,39 @@ jobs:
           username: ${{ needs.myvars.outputs.GITHUB_ORG }}
           password: ${{ secrets.TOKEN_GPR }}
 
-      - name: Build UAT on linux/amd64
-        id: docker_build
+      - name: Build and push image (edge)
         uses: docker/build-push-action@v3
         with:
           context: .
           file: ./${{ env.SUB_DIR }}/Dockerfile
-          push: false
-          load: true # Export to Docker Engine rather than pushing to a registry
-          tags: ${{ github.run_id }}
+          platforms: |
+            linux/amd64
+          # linux/arm64/v8
+          # linux/arm/v8
+          # linux/arm/v7
+          push: true
+          tags: |
+            ${{ needs.myvars.outputs.TAG_DKR_BRANCH_NAME }}
+            ${{ needs.myvars.outputs.TAG_GPR_BRANCH_NAME }}
+          # The order for <docker push -tag> matters for our CD down the line
           cache-from: type=gha, scope=${{ github.workflow }}
           cache-to: type=gha, scope=${{ github.workflow }}, mode=max
-          platforms: linux/amd64
 
-      - name: Checkpoint | Wait for container to run
+      - name: UAT run edge | Wait for container to run
         timeout-minutes: 2
         # These two VAR are here to force SQLite over Mysql
         # database__client=s
         # database__connection__filename=
         run: |
-          docker run -d --name ghostUAT -p 2368:2368 -e WEB_URL=http://localhost:2368 -e NODE_ENV=production -e database__client=sqlite3 -e database__connection__filename=/var/lib/ghost/content/data/ghost.db ${{ github.run_id }}
+          docker run -d --name ghostUAT -p 2368:2368 -e WEB_URL=http://localhost:2368 -e NODE_ENV=production -e database__client=sqlite3 -e database__connection__filename=/var/lib/ghost/content/data/ghost.db ${{ needs.myvars.outputs.TAG_DKR_BRANCH_NAME }}
           echo "--- Wait for ghostUAT --->"
           until $(curl --output /dev/null --silent --head --fail http://localhost:2368); do
             echo "--- ghostUAT is starting..."
             sleep 1
           done;
           echo "--- ghostUAT is running! --->"
-      - name: Checkpoint | docker-library tests
+
+      - name: UAT docker test edge | docker-library tests
         # Ghost V5 grep "0o0o"
         # Ghost V4 grep "Thoughts, stories and ideas"
         # Ghost V3 grep "The professional publishing platform"
@@ -195,12 +204,14 @@ jobs:
           curl http://localhost:2368 | grep "Thoughts, stories and ideas"
           git clone --depth 1 https://github.com/docker-library/official-images.git official-images
           cp ./test/config.sh official-images/test/config.sh
-          official-images/test/run.sh ${{ github.run_id }}
-  # ----------------------------------------------
-  # build | QEMU docs setup-qemu-action https://github.com/firepress-org/ghostfire/issues/44
-  # ----------------------------------------------
-  build:
-    needs: [myvars, uat]
+          official-images/test/run.sh ${{ needs.myvars.outputs.TAG_DKR_BRANCH_NAME }}
+
+      - name: Checkpoint | image ls
+        run: docker image ls
+
+  build_stable:
+    needs: [myvars]
+    if: ${{ github.ref_type == 'tag' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -223,7 +234,7 @@ jobs:
           username: ${{ needs.myvars.outputs.GITHUB_ORG }}
           password: ${{ secrets.TOKEN_GPR }}
 
-      - name: Build and push image
+      - name: Build and push image (stable)
         uses: docker/build-push-action@v3
         with:
           context: .
@@ -247,11 +258,106 @@ jobs:
           cache-from: type=gha, scope=${{ github.workflow }}
           cache-to: type=gha, scope=${{ github.workflow }}, mode=max
 
-      - name: Checkpoint | docker image ls
+      - name: UAT run stable | Wait for container to run
+        timeout-minutes: 2
+        # These two VAR are here to force SQLite over Mysql
+        # database__client=s
+        # database__connection__filename=
+        run: |
+          docker run -d --name ghostUAT -p 2368:2368 -e WEB_URL=http://localhost:2368 -e NODE_ENV=production -e database__client=sqlite3 -e database__connection__filename=/var/lib/ghost/content/data/ghost.db ${{ needs.myvars.outputs.TAG_DKR_BRANCH_NAME }}
+          echo "--- Wait for ghostUAT --->"
+          until $(curl --output /dev/null --silent --head --fail http://localhost:2368); do
+            echo "--- ghostUAT is starting..."
+            sleep 1
+          done;
+          echo "--- ghostUAT is running! --->"
+
+      - name: UAT docker test stable | docker-library tests
+        # Ghost V5 grep "0o0o"
+        # Ghost V4 grep "Thoughts, stories and ideas"
+        # Ghost V3 grep "The professional publishing platform"
+        run: |
+          curl http://localhost:2368 | grep "Thoughts, stories and ideas"
+          git clone --depth 1 https://github.com/docker-library/official-images.git official-images
+          cp ./test/config.sh official-images/test/config.sh
+          official-images/test/run.sh ${{ needs.myvars.outputs.TAG_DKR_BRANCH_NAME }}
+
+      - name: Checkpoint | image ls
         run: docker image ls
 
   # ----------------------------------------------
-  # Tests after build
+  # UAT / edge OR stable
+  # This job is bypassed: weird bug on the uat job. Ci complain about docker login. So the UAT is under the build job.
+  # ----------------------------------------------
+
+  # ----------------------------------------------
+  # Continuous Deployment / edge OR stable
+  # I duplicate this in two jobs to have a better visual representation
+  # ----------------------------------------------
+  cd_edge:
+    needs: [build_edge]
+    if: ${{ github.ref_type != 'tag' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: zcong1993/setup-timezone@v1.1.2
+        with:
+          timezone: America/Montreal
+
+      - name: cd edge
+        uses: appleboy/ssh-action@v0.1.5
+        with:
+          host: ${{ secrets.NODE1 }}
+          port: ${{ secrets.SSH_PORT }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY_ACTIONS }}
+          passphrase: ${{ secrets.SSH_KEY_ACTIONS_PASSPHRASE }}
+          script: |
+            ${{ secrets.SSH_CMD__UPDATE_DKR_IMG_EDGE }}
+            hostname
+          #sync: true
+          #host: "${{ secrets.NODE1 }},${{ secrets.NODE2 }},${{ secrets.NODE3 }}"
+          # alt projet: fifsky/ssh-action@master https://github.com/appleboy/ssh-action/issues/80#issuecomment-759473472
+
+      - name: Add a comment (from a PR)
+        run: |
+          echo '## For reference' >> $GITHUB_STEP_SUMMARY
+          echo 'Docker image: ${{ needs.myvars.outputs.TAG_DKR_BRANCH_NAME }}' >> $GITHUB_STEP_SUMMARY
+          echo 'Please use docker images that were build from a tag. More details: https://github.com/firepress-org/ghostfire/issues/265' >> $GITHUB_STEP_SUMMARY
+
+  cd_stable:
+    needs: [build_stable]
+    if: ${{ github.ref_type == 'tag' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: zcong1993/setup-timezone@v1.1.2
+        with:
+          timezone: America/Montreal
+
+      - name: cd stable
+        uses: appleboy/ssh-action@v0.1.5
+        with:
+          host: ${{ secrets.NODE1 }}
+          port: ${{ secrets.SSH_PORT }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY_ACTIONS }}
+          passphrase: ${{ secrets.SSH_KEY_ACTIONS_PASSPHRASE }}
+          script: |
+            ${{ secrets.SSH_CMD__UPDATE_DKR_IMG_STABLE }}
+            hostname
+
+      - name: Add a comment (from a tag)
+        run: |
+          echo '## Offical Docker Image :rocket:' >> $GITHUB_STEP_SUMMARY
+          echo 'Docker image: ${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_DATE }}' >> $GITHUB_STEP_SUMMARY
+
+  # ----------------------------------------------
+  # Reviews
   # ----------------------------------------------
   review_myvars:
     needs: [myvars]
@@ -275,9 +381,9 @@ jobs:
           echo ${{ needs.myvars.outputs.TAG_GPR_BRANCH_NAME }}
           echo ${{ needs.myvars.outputs.TAG_GPR_VERSION_HASH_ONLY }}
           echo ${{ needs.myvars.outputs.TAG_GPR_VERSION_HASH_DATE }}
-          echo
+          echo "---"
           echo "Core environment variables:"
-          echo "= = = = = = = = = ="
+          echo "---"
           echo "${{ env.SUB_DIR }} << SUB_DIR"
           echo "${{ needs.myvars.outputs.APP_NAME }} << APP_NAME"
           echo "${{ needs.myvars.outputs.DOCKERHUB_USER }} << DOCKERHUB_USER"
@@ -292,9 +398,9 @@ jobs:
           echo "${{ needs.myvars.outputs.VERSION_HASH_ONLY }} << VERSION_HASH_ONLY"
           echo "${{ needs.myvars.outputs.VERSION_HASH_DATE }} << VERSION_HASH_DATE"
           echo "${{ needs.myvars.outputs._NOTI_MESSAGE }} << _NOTI_MESSAGE"
-          echo
+          echo "---"
           echo "Environment variables provided Github Actions :"
-          echo "= = = = = = = = = ="
+          echo "---"
           echo "${GITHUB_WORKFLOW} << GITHUB_WORKFLOW"
           echo "${GITHUB_RUN_ID} << GITHUB_RUN_ID"
           echo "${GITHUB_RUN_NUMBER} << GITHUB_RUN_NUMBER"
@@ -321,7 +427,8 @@ jobs:
   # $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID
 
   review_snyk_opt:
-    needs: [myvars, uat, build]
+    needs: [myvars, build_stable, cd_stable]
+    if: ${{ github.ref_type == 'tag' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -350,12 +457,13 @@ jobs:
           sarif_file: snyk.sarif
 
   review_trivy_opt:
-    needs: [myvars, uat, build]
+    needs: [myvars, build_stable, cd_stable]
 
     #permissions:
     #  contents: read # for actions/checkout to fetch code
     #  security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
 
+    if: ${{ github.ref_type == 'tag' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -384,7 +492,8 @@ jobs:
       #    sarif_file: "trivy-results.sarif"
 
   review_dockle:
-    needs: [myvars, uat, build]
+    needs: [myvars, build_stable, cd_stable]
+    if: ${{ github.ref_type == 'tag' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -401,7 +510,8 @@ jobs:
   #   needs: [myvars, build]
   #   uses: firepress-org/reusable_workflows/.github/workflows/super-linter.yaml@master
   review_linter_opt:
-    needs: [myvars]
+    needs: [myvars, build_stable, cd_stable]
+    if: ${{ github.ref_type == 'tag' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -425,7 +535,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   review_inspect:
-    needs: [myvars, uat, build]
+    needs: [myvars, build_stable, cd_stable]
+    if: ${{ github.ref_type == 'tag' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -467,64 +578,9 @@ jobs:
         run: |
           uname -a && echo && echo
 
-  # ----------------------------------------------
-  # continuous_deployment after build
-  # ----------------------------------------------
-  continuous_deployment:
-    needs: [myvars, uat, build]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - uses: zcong1993/setup-timezone@v1.1.2
-        with:
-          timezone: America/Montreal
-
-      - name: EDGE | Continuous Deployment
-        if: github.ref != 'refs/heads/master'
-        uses: appleboy/ssh-action@v0.1.5
-        with:
-          host: ${{ secrets.NODE1 }}
-          port: ${{ secrets.SSH_PORT }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_KEY_ACTIONS }}
-          passphrase: ${{ secrets.SSH_KEY_ACTIONS_PASSPHRASE }}
-          script: |
-            ${{ secrets.SSH_CMD__UPDATE_DKR_IMG_EDGE }}
-            hostname
-          #sync: true
-          #host: "${{ secrets.NODE1 }},${{ secrets.NODE2 }},${{ secrets.NODE3 }}"
-          # alt projet: fifsky/ssh-action@master https://github.com/appleboy/ssh-action/issues/80#issuecomment-759473472
-
-      - name: MASTER | Continuous Deployment
-        if: github.ref == 'refs/heads/master' || github.event_name != 'pull_request'
-        uses: appleboy/ssh-action@v0.1.5
-        with:
-          host: ${{ secrets.NODE1 }}
-          port: ${{ secrets.SSH_PORT }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_KEY_ACTIONS }}
-          passphrase: ${{ secrets.SSH_KEY_ACTIONS_PASSPHRASE }}
-          script: |
-            ${{ secrets.SSH_CMD__UPDATE_DKR_IMG_STABLE }}
-            hostname
-
-      - name: Update README on Dockerhub
-        run: |
-          docker run --rm \
-            -v $(pwd)/README.md:/data/README.md \
-            -e DOCKERHUB_USERNAME=${{ needs.myvars.outputs.DOCKERHUB_USER }} \
-            -e DOCKERHUB_PASSWORD=${{ secrets.DOCKERHUB_PASSWORD }} \
-            -e DOCKERHUB_REPO_PREFIX=${{ needs.myvars.outputs.DOCKERHUB_USER }} \
-            -e DOCKERHUB_REPO_NAME=${{ needs.myvars.outputs.APP_NAME }} \
-            devmtl/readme-to-dockerhub:stable
-
-  # ----------------------------------------------
-  # Actions after continuous_deployment
-  # ----------------------------------------------
   review_comment_pr:
-    needs: [myvars, uat, build, continuous_deployment]
+    needs: [myvars, build_stable, cd_stable]
+    if: ${{ github.ref_type == 'tag' }}
 
     permissions:
       pull-requests: write # needed to create and update comments in PRs
@@ -571,7 +627,8 @@ jobs:
           edit-mode: replace
 
   review_lighthouse:
-    needs: [myvars, uat, build, continuous_deployment]
+    needs: [myvars, build_stable, cd_stable]
+    if: ${{ github.ref_type == 'tag' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -592,7 +649,8 @@ jobs:
           temporaryPublicStorage: true # upload lighthouse report to the temporary storage
 
   review_artillery:
-    needs: [myvars, uat, build, continuous_deployment]
+    needs: [myvars, build_stable, cd_stable]
+    if: ${{ github.ref_type == 'tag' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -609,32 +667,9 @@ jobs:
           filepath: ./.github/load-test.yml
           #            https://trial.firepress.link/edge
 
-  review_notes:
-    needs: [myvars, uat, build, continuous_deployment]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - uses: zcong1993/setup-timezone@v1.1.2
-        with:
-          timezone: America/Montreal
-
-      - name: Add a comment
-        if: ${{ github.ref_type == 'tag' }}
-        run: |
-          echo '## Offical Docker Image :rocket:' >> $GITHUB_STEP_SUMMARY
-          echo '${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_DATE }}' >> $GITHUB_STEP_SUMMARY
-
-      - name: Add a warning
-        if: ${{ github.ref_type != 'tag' }}
-        run: |
-          echo '## For reference' >> $GITHUB_STEP_SUMMARY
-          echo '${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_DATE }}' >> $GITHUB_STEP_SUMMARY
-          echo 'Please use docker images that were build from a tag. More details: https://github.com/firepress-org/ghostfire/issues/265' >> $GITHUB_STEP_SUMMARY
-
   review_slack:
-    needs: [myvars, uat, build, continuous_deployment]
+    needs: [myvars, build_stable, cd_stable]
+    if: ${{ github.ref_type == 'tag' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -655,3 +690,26 @@ jobs:
               ' NOTI_SLACK_TOKEN="$SLACK_TOKEN_CRON" \
                 NOTI_SLACK_CHANNEL="$SLACK_CHANNEL" \
                 noti -k -m "$NOTI_MESSAGE" '
+
+  readme_update:
+    needs: [myvars, build_stable, cd_stable]
+    if: ${{ github.ref_type == 'tag' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: zcong1993/setup-timezone@v1.1.2
+        with:
+          timezone: America/Montreal
+
+      - name: Update README on Dockerhub
+        if: ${{ github.ref_type == 'tag' }}
+        run: |
+          docker run --rm \
+            -v $(pwd)/README.md:/data/README.md \
+            -e DOCKERHUB_USERNAME=${{ needs.myvars.outputs.DOCKERHUB_USER }} \
+            -e DOCKERHUB_PASSWORD=${{ secrets.DOCKERHUB_PASSWORD }} \
+            -e DOCKERHUB_REPO_PREFIX=${{ needs.myvars.outputs.DOCKERHUB_USER }} \
+            -e DOCKERHUB_REPO_NAME=${{ needs.myvars.outputs.APP_NAME }} \
+            devmtl/readme-to-dockerhub:stable

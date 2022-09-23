@@ -578,54 +578,6 @@ jobs:
         run: |
           uname -a && echo && echo
 
-  review_comment_pr:
-    needs: [myvars, build_stable, cd_stable]
-    if: ${{ github.ref_type == 'tag' }}
-
-    permissions:
-      pull-requests: write # needed to create and update comments in PRs
-
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - uses: zcong1993/setup-timezone@v1.1.2
-        with:
-          timezone: America/Montreal
-
-      - name: Find comment for image tags
-        # If PR, put image tags in the PR comments
-        # from https://github.com/marketplace/actions/create-or-update-comment
-        uses: peter-evans/find-comment@v2
-        if: github.event_name == 'pull_request'
-        id: fc
-        with:
-          issue-number: ${{ github.event.pull_request.number }}
-          comment-author: "github-actions[bot]"
-          body-includes: Docker image tag(s) pushed
-
-        # If PR, put image tags in the PR comments
-      - name: Create or update comment for image tags
-        uses: peter-evans/create-or-update-comment@v2
-        if: github.event_name == 'pull_request'
-        with:
-          comment-id: ${{ steps.fc.outputs.comment-id }}
-          issue-number: ${{ github.event.pull_request.number }}
-          body: |
-            Docker image tag(s) pushed:
-            ```text
-            ${{ needs.myvars.outputs.TAG_DKR_VERSION }}
-            ${{ needs.myvars.outputs.TAG_DKR_BRANCH_NAME }}
-            ${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_ONLY }}
-            ${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_DATE }}
-            ${{ needs.myvars.outputs.TAG_GPR_VERSION }}
-            ${{ needs.myvars.outputs.TAG_GPR_BRANCH_NAME }}
-            ${{ needs.myvars.outputs.TAG_GPR_VERSION_HASH_ONLY }}
-            ${{ needs.myvars.outputs.TAG_GPR_VERSION_HASH_DATE }}
-            ```
-          edit-mode: replace
-
   review_lighthouse:
     needs: [myvars, build_stable, cd_stable]
     if: ${{ github.ref_type == 'tag' }}
@@ -691,7 +643,7 @@ jobs:
                 NOTI_SLACK_CHANNEL="$SLACK_CHANNEL" \
                 noti -k -m "$NOTI_MESSAGE" '
 
-  readme_update:
+  update_readme:
     needs: [myvars, build_stable, cd_stable]
     if: ${{ github.ref_type == 'tag' }}
     runs-on: ubuntu-latest
@@ -713,3 +665,50 @@ jobs:
             -e DOCKERHUB_REPO_PREFIX=${{ needs.myvars.outputs.DOCKERHUB_USER }} \
             -e DOCKERHUB_REPO_NAME=${{ needs.myvars.outputs.APP_NAME }} \
             devmtl/readme-to-dockerhub:stable
+
+  comment_within_pr:
+    needs: [myvars, build_stable, cd_stable]
+
+    permissions:
+      pull-requests: write # needed to create and update comments in PRs
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: zcong1993/setup-timezone@v1.1.2
+        with:
+          timezone: America/Montreal
+
+      - name: Find comment for image tags
+        # If PR, put image tags in the PR comments
+        # from https://github.com/marketplace/actions/create-or-update-comment
+        uses: peter-evans/find-comment@v2
+        if: github.event_name == 'pull_request'
+        id: fc
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: "github-actions[bot]"
+          body-includes: Docker image tag(s) pushed
+
+        # If PR, put image tags in the PR comments
+      - name: Create or update comment for image tags
+        uses: peter-evans/create-or-update-comment@v2
+        if: github.event_name == 'pull_request'
+        with:
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            Docker image tag(s) pushed:
+            ```text
+            ${{ needs.myvars.outputs.TAG_DKR_VERSION }}
+            ${{ needs.myvars.outputs.TAG_DKR_BRANCH_NAME }}
+            ${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_ONLY }}
+            ${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_DATE }}
+            ${{ needs.myvars.outputs.TAG_GPR_VERSION }}
+            ${{ needs.myvars.outputs.TAG_GPR_BRANCH_NAME }}
+            ${{ needs.myvars.outputs.TAG_GPR_VERSION_HASH_ONLY }}
+            ${{ needs.myvars.outputs.TAG_GPR_VERSION_HASH_DATE }}
+            ```
+          edit-mode: replace

@@ -609,7 +609,7 @@ jobs:
           filepath: ./.github/load-test.yml
           #            https://trial.firepress.link/edge
 
-  review_step_summary:
+  review_notes:
     needs: [myvars, uat, build, continuous_deployment]
     runs-on: ubuntu-latest
     steps:
@@ -620,10 +620,17 @@ jobs:
         with:
           timezone: America/Montreal
 
-      - name: Adding markdown
+      - name: Add a comment
+        if: ${{ github.ref_type == 'tag' }}
         run: |
-          echo '### Hello world! :rocket:' >> $GITHUB_STEP_SUMMARY
-          echo '${{ needs.myvars.outputs._NOTI_MESSAGE }}' >> $GITHUB_STEP_SUMMARY
+          echo '## Offical docker image :rocket:' >> $GITHUB_STEP_SUMMARY
+          echo '${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_DATE }}' >> $GITHUB_STEP_SUMMARY
+
+      - name: Add a warning
+        if: ${{ github.ref_type != 'tag' }}
+        run: |
+          echo 'Not an offical docker image. Please use docker images that were build from a tag. More details: https://github.com/firepress-org/ghostfire/issues/265' >> $GITHUB_STEP_SUMMARY
+          echo '${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_DATE }}' >> $GITHUB_STEP_SUMMARY
 
   review_slack:
     needs: [myvars, uat, build, continuous_deployment]

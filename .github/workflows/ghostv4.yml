@@ -8,7 +8,7 @@ on:
   schedule:
     - cron: "0 10 * * *" # everyday at 10am
   pull_request:
-    branches: [master, main]
+    branches: [lts_v4]
   push:
     tags:
       - "4.*.*"

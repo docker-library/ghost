@@ -53,10 +53,10 @@ jobs:
       - name: Create dir for our varz
         run: mkdir -pv ~/varz
       - name: edge | Set BRANCH_NAME
-        if: ${{ github.ref_type != 'tag' }}
+        if: github.ref_type != 'tag'
         run: echo "edge" > ~/varz/BRANCH_NAME
       - name: stable | Set BRANCH_NAME
-        if: ${{ github.ref_type == 'tag' }}
+        if: github.ref_type == 'tag'
         run: echo "stable" > ~/varz/BRANCH_NAME
 
       - name: Define and save variables to disk
@@ -141,7 +141,7 @@ jobs:
   # ----------------------------------------------
   build_edge:
     needs: [myvars]
-    if: ${{ github.ref_type != 'tag' }}
+    if: github.ref_type != 'tag'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -211,7 +211,7 @@ jobs:
 
   build_stable:
     needs: [myvars]
-    if: ${{ github.ref_type == 'tag' }}
+    if: github.ref_type == 'tag'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -296,7 +296,7 @@ jobs:
   # ----------------------------------------------
   cd_edge:
     needs: [build_edge]
-    if: ${{ github.ref_type != 'tag' }}
+    if: github.ref_type != 'tag'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -329,7 +329,7 @@ jobs:
 
   cd_stable:
     needs: [build_stable]
-    if: ${{ github.ref_type == 'tag' }}
+    if: github.ref_type == 'tag'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -428,7 +428,7 @@ jobs:
 
   review_snyk_opt:
     needs: [myvars, build_stable, cd_stable]
-    if: ${{ github.ref_type == 'tag' }}
+    if: github.ref_type == 'tag'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -463,7 +463,7 @@ jobs:
     #  contents: read # for actions/checkout to fetch code
     #  security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
 
-    if: ${{ github.ref_type == 'tag' }}
+    if: github.ref_type == 'tag'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -493,7 +493,7 @@ jobs:
 
   review_dockle:
     needs: [myvars, build_stable, cd_stable]
-    if: ${{ github.ref_type == 'tag' }}
+    if: github.ref_type == 'tag'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -511,7 +511,7 @@ jobs:
   #   uses: firepress-org/reusable_workflows/.github/workflows/super-linter.yaml@master
   review_linter_opt:
     needs: [myvars, build_stable, cd_stable]
-    if: ${{ github.ref_type == 'tag' }}
+    if: github.ref_type == 'tag'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -536,7 +536,7 @@ jobs:
 
   review_inspect:
     needs: [myvars, build_stable, cd_stable]
-    if: ${{ github.ref_type == 'tag' }}
+    if: github.ref_type == 'tag'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -580,7 +580,7 @@ jobs:
 
   review_lighthouse:
     needs: [myvars, build_stable, cd_stable]
-    if: ${{ github.ref_type == 'tag' }}
+    if: github.ref_type == 'tag'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -602,7 +602,7 @@ jobs:
 
   review_artillery:
     needs: [myvars, build_stable, cd_stable]
-    if: ${{ github.ref_type == 'tag' }}
+    if: github.ref_type == 'tag'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -621,7 +621,7 @@ jobs:
 
   review_slack:
     needs: [myvars, build_stable, cd_stable]
-    if: ${{ github.ref_type == 'tag' }}
+    if: github.ref_type == 'tag'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -645,7 +645,7 @@ jobs:
 
   update_readme:
     needs: [myvars, build_stable, cd_stable]
-    if: ${{ github.ref_type == 'tag' }}
+    if: github.ref_type == 'tag'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -656,7 +656,6 @@ jobs:
           timezone: America/Montreal
 
       - name: Update README on Dockerhub
-        if: ${{ github.ref_type == 'tag' }}
         run: |
           docker run --rm \
             -v $(pwd)/README.md:/data/README.md \
@@ -672,6 +671,7 @@ jobs:
     permissions:
       pull-requests: write # needed to create and update comments in PRs
 
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

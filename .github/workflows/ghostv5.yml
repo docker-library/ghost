@@ -6,7 +6,7 @@ name: Ghost v5
 
 on:
   schedule:
-    - cron: "0 10 * * *" # everyday at 10am
+    - cron: "0 7 * * *" # everyday at 7am
   pull_request:
     branches: [master, main]
   push:
@@ -48,8 +48,8 @@ jobs:
           git_threshold: degraded_performance
           actions_threshold: operational
 
-      # edge tags are from a PR or a commit in a PR
-      # stable is when a commits was tagged
+      # Commits from a PR use docker image tag: edge
+      # When a PR is merge/rebase into master, the docker image tag: stable
       - name: Create dir for our varz
         run: mkdir -pv ~/varz
       - name: edge | Set BRANCH_NAME
@@ -264,7 +264,7 @@ jobs:
         # database__client=s
         # database__connection__filename=
         run: |
-          docker run -d --name ghostUAT -p 2368:2368 -e WEB_URL=http://localhost:2368 -e NODE_ENV=production -e database__client=sqlite3 -e database__connection__filename=/var/lib/ghost/content/data/ghost.db ${{ needs.myvars.outputs.TAG_DKR_BRANCH_NAME }}
+          docker run -d --name ghostUAT -p 2368:2368 -e WEB_URL=http://localhost:2368 -e NODE_ENV=production -e database__client=sqlite3 -e database__connection__filename=/var/lib/ghost/content/data/ghost.db ${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_DATE }}
           echo "--- Wait for ghostUAT --->"
           until $(curl --output /dev/null --silent --head --fail http://localhost:2368); do
             echo "--- ghostUAT is starting..."
@@ -280,7 +280,7 @@ jobs:
           curl http://localhost:2368 | grep "Thoughts, stories and ideas"
           git clone --depth 1 https://github.com/docker-library/official-images.git official-images
           cp ./test/config.sh official-images/test/config.sh
-          official-images/test/run.sh ${{ needs.myvars.outputs.TAG_DKR_BRANCH_NAME }}
+          official-images/test/run.sh ${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_DATE }}
 
       - name: Checkpoint | image ls
         run: docker image ls
@@ -643,6 +643,10 @@ jobs:
                 NOTI_SLACK_CHANNEL="$SLACK_CHANNEL" \
                 noti -k -m "$NOTI_MESSAGE" '
 
+  # ----------------------------------------------
+  # Actions after continuous_deployment
+  # ----------------------------------------------
+
   update_readme:
     needs: [myvars, build_stable, cd_stable]
     if: github.ref_type == 'tag'
@@ -671,7 +675,6 @@ jobs:
     permissions:
       pull-requests: write # needed to create and update comments in PRs
 
-    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

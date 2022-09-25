@@ -9,9 +9,13 @@ on:
     - cron: "0 7 * * *" # everyday at 7am
   pull_request:
     branches: [master, main]
+    paths:
+      - "v5/**"
   push:
     tags:
       - "5.*.*"
+    paths-ignore:
+      - "**.md"
     # branches: [master, main]
 
   # Allows you to run this workflow manually from the Actions tab

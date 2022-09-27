@@ -1,0 +1,44 @@
+{
+  "url": "http://localhost:2368/",
+  "server": {
+      "port": "2368",
+      "host": "0.0.0.0"
+  },
+  "database": {
+      "client": "sqlite3",
+      "connection": {
+          "filename": "/var/lib/ghost/content/data/ghost.db"
+      }
+  },
+  "mail": {
+      "from": "'Our Company Team' <thisisus@companyteam.com>",
+      "transport": "SMTP",
+      "options": {
+          "service": "Mailgun",
+          "host": "smtp.mailgun.org",
+          "auth": {
+              "user": "postmaster@thisisus.com",
+              "pass": "6546545466254456654-4566544-654456654"
+          }
+      }
+  },
+  "logging": {
+      "path": "/var/lib/ghost/content/logs",
+      "level": "error",
+      "rotation": {
+          "enabled": true,
+          "count": 7,
+          "period": "5d"
+      },
+      "transports": ["stdout", "file"]
+  },
+  "caching": {
+      "frontend": {
+          "maxAge": 1
+      }
+  },
+  "process": "local",
+  "paths": {
+      "contentPath": "/var/lib/ghost/content"
+  }
+}

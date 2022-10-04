@@ -8,5 +8,8 @@ APP_VERSION="5.17.1"
 ### function options
 CFG_USE_GPG_SIGNATURE="true"
 
+### Needed when projects are under sub directories
+CFG_SUB_DIR="v5"
+
 ### branch names
 CFG_DEFAULT_BRANCH="master"

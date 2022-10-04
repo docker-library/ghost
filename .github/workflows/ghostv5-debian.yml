@@ -191,8 +191,10 @@ jobs:
         # These two VAR are here to force SQLite over Mysql
         # database__client=s
         # database__connection__filename=
+        # https://github.com/infosiftr/stackbrew/blob/2ae0c989749f493839bfa6a2998567031b9073a4/test/tests/ghost-basics/run.sh
+        # docker run -d --name some-ghost -e NODE_ENV=development -e url=http://localhost:3001 -p 3001:2368 ghost:5
         run: |
-          docker run -d --name ghostUAT -p 2368:2368 -e WEB_URL=http://localhost:2368 -e NODE_ENV=production -e database__client=sqlite3 -e database__connection__filename=/var/lib/ghost/content/data/ghost.db ${{ needs.myvars.outputs.TAG_DKR_BRANCH_NAME }}
+          docker run -d --name ghostUAT -e url=http://localhost:2368 -p 2368:2368 -e WEB_URL=http://localhost:2368 -e NODE_ENV=development ${{ needs.myvars.outputs.TAG_DKR_BRANCH_NAME }}
           echo "--- Wait for ghostUAT --->"
           until $(curl --output /dev/null --silent --head --fail http://localhost:2368); do
             echo "--- ghostUAT is starting..."

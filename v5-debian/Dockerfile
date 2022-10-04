@@ -82,7 +82,7 @@ LABEL org.opencontainers.image.authors="Pascal Andy https://firepress.org/en/con
 
 ### STAGE build
 ###
-### from https://github.com/docker-library/ghost/5/debian/Dockerfile
+### from https://github.com/docker-library/ghost/blob/master/5/debian/Dockerfile
 FROM node AS build
 
 ARG VERSION
@@ -212,9 +212,9 @@ RUN set -eux; \
 ###
 ### HEALTHCHECK CMD wget -q -s http://localhost:2368 || exit 1
 ### HEALTHCHECK attributes are passed during runtime <docker service create with var depending on the client IDs>
-FROM base as prod
+#FROM base as prod
 COPY --chown="${USER}":"${USER}" /v5-debian/docker-entrypoint.sh /usr/local/bin
-COPY --from=build --chown="${USER}":"${USER}" "${GHOST_INSTALL}" "${GHOST_INSTALL}"
+#COPY --from=build --chown="${USER}":"${USER}" "${GHOST_INSTALL}" "${GHOST_INSTALL}"
 
 WORKDIR "${GHOST_INSTALL}"
 VOLUME "${GHOST_CONTENT}"

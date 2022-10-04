@@ -201,7 +201,7 @@ jobs:
           echo "--- ghostUAT is running! --->"
 
       - name: UAT docker test edge | docker-library tests
-        # Ghost V5 grep "0o0o"
+        # Ghost V5 grep "Thoughts, stories and ideas"
         # Ghost V4 grep "Thoughts, stories and ideas"
         # Ghost V3 grep "The professional publishing platform"
         run: |

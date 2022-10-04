@@ -48,9 +48,8 @@ jobs:
       - name: Github Actions system status
         uses: crazy-max/ghaction-github-status@v3.0.0
         with:
-          overall_threshold: minor
-          git_threshold: degraded_performance
           actions_threshold: operational
+          git_threshold: degraded_performance
 
       # Commits from a PR use docker image tag: edge
       # When a PR is merge/rebase into master, the docker image tag: stable

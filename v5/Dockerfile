@@ -17,8 +17,8 @@ ARG GITHUB_REGISTRY="registry"
 #   https://github.com/nodejs/Release (looking for "LTS")
 #   https://github.com/TryGhost/Ghost/blob/v4.1.2/package.json#L38
 # ----------------------------------------------
-ARG GHOST_CLI_VERSION="5.17.2"
-ARG NODE_VERSION="5.17.2"
+ARG GHOST_CLI_VERSION="1.23.1"
+ARG NODE_VERSION="16-alpine3.16"
 ARG BASE_OS="alpine"
 ARG USER="node"
 
@@ -37,9 +37,9 @@ ENV GHOST_INSTALL="/var/lib/ghost"          \
   GHOST_CONTENT="/var/lib/ghost/content"  \
   NODE_ENV="production"                   \
   USER="${USER}"                          \
-  NODE_VERSION="5.17.2"          \
-  VERSION="5.17.2"                    \
-  GHOST_CLI_VERSION="5.17.2"
+  NODE_VERSION="${NODE_VERSION}"          \
+  VERSION="${VERSION}"                    \
+  GHOST_CLI_VERSION="${GHOST_CLI_VERSION}"
 
 # credit to https://github.com/opencontainers/image-spec/blob/master/annotations.md
 LABEL org.opencontainers.image.authors="Pascal Andy https://firepress.org/en/contact/"  \

@@ -16,121 +16,53 @@ ARG USER="node"
 ARG GHOST_CLI_VERSION="1.23.0"
 ARG GOSU_VERSION="1.12"
 
-### Define base image versions
-FROM node:16.17.0-bullseye-slim as node
-FROM ubuntu:jammy-20220815 as ubuntu
-#
 # https://docs.ghost.org/faq/node-versions/
 # https://github.com/nodejs/Release (looking for "LTS")
 # https://github.com/TryGhost/Ghost/blob/v4.1.2/package.json#L38
-#
-# ubuntu base with nodejs coppied in from official image, for a more secure base
-# https://hub.docker.com/_/ubuntu
-# https://hub.docker.com/_/node
-
-
-### STAGE base
-#
-FROM ubuntu as base
-# Install node: copy in the specific version we want from a docker image
-# This avoids depdency package installs (python3) that the deb package requires
-COPY --from=node /usr/local/include/ /usr/local/include/
-COPY --from=node /usr/local/lib/ /usr/local/lib/
-COPY --from=node /usr/local/bin/ /usr/local/bin/
-
-# tini: replace npm in CMD with tini for better kernel signal handling
-# You may also need development tools to build native npm addons:
-# apt-get install gcc g++ make
-RUN apt-get update \
-    && apt-get -qq install -y --no-install-recommends \
-        ca-certificates dirmngr gnupg wget tini curl \
-    && rm -rf /var/lib/apt/lists/* \
-    # prevent symlimk errors
-    && corepack disable && corepack enable \
-    \
-    # create node user and group, then create app dir
-    && groupadd --gid 1000 node \
-    && useradd --uid 1000 --gid node --shell /bin/bash --create-home node
-
-ARG VERSION
-ARG GHOST_CLI_VERSION
-ARG USER
-ARG GOSU_VERSION
-
-ENV GHOST_INSTALL="/var/lib/ghost"              \
-    GHOST_CONTENT="/var/lib/ghost/content"      \
-    NODE_ENV="production"                       \
-    USER="${USER}"                              \
-    VERSION="${VERSION}"                        \
-    GHOST_CLI_VERSION="${GHOST_CLI_VERSION}"    \
-    GOSU_VERSION="${GOSU_VERSION}"
-
-# credit to https://github.com/opencontainers/image-spec/blob/master/annotations.md
-LABEL org.opencontainers.image.authors="Pascal Andy https://firepress.org/en/contact/"  \
-    org.opencontainers.image.vendors="https://firepress.org/"                         \
-    org.opencontainers.image.created="$(date "+%Y-%m-%d_%HH%Ms%S")"                   \
-    org.opencontainers.image.commit="$(git rev-parse --short HEAD)"                   \
-    org.opencontainers.image.title="Ghost"                                            \
-    org.opencontainers.image.description="Docker image for Ghost ${VERSION}"          \
-    org.opencontainers.image.url="https://hub.docker.com/r/devmtl/ghostfire/tags/"    \
-    org.opencontainers.image.source="https://github.com/firepress-org/ghostfire"      \
-    org.opencontainers.image.licenses="GNUv3 https://github.com/pascalandy/GNU-GENERAL-PUBLIC-LICENSE/blob/master/LICENSE.md" \
-    org.firepress.image.ghost_cli_version="${GHOST_CLI_VERSION}"                      \
-    org.firepress.image.user="${USER}"                                                \
-    org.firepress.image.node_env="${NODE_ENV}"                                        \
-    org.firepress.image.base_os="${BASE_OS}"
-
-### STAGE build
-###
-### from https://github.com/docker-library/ghost/blob/master/5/debian/Dockerfile
-FROM node AS build
-
-ARG VERSION
-ARG GHOST_CLI_VERSION
-ARG USER
-ARG GOSU_VERSION
-
-ENV GHOST_INSTALL="/var/lib/ghost"              \
-    GHOST_CONTENT="/var/lib/ghost/content"      \
-    NODE_ENV="production"                       \
-    USER="${USER}"                              \
-    VERSION="${VERSION}"                        \
-    GHOST_CLI_VERSION="${GHOST_CLI_VERSION}"    \
-    GOSU_VERSION="${GOSU_VERSION}"
+FROM node:16-bullseye-slim
 
 # grab gosu for easy step-down from root
 # https://github.com/tianon/gosu/releases
+ENV GOSU_VERSION 1.12
 RUN set -eux; \
-    # save list of currently installed packages for later so we can clean up
-    savedAptMark="$(apt-mark showmanual)"; \
-    apt-get update; \
-    apt-get install -y --no-install-recommends ca-certificates dirmngr gnupg wget; \
-    rm -rf /var/lib/apt/lists/*; \
-    \
-    dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')"; \
-    wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch"; \
-    wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch.asc"; \
-    \
-    # verify the signature
-    export GNUPGHOME="$(mktemp -d)"; \
-    gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4; \
-    gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu; \
-    command -v gpgconf && gpgconf --kill all || :; \
-    rm -rf "$GNUPGHOME" /usr/local/bin/gosu.asc; \
-    \
-    # clean up fetch dependencies
-    apt-mark auto '.*' > /dev/null; \
-    [ -z "$savedAptMark" ] || apt-mark manual $savedAptMark > /dev/null; \
-    apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
-    \
-    chmod +x /usr/local/bin/gosu; \
-    # verify that the binary works
-    gosu --version; \
-    gosu nobody true
+# save list of currently installed packages for later so we can clean up
+	savedAptMark="$(apt-mark showmanual)"; \
+	apt-get update; \
+	apt-get install -y --no-install-recommends ca-certificates dirmngr gnupg wget; \
+	rm -rf /var/lib/apt/lists/*; \
+	\
+	dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')"; \
+	wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch"; \
+	wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch.asc"; \
+	\
+# verify the signature
+	export GNUPGHOME="$(mktemp -d)"; \
+	gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4; \
+	gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu; \
+	command -v gpgconf && gpgconf --kill all || :; \
+	rm -rf "$GNUPGHOME" /usr/local/bin/gosu.asc; \
+	\
+# clean up fetch dependencies
+	apt-mark auto '.*' > /dev/null; \
+	[ -z "$savedAptMark" ] || apt-mark manual $savedAptMark > /dev/null; \
+	apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
+	\
+	chmod +x /usr/local/bin/gosu; \
+# verify that the binary works
+	gosu --version; \
+	gosu nobody true
 
+ENV NODE_ENV production
+
+ENV GHOST_CLI_VERSION 1.23.1
 RUN set -eux; \
-    npm install -g "ghost-cli@$GHOST_CLI_VERSION"; \
-    npm cache clean --force
+	npm install -g "ghost-cli@$GHOST_CLI_VERSION"; \
+	npm cache clean --force
+
+ENV GHOST_INSTALL /var/lib/ghost
+ENV GHOST_CONTENT /var/lib/ghost/content
+
+ENV GHOST_VERSION 5.18.0
 
 RUN set -eux; \
 	mkdir -p "$GHOST_INSTALL"; \
@@ -139,7 +71,7 @@ RUN set -eux; \
 	savedAptMark="$(apt-mark showmanual)"; \
 	aptPurge=; \
 	\
-	installCmd='gosu node ghost install "$VERSION" --db mysql --dbhost mysql --no-prompt --no-stack --no-setup --dir "$GHOST_INSTALL"'; \
+	installCmd='gosu node ghost install "$GHOST_VERSION" --db mysql --dbhost mysql --no-prompt --no-stack --no-setup --dir "$GHOST_INSTALL"'; \
 	if ! eval "$installCmd"; then \
 		aptPurge=1; \
 		apt-get update; \
@@ -204,21 +136,11 @@ RUN set -eux; \
 	npm cache clean --force; \
 	rm -rv /tmp/yarn* /tmp/v8*
 
-### STAGE debug
-###
-#FROM build AS debug
+WORKDIR $GHOST_INSTALL
+VOLUME $GHOST_CONTENT
 
-### STAGE prod
-###
-### HEALTHCHECK CMD wget -q -s http://localhost:2368 || exit 1
-### HEALTHCHECK attributes are passed during runtime <docker service create with var depending on the client IDs>
-#FROM base as prod
-COPY --chown="${USER}":"${USER}" /v5-debian/docker-entrypoint.sh /usr/local/bin
-#COPY --from=build --chown="${USER}":"${USER}" "${GHOST_INSTALL}" "${GHOST_INSTALL}"
+COPY docker-entrypoint.sh /usr/local/bin
+ENTRYPOINT ["docker-entrypoint.sh"]
 
-WORKDIR "${GHOST_INSTALL}"
-VOLUME "${GHOST_CONTENT}"
 EXPOSE 2368
-# tiny is missing as we test
-ENTRYPOINT [ "docker-entrypoint.sh" ]
-CMD [ "node", "current/index.js" ]
+CMD ["node", "current/index.js"]

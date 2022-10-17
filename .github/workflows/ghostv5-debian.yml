@@ -42,7 +42,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: "0"
-      - uses: zcong1993/setup-timezone@v1.1.2
+      - uses: zcong1993/setup-timezone@v2.0.0
         with:
           timezone: America/Montreal
       - name: Github Actions system status
@@ -151,7 +151,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - uses: zcong1993/setup-timezone@v1.1.2
+      - uses: zcong1993/setup-timezone@v2.0.0
         with:
           timezone: America/Montreal
       - uses: docker/setup-qemu-action@v2
@@ -223,7 +223,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - uses: zcong1993/setup-timezone@v1.1.2
+      - uses: zcong1993/setup-timezone@v2.0.0
         with:
           timezone: America/Montreal
       - uses: docker/setup-qemu-action@v2
@@ -308,7 +308,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - uses: zcong1993/setup-timezone@v1.1.2
+      - uses: zcong1993/setup-timezone@v2.0.0
         with:
           timezone: America/Montreal
 
@@ -341,7 +341,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - uses: zcong1993/setup-timezone@v1.1.2
+      - uses: zcong1993/setup-timezone@v2.0.0
         with:
           timezone: America/Montreal
 
@@ -372,7 +372,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - uses: zcong1993/setup-timezone@v1.1.2
+      - uses: zcong1993/setup-timezone@v2.0.0
         with:
           timezone: America/Montreal
       - name: Show variables
@@ -440,7 +440,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - uses: zcong1993/setup-timezone@v1.1.2
+      - uses: zcong1993/setup-timezone@v2.0.0
         with:
           timezone: America/Montreal
       - name: Checkpoint | Scanner by Snyk
@@ -475,7 +475,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - uses: zcong1993/setup-timezone@v1.1.2
+      - uses: zcong1993/setup-timezone@v2.0.0
         with:
           timezone: America/Montreal
 
@@ -505,7 +505,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - uses: zcong1993/setup-timezone@v1.1.2
+      - uses: zcong1993/setup-timezone@v2.0.0
         with:
           timezone: America/Montreal
       - name: Checkpoint | Scanner by Dockle
@@ -523,7 +523,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - uses: zcong1993/setup-timezone@v1.1.2
+      - uses: zcong1993/setup-timezone@v2.0.0
         with:
           timezone: America/Montreal
       - name: Checkpoint | Linter
@@ -548,7 +548,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - uses: zcong1993/setup-timezone@v1.1.2
+      - uses: zcong1993/setup-timezone@v2.0.0
         with:
           timezone: America/Montreal
       - name: Login to DockerHub registry
@@ -592,7 +592,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - uses: zcong1993/setup-timezone@v1.1.2
+      - uses: zcong1993/setup-timezone@v2.0.0
         with:
           timezone: America/Montreal
 
@@ -614,7 +614,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - uses: zcong1993/setup-timezone@v1.1.2
+      - uses: zcong1993/setup-timezone@v2.0.0
         with:
           timezone: America/Montreal
 
@@ -633,7 +633,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - uses: zcong1993/setup-timezone@v1.1.2
+      - uses: zcong1993/setup-timezone@v2.0.0
         with:
           timezone: America/Montreal
 
@@ -661,7 +661,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - uses: zcong1993/setup-timezone@v1.1.2
+      - uses: zcong1993/setup-timezone@v2.0.0
         with:
           timezone: America/Montreal
 
@@ -686,7 +686,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - uses: zcong1993/setup-timezone@v1.1.2
+      - uses: zcong1993/setup-timezone@v2.0.0
         with:
           timezone: America/Montreal
 

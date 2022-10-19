@@ -1,5 +1,5 @@
 # ----------------------------------------------
-# At FirePress we run most things in Docker containers.
+# At FirePress we run most things in Docker containers
 # These ARG are required during the Github Actions CI
 # ----------------------------------------------
 ARG APP_NAME="ghostfire"

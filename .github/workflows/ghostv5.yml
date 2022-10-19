@@ -21,6 +21,13 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+# see dependabot job
+# Set the access for individual scopes, or use permissions: write-all
+permissions:
+  pull-requests: write
+  issues: write
+  repository-projects: write
+
 env:
   # needed to define path within 'uses'
   SUB_DIR: "v5"
@@ -653,6 +660,13 @@ jobs:
   update_readme:
     needs: [myvars, build_stable, cd_stable]
     if: github.ref_type == 'tag'
+
+    # Set the access for individual scopes, or use permissions: write-all
+    permissions:
+      pull-requests: write
+      issues: write
+      repository-projects: write
+
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -675,8 +689,11 @@ jobs:
   comment_within_pr:
     needs: [myvars, build_stable, cd_stable]
 
+    # Set the access for individual scopes, or use permissions: write-all
     permissions:
-      pull-requests: write # needed to create and update comments in PRs
+      pull-requests: write
+      issues: write
+      repository-projects: write
 
     runs-on: ubuntu-latest
     steps:
@@ -718,3 +735,25 @@ jobs:
             ${{ needs.myvars.outputs.TAG_GPR_VERSION_HASH_DATE }}
             ```
           edit-mode: replace
+
+  pr_label:
+  # https://docs.github.com/en/code-security/dependabot/working-with-dependabot/automating-dependabot-with-github-actions
+
+    # Set the access for individual scopes, or use permissions: write-all
+    permissions:
+      pull-requests: write
+      issues: write
+      repository-projects: write
+
+    if: ${{ github.actor == 'dependabot[bot]' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: zcong1993/setup-timezone@v2.0.0
+        with:
+          timezone: America/Montreal
+
+      - name: Add a label for PR opened by dependabot
+        run: gh pr edit "$PR_URL" --add-label "dependabot"

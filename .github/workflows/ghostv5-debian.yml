@@ -66,7 +66,9 @@ jobs:
       - name: Define and save variables to disk
         run: |
           cat Dockerfile | grep APP_NAME= | head -n 1 | grep -o '".*"' | sed 's/"//g' > ~/varz/APP_NAME
-          cat Dockerfile | grep VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g' > ~/varz/VERSION
+          cat Dockerfile | grep VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g' > ~/varz/VERSION_TMP
+          echo "— — — DO NOT MIX alpine vs debian Tags! — — — "
+          echo "$(cat ~/varz/VERSION_TMP)_debian" > ~/varz/VERSION
           cat Dockerfile | grep DOCKERHUB_USER= | head -n 1 | grep -o '".*"' | sed 's/"//g' > ~/varz/DOCKERHUB_USER
           cat Dockerfile | grep GITHUB_ORG= | head -n 1 | grep -o '".*"' | sed 's/"//g' > ~/varz/GITHUB_ORG
           cat Dockerfile | grep GITHUB_REGISTRY= | head -n 1 | grep -o '".*"' | sed 's/"//g' > ~/varz/GITHUB_REGISTRY

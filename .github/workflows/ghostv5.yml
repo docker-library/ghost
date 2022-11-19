@@ -21,13 +21,6 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# see dependabot job
-# Set the access for individual scopes, or use permissions: write-all
-permissions:
-  pull-requests: write
-  issues: write
-  repository-projects: write
-
 env:
   # needed to define path within 'uses'
   SUB_DIR: "v5"
@@ -439,6 +432,7 @@ jobs:
   # $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID
 
   review_snyk_opt:
+    continue-on-error: true
     needs: [myvars, build_stable, cd_stable]
     if: github.ref_type == 'tag'
     runs-on: ubuntu-latest
@@ -455,7 +449,6 @@ jobs:
 
         # Snyk can be used to break the build when it detects vulnerabilities.
         # In this case we want to upload the issues to GitHub Code Scanning
-        continue-on-error: true
         env:
           # In order to use the Snyk Action you will need to have a Snyk API token.
           # More details in https://github.com/snyk/actions#getting-your-snyk-token
@@ -471,10 +464,6 @@ jobs:
 
   review_trivy_opt:
     needs: [myvars, build_stable, cd_stable]
-
-    #permissions:
-    #  contents: read # for actions/checkout to fetch code
-    #  security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
 
     if: github.ref_type == 'tag'
     runs-on: ubuntu-latest
@@ -664,12 +653,6 @@ jobs:
     needs: [myvars, build_stable, cd_stable]
     if: github.ref_type == 'tag'
 
-    # Set the access for individual scopes, or use permissions: write-all
-    permissions:
-      pull-requests: write
-      issues: write
-      repository-projects: write
-
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -691,12 +674,6 @@ jobs:
 
   comment_within_pr:
     needs: [myvars, build_stable, cd_stable]
-
-    # Set the access for individual scopes, or use permissions: write-all
-    permissions:
-      pull-requests: write
-      issues: write
-      repository-projects: write
 
     runs-on: ubuntu-latest
     steps:
@@ -741,12 +718,6 @@ jobs:
 
   pr_label:
   # https://docs.github.com/en/code-security/dependabot/working-with-dependabot/automating-dependabot-with-github-actions
-
-    # Set the access for individual scopes, or use permissions: write-all
-    permissions:
-      pull-requests: write
-      issues: write
-      repository-projects: write
 
     if: ${{ github.actor == 'dependabot[bot]' }}
     runs-on: ubuntu-latest

@@ -8,7 +8,7 @@ on:
   #schedule:
   #  - cron: "0 7 * * *" # everyday at 7am
   pull_request:
-    branches: [master, main]
+    branches: [debian]
     paths:
       - "v5-debian/**"
   push:
@@ -48,9 +48,8 @@ jobs:
       - name: Github Actions system status
         uses: crazy-max/ghaction-github-status@v3.1.0
         with:
-          overall_threshold: minor
-          git_threshold: degraded_performance
           actions_threshold: operational
+          git_threshold: degraded_performance
 
       # Commits from a PR use docker image tag: edge
       # When a PR is merge/rebase into master, the docker image tag: stable
@@ -68,7 +67,7 @@ jobs:
           cat Dockerfile | grep APP_NAME= | head -n 1 | grep -o '".*"' | sed 's/"//g' > ~/varz/APP_NAME
           cat Dockerfile | grep VERSION= | head -n 1 | grep -o '".*"' | sed 's/"//g' > ~/varz/VERSION_TMP
           echo "— — — DO NOT MIX alpine vs debian Tags! — — — "
-          echo "$(cat ~/varz/VERSION_TMP)_debian" > ~/varz/VERSION
+          echo "$(cat ~/varz/VERSION_TMP)" > ~/varz/VERSION
           cat Dockerfile | grep DOCKERHUB_USER= | head -n 1 | grep -o '".*"' | sed 's/"//g' > ~/varz/DOCKERHUB_USER
           cat Dockerfile | grep GITHUB_ORG= | head -n 1 | grep -o '".*"' | sed 's/"//g' > ~/varz/GITHUB_ORG
           cat Dockerfile | grep GITHUB_REGISTRY= | head -n 1 | grep -o '".*"' | sed 's/"//g' > ~/varz/GITHUB_REGISTRY
@@ -193,10 +192,8 @@ jobs:
         # These two VAR are here to force SQLite over Mysql
         # database__client=s
         # database__connection__filename=
-        # https://github.com/infosiftr/stackbrew/blob/2ae0c989749f493839bfa6a2998567031b9073a4/test/tests/ghost-basics/run.sh
-        # docker run -d --name some-ghost -e NODE_ENV=development -e url=http://localhost:3001 -p 3001:2368 ghost:5
         run: |
-          docker run -d --name ghostUAT -e url=http://localhost:2368 -p 2368:2368 -e WEB_URL=http://localhost:2368 -e NODE_ENV=development ${{ needs.myvars.outputs.TAG_DKR_BRANCH_NAME }}
+          docker run -d --name ghostUAT -p 2368:2368 -e WEB_URL=http://localhost:2368 -e NODE_ENV=production -e database__client=sqlite3 -e database__connection__filename=/var/lib/ghost/content/data/ghost.db ${{ needs.myvars.outputs.TAG_DKR_BRANCH_NAME }}
           echo "--- Wait for ghostUAT --->"
           until $(curl --output /dev/null --silent --head --fail http://localhost:2368); do
             echo "--- ghostUAT is starting..."
@@ -205,7 +202,7 @@ jobs:
           echo "--- ghostUAT is running! --->"
 
       - name: UAT docker test edge | docker-library tests
-        # Ghost V5 grep "0o0o"
+        # Ghost V5 grep "Thoughts, stories and ideas"
         # Ghost V4 grep "Thoughts, stories and ideas"
         # Ghost V3 grep "The professional publishing platform"
         run: |
@@ -435,6 +432,7 @@ jobs:
   # $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID
 
   review_snyk_opt:
+    continue-on-error: true
     needs: [myvars, build_stable, cd_stable]
     if: github.ref_type == 'tag'
     runs-on: ubuntu-latest
@@ -447,10 +445,10 @@ jobs:
           timezone: America/Montreal
       - name: Checkpoint | Scanner by Snyk
         # https://github.com/snyk/actions/tree/master/docker
-        uses: snyk/actions/docker@0.3.0
+        uses: snyk/actions/node@master
+
         # Snyk can be used to break the build when it detects vulnerabilities.
         # In this case we want to upload the issues to GitHub Code Scanning
-        continue-on-error: true
         env:
           # In order to use the Snyk Action you will need to have a Snyk API token.
           # More details in https://github.com/snyk/actions#getting-your-snyk-token
@@ -466,10 +464,6 @@ jobs:
 
   review_trivy_opt:
     needs: [myvars, build_stable, cd_stable]
-
-    #permissions:
-    #  contents: read # for actions/checkout to fetch code
-    #  security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
 
     if: github.ref_type == 'tag'
     runs-on: ubuntu-latest
@@ -658,6 +652,7 @@ jobs:
   update_readme:
     needs: [myvars, build_stable, cd_stable]
     if: github.ref_type == 'tag'
+
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -679,9 +674,6 @@ jobs:
 
   comment_within_pr:
     needs: [myvars, build_stable, cd_stable]
-
-    permissions:
-      pull-requests: write # needed to create and update comments in PRs
 
     runs-on: ubuntu-latest
     steps:
@@ -723,3 +715,19 @@ jobs:
             ${{ needs.myvars.outputs.TAG_GPR_VERSION_HASH_DATE }}
             ```
           edit-mode: replace
+
+  pr_label:
+  # https://docs.github.com/en/code-security/dependabot/working-with-dependabot/automating-dependabot-with-github-actions
+
+    if: ${{ github.actor == 'dependabot[bot]' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: zcong1993/setup-timezone@v2.0.0
+        with:
+          timezone: America/Montreal
+
+      - name: Add a label for PR opened by dependabot
+        run: gh pr edit "$PR_URL" --add-label "dependabot"

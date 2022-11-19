@@ -8,9 +8,7 @@ on:
   #schedule:
   #  - cron: "0 7 * * *" # everyday at 7am
   pull_request:
-    branches: [debian]
-    paths:
-      - "v5-debian/**"
+    branches: [debian_test]
   push:
     tags:
       - "5.*.*"

@@ -53,14 +53,14 @@ jobs:
 
       - name: Create dir for our varz
         run: mkdir -pv ~/varz
-
       # Build Logic
-      # By default, every builds uses edge workflow
-      # Commits from a PR uses edge workflow
-      # When a PR is merge/rebase into master, it uses edge workflow
-      # Commits on master/main uses edge workflow. I do this all the time to test ci yaml.
-      # When I tag a commit it uses stable workflow and build the OFFICIAL image
-      
+      # By default, every builds uses 'edge' workflow
+      #   Commits from a PR, it uses 'edge' workflow
+      #   When a PR is merge/rebase into master, it uses 'edge' workflow
+      #   When a schedule build rund, it uses 'edge' workflow
+      #   Commits on master/main uses, it uses 'edge' workflow (I do this all the time to test ci yaml)
+      # Once everything is clean ..
+      #   I TAG a commit (i.e. 5.19.1), then the CI uses 'stable' workflow and push the OFFICIAL docker image
       - name: edge | Set BRANCH_NAME
         if: github.ref_type != 'tag'
         run: echo "edge" > ~/varz/BRANCH_NAME

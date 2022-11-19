@@ -426,41 +426,7 @@ jobs:
           echo "${RUNNER_TOOL_CACHE} << RUNNER_TOOL_CACHE"
           echo "${GITHUB_ACTIONS} << GITHUB_ACTIONS"
 
-  # https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#context-availability
-  # if: github.event_name != 'pull_request'
-  # if: ${{ github.ref == 'refs/heads/main' }}
-  # $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID
-
-  review_snyk_opt:
-    continue-on-error: true
-    needs: [myvars, build_stable, cd_stable]
-    if: github.ref_type == 'tag'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - uses: zcong1993/setup-timezone@v2.0.0
-        with:
-          timezone: America/Montreal
-      - name: Checkpoint | Scanner by Snyk
-        # https://github.com/snyk/actions/tree/master/docker
-        uses: snyk/actions/node@master
-
-        # Snyk can be used to break the build when it detects vulnerabilities.
-        # In this case we want to upload the issues to GitHub Code Scanning
-        env:
-          # In order to use the Snyk Action you will need to have a Snyk API token.
-          # More details in https://github.com/snyk/actions#getting-your-snyk-token
-          # or you can signup for free at https://snyk.io/login
-          SNYK_TOKEN: ${{ secrets.TOKEN_SNYK }}
-        with:
-          image: ${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_DATE }}
-          args: --file=./${{ env.SUB_DIR }}/Dockerfile --severity-threshold=high
-      - name: Checkpoint | Upload result to GitHub Code Scanning
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: snyk.sarif
+# review_snyk_opt:
 
   review_trivy_opt:
     needs: [myvars, build_stable, cd_stable]

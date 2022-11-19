@@ -683,8 +683,9 @@ jobs:
           edit-mode: replace
 
   pr_label:
-  # https://docs.github.com/en/code-security/dependabot/working-with-dependabot/automating-dependabot-with-github-actions
+    needs: [myvars, build_stable, cd_stable]
 
+    # https://docs.github.com/en/code-security/dependabot/working-with-dependabot/automating-dependabot-with-github-actions
     if: ${{ github.actor == 'dependabot[bot]' }}
     runs-on: ubuntu-latest
     steps:

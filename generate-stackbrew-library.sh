@@ -57,7 +57,8 @@ cat <<-EOH
 # this file is generated via https://github.com/docker-library/ghost/blob/$(fileCommit "$self")/$self
 
 Maintainers: Tianon Gravi <admwiggin@gmail.com> (@tianon),
-             Joseph Ferguson <yosifkit@gmail.com> (@yosifkit)
+             Joseph Ferguson <yosifkit@gmail.com> (@yosifkit),
+             Austin Burdine <austin@acburdine.me> (@acburdine)
 GitRepo: https://github.com/docker-library/ghost.git
 EOH
 

@@ -14,7 +14,7 @@ For outstanding `ghost` image PRs, check [PRs with the "library/ghost" label on 
 
 ---
 
--	[![build status badge](https://img.shields.io/github/workflow/status/docker-library/ghost/GitHub%20CI/master?label=GitHub%20CI)](https://github.com/docker-library/ghost/actions?query=workflow%3A%22GitHub+CI%22+branch%3Amaster)
+-	[![build status badge](https://img.shields.io/github/actions/workflow/status/docker-library/ghost/ci.yml?branch=master&label=GitHub%20CI)](https://github.com/docker-library/ghost/actions?query=workflow%3A%22GitHub+CI%22+branch%3Amaster)
 -	[![build status badge](https://img.shields.io/jenkins/s/https/doi-janky.infosiftr.net/job/update.sh/job/ghost.svg?label=Automated%20update.sh)](https://doi-janky.infosiftr.net/job/update.sh/job/ghost/)
 
 | Build | Status | Badges | (per-arch) |

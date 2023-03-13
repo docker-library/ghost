@@ -476,7 +476,7 @@ jobs:
 
       - name: Checkpoint | Scanner Trivy for HIGH,CRITICAL CVEs and report (blocking)
         continue-on-error: true
-        uses: aquasecurity/trivy-action@0.9.1
+        uses: aquasecurity/trivy-action@0.9.2
         with:
           image-ref: ${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_DATE }}
           exit-code: 0

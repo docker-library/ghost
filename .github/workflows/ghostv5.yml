@@ -11,7 +11,6 @@ on:
     branches: [master, main]
     paths:
       - "v5/**"
-      - ".github/workflows/**"
   push:
     tags:
       - "5.*.*"
@@ -102,27 +101,27 @@ jobs:
         id: myvars
         run: |
           echo "APP_NAME=$(cat ~/varz/APP_NAME)" >> "$GITHUB_OUTPUT"
-          echo "::set-output name=VERSION::$(cat ~/varz/VERSION)"
-          echo "::set-output name=DOCKERHUB_USER::$(cat ~/varz/DOCKERHUB_USER)"
-          echo "::set-output name=GITHUB_ORG::$(cat ~/varz/GITHUB_ORG)"
-          echo "::set-output name=GITHUB_REGISTRY::$(cat ~/varz/GITHUB_REGISTRY)"
-          echo "::set-output name=DKR_PREFIX::$(cat ~/varz/DKR_PREFIX)"
-          echo "::set-output name=GPR_PREFIX::$(cat ~/varz/GPR_PREFIX)"
-          echo "::set-output name=SUB_DIR::$(cat ~/varz/SUB_DIR)"
-          echo "::set-output name=SHORT_HASH_COMMIT::$(cat ~/varz/SHORT_HASH_COMMIT)"
-          echo "::set-output name=DATE::$(cat ~/varz/DATE)"
-          echo "::set-output name=BRANCH_NAME::$(cat ~/varz/BRANCH_NAME)"
-          echo "::set-output name=VERSION_HASH_ONLY::$(cat ~/varz/VERSION_HASH_ONLY)"
-          echo "::set-output name=VERSION_HASH_DATE::$(cat ~/varz/VERSION_HASH_DATE)"
-          echo "::set-output name=_NOTI_MESSAGE::$(cat ~/varz/_NOTI_MESSAGE)"
-          echo "::set-output name=TAG_DKR_VERSION::$(cat ~/varz/TAG_DKR_VERSION)"
-          echo "::set-output name=TAG_DKR_BRANCH_NAME::$(cat ~/varz/TAG_DKR_BRANCH_NAME)"
-          echo "::set-output name=TAG_DKR_VERSION_HASH_ONLY::$(cat ~/varz/TAG_DKR_VERSION_HASH_ONLY)"
-          echo "::set-output name=TAG_DKR_VERSION_HASH_DATE::$(cat ~/varz/TAG_DKR_VERSION_HASH_DATE)"
-          echo "::set-output name=TAG_GPR_VERSION::$(cat ~/varz/TAG_GPR_VERSION)"
-          echo "::set-output name=TAG_GPR_BRANCH_NAME::$(cat ~/varz/TAG_GPR_BRANCH_NAME)"
-          echo "::set-output name=TAG_GPR_VERSION_HASH_ONLY::$(cat ~/varz/TAG_GPR_VERSION_HASH_ONLY)"
-          echo "::set-output name=TAG_GPR_VERSION_HASH_DATE::$(cat ~/varz/TAG_GPR_VERSION_HASH_DATE)"
+          echo "VERSION=$(cat ~/varz/VERSION)" >> "$GITHUB_OUTPUT"
+          echo "DOCKERHUB_USER=$(cat ~/varz/DOCKERHUB_USER)" >> "$GITHUB_OUTPUT"
+          echo "GITHUB_ORG=$(cat ~/varz/GITHUB_ORG)" >> "$GITHUB_OUTPUT"
+          echo "GITHUB_REGISTRY=$(cat ~/varz/GITHUB_REGISTRY)" >> "$GITHUB_OUTPUT"
+          echo "DKR_PREFIX=$(cat ~/varz/DKR_PREFIX)" >> "$GITHUB_OUTPUT"
+          echo "GPR_PREFIX=$(cat ~/varz/GPR_PREFIX)" >> "$GITHUB_OUTPUT"
+          echo "SUB_DIR=$(cat ~/varz/SUB_DIR)" >> "$GITHUB_OUTPUT"
+          echo "SHORT_HASH_COMMIT=$(cat ~/varz/SHORT_HASH_COMMIT)" >> "$GITHUB_OUTPUT"
+          echo "DATE=$(cat ~/varz/DATE)" >> "$GITHUB_OUTPUT"
+          echo "BRANCH_NAME=$(cat ~/varz/BRANCH_NAME)" >> "$GITHUB_OUTPUT"
+          echo "VERSION_HASH_ONLY=$(cat ~/varz/VERSION_HASH_ONLY)" >> "$GITHUB_OUTPUT"
+          echo "VERSION_HASH_DATE=$(cat ~/varz/VERSION_HASH_DATE)" >> "$GITHUB_OUTPUT"
+          echo "_NOTI_MESSAGE=$(cat ~/varz/_NOTI_MESSAGE)" >> "$GITHUB_OUTPUT"
+          echo "TAG_DKR_VERSION=$(cat ~/varz/TAG_DKR_VERSION)" >> "$GITHUB_OUTPUT"
+          echo "TAG_DKR_BRANCH_NAME=$(cat ~/varz/TAG_DKR_BRANCH_NAME)" >> "$GITHUB_OUTPUT"
+          echo "TAG_DKR_VERSION_HASH_ONLY=$(cat ~/varz/TAG_DKR_VERSION_HASH_ONLY)" >> "$GITHUB_OUTPUT"
+          echo "TAG_DKR_VERSION_HASH_DATE=$(cat ~/varz/TAG_DKR_VERSION_HASH_DATE)" >> "$GITHUB_OUTPUT"
+          echo "TAG_GPR_VERSION=$(cat ~/varz/TAG_GPR_VERSION)" >> "$GITHUB_OUTPUT"
+          echo "TAG_GPR_BRANCH_NAME=$(cat ~/varz/TAG_GPR_BRANCH_NAME)" >> "$GITHUB_OUTPUT"
+          echo "TAG_GPR_VERSION_HASH_ONLY=$(cat ~/varz/TAG_GPR_VERSION_HASH_ONLY)" >> "$GITHUB_OUTPUT"
+          echo "TAG_GPR_VERSION_HASH_DATE=$(cat ~/varz/TAG_GPR_VERSION_HASH_DATE)" >> "$GITHUB_OUTPUT"
     outputs:
       APP_NAME: ${{ steps.myvars.outputs.APP_NAME }}
       VERSION: ${{ steps.myvars.outputs.VERSION }}

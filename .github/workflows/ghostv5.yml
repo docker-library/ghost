@@ -334,9 +334,9 @@ jobs:
 
       - name: Add a comment (from a PR)
         run: |
-          echo '## For reference' >> $GITHUB_STEP_SUMMARY
-          echo 'Docker image: ${{ needs.myvars.outputs.TAG_DKR_BRANCH_NAME }}' >> $GITHUB_STEP_SUMMARY
-          echo 'Please use docker images that were build from a tag. More details: https://github.com/firepress-org/ghostfire/issues/265' >> $GITHUB_STEP_SUMMARY
+          echo "## For reference (from a PR)" >> $GITHUB_STEP_SUMMARY
+          echo "Docker image: ${{ needs.myvars.outputs.TAG_DKR_BRANCH_NAME }}" >> $GITHUB_STEP_SUMMARY
+          echo "Please use docker images that were build from a tag. More details: https://github.com/firepress-org/ghostfire/issues/265" >> $GITHUB_STEP_SUMMARY
 
   cd_stable:
     needs: [build_stable]
@@ -364,8 +364,9 @@ jobs:
 
       - name: Add a comment (from a tag)
         run: |
-          echo '## Offical Docker Image :rocket:' >> $GITHUB_STEP_SUMMARY
-          echo 'Docker image: ${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_DATE }}' >> $GITHUB_STEP_SUMMARY
+          echo "## For reference (from a tag)" >> $GITHUB_STEP_SUMMARY
+          echo "Docker image: ${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_DATE }}" >> $GITHUB_STEP_SUMMARY
+          echo "Please use docker images that were build from a tag. More details: https://github.com/firepress-org/ghostfire/issues/265" >> $GITHUB_STEP_SUMMARY
 
   # ----------------------------------------------
   # Reviews

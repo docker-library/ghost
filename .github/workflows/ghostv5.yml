@@ -100,7 +100,7 @@ jobs:
       - name: Expose variables to all jobs
         id: myvars
         run: |
-          echo "::set-output name=APP_NAME::$(cat ~/varz/APP_NAME)"
+          echo "APP_NAME=$(cat ~/varz/APP_NAME)" >> "$GITHUB_OUTPUT"
           echo "::set-output name=VERSION::$(cat ~/varz/VERSION)"
           echo "::set-output name=DOCKERHUB_USER::$(cat ~/varz/DOCKERHUB_USER)"
           echo "::set-output name=GITHUB_ORG::$(cat ~/varz/GITHUB_ORG)"

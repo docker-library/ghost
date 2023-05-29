@@ -440,7 +440,7 @@ jobs:
           timezone: America/Montreal
       - name: Checkpoint | Scanner by Snyk
         # https://github.com/snyk/actions/tree/master/docker
-        uses: snyk/actions/docker@0.3.0
+        uses: snyk/actions/docker@0.4.0
         # Snyk can be used to break the build when it detects vulnerabilities.
         # In this case we want to upload the issues to GitHub Code Scanning
         continue-on-error: true

@@ -19,7 +19,7 @@ ARG GITHUB_REGISTRY="registry"
 #   https://github.com/TryGhost/Ghost/blob/v4.1.2/package.json#L38
 # ----------------------------------------------
 ARG GHOST_CLI_VERSION="1.24.0"
-ARG NODE_VERSION="16-alpine3.16"
+ARG NODE_VERSION="16-alpine3.17"
 ARG BASE_OS="alpine"
 ARG USER="node"
 

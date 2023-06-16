@@ -16,7 +16,7 @@ on:
       - "5.*.*"
     paths-ignore:
       - "**.md"
-# branches: [master, main]
+  # branches: [master, main]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -433,7 +433,7 @@ jobs:
           echo "${RUNNER_TOOL_CACHE} << RUNNER_TOOL_CACHE"
           echo "${GITHUB_ACTIONS} << GITHUB_ACTIONS"
 
-# review_snyk_opt:
+  # review_snyk_opt:
 
   review_trivy_opt:
     needs: [myvars, build_stable, cd_stable]
@@ -575,6 +575,7 @@ jobs:
           uploadArtifacts: true # save results as an action artifacts
           temporaryPublicStorage: true # upload lighthouse report to the temporary storage
 
+  # https://github.com/firepress-org/ghostfire/issues/408
   review_artillery:
     needs: [myvars, build_stable, cd_stable]
     if: github.ref_type == 'tag'

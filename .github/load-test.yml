@@ -1,5 +1,5 @@
 config:
-  target: https://trial.firepress.link/edge
+  target: https://trial.firepress.link/stable/
   phases:
     - duration: 30 #sec
       arrivalRate: 2

@@ -576,24 +576,6 @@ jobs:
           temporaryPublicStorage: true # upload lighthouse report to the temporary storage
 
   # https://github.com/firepress-org/ghostfire/issues/408
-  review_artillery:
-    needs: [myvars, build_stable, cd_stable]
-    if: github.ref_type == 'tag'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - uses: zcong1993/setup-timezone@v2.0.0
-        with:
-          timezone: America/Montreal
-
-      - name: Checkpoint | Artillery
-        id: load-test
-        uses: kenju/github-actions-artillery@master
-        with:
-          filepath: ./.github/load-test.yml
-          #            https://trial.firepress.link/edge
 
   review_slack:
     needs: [myvars, build_stable, cd_stable]

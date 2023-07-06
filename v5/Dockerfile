@@ -18,7 +18,7 @@ ARG GITHUB_REGISTRY="registry"
 #   https://github.com/nodejs/Release (looking for "LTS")
 #   https://github.com/TryGhost/Ghost/blob/v4.1.2/package.json#L38
 # ----------------------------------------------
-ARG GHOST_CLI_VERSION="1.24.0"
+ARG GHOST_CLI_VERSION="1.24.1"
 ARG NODE_VERSION="16-alpine3.17"
 ARG BASE_OS="alpine"
 ARG USER="node"
@@ -35,39 +35,39 @@ ARG NODE_VERSION
 ARG ALPINE_VERSION
 
 ENV GHOST_INSTALL="/var/lib/ghost"          \
-  GHOST_CONTENT="/var/lib/ghost/content"  \
-  NODE_ENV="production"                   \
-  USER="${USER}"                          \
-  NODE_VERSION="${NODE_VERSION}"          \
-  VERSION="${VERSION}"                    \
-  GHOST_CLI_VERSION="${GHOST_CLI_VERSION}"
+	GHOST_CONTENT="/var/lib/ghost/content"  \
+	NODE_ENV="production"                   \
+	USER="${USER}"                          \
+	NODE_VERSION="${NODE_VERSION}"          \
+	VERSION="${VERSION}"                    \
+	GHOST_CLI_VERSION="${GHOST_CLI_VERSION}"
 
 # credit to https://github.com/opencontainers/image-spec/blob/master/annotations.md
 LABEL org.opencontainers.image.authors="Pascal Andy https://firepress.org/en/contact/"  \
-  org.opencontainers.image.vendors="https://firepress.org/"                         \
-  org.opencontainers.image.created="$(date "+%Y-%m-%d_%HH%Ms%S")"                   \
-  org.opencontainers.image.commit="$(git rev-parse --short HEAD)"                   \
-  org.opencontainers.image.title="Ghost"                                            \
-  org.opencontainers.image.description="Docker image for Ghost ${VERSION}"          \
-  org.opencontainers.image.url="https://hub.docker.com/r/devmtl/ghostfire/tags/"    \
-  org.opencontainers.image.source="https://github.com/firepress-org/ghostfire"      \
-  org.opencontainers.image.licenses="GNUv3 https://github.com/pascalandy/GNU-GENERAL-PUBLIC-LICENSE/blob/master/LICENSE.md" \
-  org.firepress.image.ghost_cli_version="${GHOST_CLI_VERSION}"                      \
-  org.firepress.image.user="${USER}"                                                \
-  org.firepress.image.node_env="${NODE_ENV}"                                        \
-  org.firepress.image.node_version="${NODE_VERSION}"                                \
-  org.firepress.image.base_os="${BASE_OS}"                                          \
-  org.firepress.image.schema_version="1.0"
+	org.opencontainers.image.vendors="https://firepress.org/"                         \
+	org.opencontainers.image.created="$(date "+%Y-%m-%d_%HH%Ms%S")"                   \
+	org.opencontainers.image.commit="$(git rev-parse --short HEAD)"                   \
+	org.opencontainers.image.title="Ghost"                                            \
+	org.opencontainers.image.description="Docker image for Ghost ${VERSION}"          \
+	org.opencontainers.image.url="https://hub.docker.com/r/devmtl/ghostfire/tags/"    \
+	org.opencontainers.image.source="https://github.com/firepress-org/ghostfire"      \
+	org.opencontainers.image.licenses="GNUv3 https://github.com/pascalandy/GNU-GENERAL-PUBLIC-LICENSE/blob/master/LICENSE.md" \
+	org.firepress.image.ghost_cli_version="${GHOST_CLI_VERSION}"                      \
+	org.firepress.image.user="${USER}"                                                \
+	org.firepress.image.node_env="${NODE_ENV}"                                        \
+	org.firepress.image.node_version="${NODE_VERSION}"                                \
+	org.firepress.image.base_os="${BASE_OS}"                                          \
+	org.firepress.image.schema_version="1.0"
 
 # grab su-exec for easy step-down from root
 # add "bash" for "[["
 RUN set -eux && apk update && apk add --no-cache                  \
-  'su-exec>=0.2' bash curl tzdata                               &&\
-  # set up timezone
-  cp /usr/share/zoneinfo/America/New_York /etc/localtime        &&\
-  echo "America/New_York" > /etc/timezone                       &&\
-  apk del tzdata                                                &&\
-  rm -rvf /var/cache/apk/* /tmp/*                               ;
+	'su-exec>=0.2' bash curl tzdata                               &&\
+	# set up timezone
+	cp /usr/share/zoneinfo/America/New_York /etc/localtime        &&\
+	echo "America/New_York" > /etc/timezone                       &&\
+	apk del tzdata                                                &&\
+	rm -rvf /var/cache/apk/* /tmp/*                               ;
 
 # ----------------------------------------------
 # 3) LAYER debug
@@ -94,62 +94,62 @@ RUN set -eux; \
 	\
 	installCmd='su-exec node ghost install "$VERSION" --db mysql --dbhost mysql --no-prompt --no-stack --no-setup --dir "$GHOST_INSTALL"'; \
 	if ! eval "$installCmd"; then \
-		virtual='.build-deps-ghost'; \
-		apkDel="$apkDel $virtual"; \
-		apk add --no-cache --virtual "$virtual" g++ make python3; \
-		eval "$installCmd"; \
+	virtual='.build-deps-ghost'; \
+	apkDel="$apkDel $virtual"; \
+	apk add --no-cache --virtual "$virtual" g++ make python3; \
+	eval "$installCmd"; \
 	fi; \
 	\
-# Tell Ghost to listen on all ips and not prompt for additional configuration
+	# Tell Ghost to listen on all ips and not prompt for additional configuration
 	cd "$GHOST_INSTALL"; \
 	su-exec node ghost config --no-prompt --ip '::' --port 2368 --url 'http://localhost:2368'; \
 	su-exec node ghost config paths.contentPath "$GHOST_CONTENT"; \
 	\
-# make a config.json symlink for NODE_ENV=development (and sanity check that it's correct)
+	# make a config.json symlink for NODE_ENV=development (and sanity check that it's correct)
 	su-exec node ln -s config.production.json "$GHOST_INSTALL/config.development.json"; \
 	readlink -f "$GHOST_INSTALL/config.development.json"; \
 	\
-# need to save initial content for pre-seeding empty volumes
+	# need to save initial content for pre-seeding empty volumes
 	mv "$GHOST_CONTENT" "$GHOST_INSTALL/content.orig"; \
 	mkdir -p "$GHOST_CONTENT"; \
 	chown node:node "$GHOST_CONTENT"; \
 	chmod 1777 "$GHOST_CONTENT"; \
 	\
-# force install a few extra packages manually since they're "optional" dependencies
-# (which means that if it fails to install, like on ARM/ppc64le/s390x, the failure will be silently ignored and thus turn into a runtime error instead)
-# see https://github.com/TryGhost/Ghost/pull/7677 for more details
-#
-# We have a RUN step here as sqlite cause trouble and it's easier to confirm where the build crash.
+	# force install a few extra packages manually since they're "optional" dependencies
+	# (which means that if it fails to install, like on ARM/ppc64le/s390x, the failure will be silently ignored and thus turn into a runtime error instead)
+	# see https://github.com/TryGhost/Ghost/pull/7677 for more details
+	#
+	# We have a RUN step here as sqlite cause trouble and it's easier to confirm where the build crash.
 	cd "$GHOST_INSTALL/current"; \
-# scrape the expected versions directly from Ghost/dependencies
+	# scrape the expected versions directly from Ghost/dependencies
 	packages="$(node -p ' \
-		var ghost = require("./package.json"); \
-		var transform = require("./node_modules/@tryghost/image-transform/package.json"); \
-		[ \
-			"sharp@" + transform.optionalDependencies["sharp"], \
-			"sqlite3@" + ghost.optionalDependencies["sqlite3"], \
-		].join(" ") \
+	var ghost = require("./package.json"); \
+	var transform = require("./node_modules/@tryghost/image-transform/package.json"); \
+	[ \
+	"sharp@" + transform.optionalDependencies["sharp"], \
+	"sqlite3@" + ghost.optionalDependencies["sqlite3"], \
+	].join(" ") \
 	')"; \
 	if echo "$packages" | grep 'undefined'; then exit 1; fi; \
 	for package in $packages; do \
-		installCmd='su-exec node yarn add "$package" --force'; \
-		if ! eval "$installCmd"; then \
-# must be some non-amd64 architecture pre-built binaries aren't published for, so let's install some build deps and do-it-all-over-again
-			virtualPackages='g++ make python3'; \
-			case "$package" in \
-				# TODO sharp@*) virtualPackages="$virtualPackages pkgconf vips-dev"; \
-				sharp@*) echo >&2 "sorry: libvips 8.12.1 in Alpine 3.15 is not new enough (8.12.2+) for sharp 0.30 😞"; continue ;; \
-			esac; \
-			virtual=".build-deps-${package%%@*}"; \
-			apkDel="$apkDel $virtual"; \
-			apk add --no-cache --virtual "$virtual" $virtualPackages; \
-			\
-			eval "$installCmd --build-from-source"; \
-		fi; \
+	installCmd='su-exec node yarn add "$package" --force'; \
+	if ! eval "$installCmd"; then \
+	# must be some non-amd64 architecture pre-built binaries aren't published for, so let's install some build deps and do-it-all-over-again
+	virtualPackages='g++ make python3'; \
+	case "$package" in \
+	# TODO sharp@*) virtualPackages="$virtualPackages pkgconf vips-dev"; \
+	sharp@*) echo >&2 "sorry: libvips 8.12.1 in Alpine 3.15 is not new enough (8.12.2+) for sharp 0.30 😞"; continue ;; \
+	esac; \
+	virtual=".build-deps-${package%%@*}"; \
+	apkDel="$apkDel $virtual"; \
+	apk add --no-cache --virtual "$virtual" $virtualPackages; \
+	\
+	eval "$installCmd --build-from-source"; \
+	fi; \
 	done; \
 	\
 	if [ -n "$apkDel" ]; then \
-		apk del --no-network $apkDel; \
+	apk del --no-network $apkDel; \
 	fi; \
 	\
 	su-exec node yarn cache clean; \

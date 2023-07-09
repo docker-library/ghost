@@ -18,7 +18,7 @@ ARG GITHUB_REGISTRY="registry"
 #   https://github.com/nodejs/Release (looking for "LTS")
 #   https://github.com/TryGhost/Ghost/blob/v4.1.2/package.json#L38
 # ----------------------------------------------
-ARG GHOST_CLI_VERSION="1.24.1"
+ARG GHOST_CLI_VERSION="1.24.2"
 ARG NODE_VERSION="18-alpine3.17"
 ARG BASE_OS="alpine"
 ARG USER="node"

@@ -304,7 +304,7 @@ jobs:
           timezone: America/Montreal
 
       - name: cd edge
-        uses: appleboy/ssh-action@v0.1.10
+        uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.NODE1 }}
           port: ${{ secrets.SSH_PORT }}
@@ -337,7 +337,7 @@ jobs:
           timezone: America/Montreal
 
       - name: cd stable
-        uses: appleboy/ssh-action@v0.1.10
+        uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.NODE1 }}
           port: ${{ secrets.SSH_PORT }}

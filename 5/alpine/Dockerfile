@@ -20,7 +20,7 @@ RUN set -eux; \
 ENV GHOST_INSTALL /var/lib/ghost
 ENV GHOST_CONTENT /var/lib/ghost/content
 
-ENV GHOST_VERSION 5.59.3
+ENV GHOST_VERSION 5.59.4
 
 RUN set -eux; \
 	mkdir -p "$GHOST_INSTALL"; \

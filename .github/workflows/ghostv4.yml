@@ -154,7 +154,7 @@ jobs:
       - uses: zcong1993/setup-timezone@v2.0.0
         with:
           timezone: America/Montreal
-      - uses: docker/setup-qemu-action@v2
+      - uses: docker/setup-qemu-action@v3
       - uses: docker/setup-buildx-action@v2
         with:
           version: v0.6.0
@@ -223,7 +223,7 @@ jobs:
       - uses: zcong1993/setup-timezone@v2.0.0
         with:
           timezone: America/Montreal
-      - uses: docker/setup-qemu-action@v2
+      - uses: docker/setup-qemu-action@v3
       - uses: docker/setup-buildx-action@v2
         with:
           version: v0.6.0

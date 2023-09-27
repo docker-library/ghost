@@ -31,7 +31,7 @@ RUN set -eux; \
 	if ! eval "$installCmd"; then \
 		virtual='.build-deps-ghost'; \
 		apkDel="$apkDel $virtual"; \
-		apk add --no-cache --virtual "$virtual" g++ make python3; \
+		apk add --no-cache --virtual "$virtual" g++ linux-headers make python3; \
 		eval "$installCmd"; \
 	fi; \
 	\

@@ -469,7 +469,7 @@ jobs:
 
       - name: Checkpoint | Scanner Trivy for HIGH,CRITICAL CVEs and report (blocking)
         continue-on-error: true
-        uses: aquasecurity/trivy-action@0.12.0
+        uses: aquasecurity/trivy-action@0.13.0
         with:
           image-ref: ${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_DATE }}
           exit-code: 0
@@ -709,7 +709,7 @@ jobs:
           edit-mode: replace
 
   pr_label:
-  # https://docs.github.com/en/code-security/dependabot/working-with-dependabot/automating-dependabot-with-github-actions
+    # https://docs.github.com/en/code-security/dependabot/working-with-dependabot/automating-dependabot-with-github-actions
 
     if: ${{ github.actor == 'dependabot[bot]' }}
     runs-on: ubuntu-latest

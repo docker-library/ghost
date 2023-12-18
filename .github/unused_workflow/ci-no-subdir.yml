@@ -370,7 +370,7 @@ jobs:
           image: ${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_DATE }}
           args: --file=${{ env.DOCKERFILE }} --severity-threshold=high
       - name: Checkpoint | Upload result to GitHub Code Scanning
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: snyk.sarif
 
@@ -403,7 +403,7 @@ jobs:
           #output: "trivy-results.sarif"
 
       #- name: Upload Trivy scan results to GitHub Security tab
-      #  uses: github/codeql-action/upload-sarif@v2
+      #  uses: github/codeql-action/upload-sarif@v3
       #  if: always()
       #  with:
       #    sarif_file: "trivy-results.sarif"

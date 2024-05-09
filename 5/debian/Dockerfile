@@ -1,6 +1,6 @@
 # https://docs.ghost.org/faq/node-versions/
 # https://github.com/nodejs/Release (looking for "LTS")
-FROM node:18-bookworm-slim
+FROM node:iron-bookworm-slim
 
 # grab gosu for easy step-down from root
 # https://github.com/tianon/gosu/releases
@@ -43,7 +43,7 @@ RUN set -eux; \
 ENV GHOST_INSTALL /var/lib/ghost
 ENV GHOST_CONTENT /var/lib/ghost/content
 
-ENV GHOST_VERSION 5.82.2
+ENV GHOST_VERSION 5.82.8
 
 RUN set -eux; \
 	mkdir -p "$GHOST_INSTALL"; \
@@ -55,8 +55,8 @@ RUN set -eux; \
 	installCmd='gosu node ghost install "$GHOST_VERSION" --db mysql --dbhost mysql --no-prompt --no-stack --no-setup --dir "$GHOST_INSTALL"'; \
 	if ! eval "$installCmd"; then \
 		aptPurge=1; \
-		apt-get update; \
-		apt-get install -y --no-install-recommends g++ make python3; \
+		apt update; \
+		apt install -y --no-install-recommends --no-install-suggests libvips-dev g++ make python3 ; \
 		eval "$installCmd"; \
 	fi; \
 	\
@@ -94,11 +94,12 @@ RUN set -eux; \
 		if ! eval "$installCmd"; then \
 # must be some non-amd64 architecture pre-built binaries aren't published for, so let's install some build deps and do-it-all-over-again
 			aptPurge=1; \
-			apt-get update; \
-			apt-get install -y --no-install-recommends g++ make python3; \
+			apt update; \
+			apt install -y --no-install-recommends g++ make python3; \
 			case "$package" in \
-				# TODO sharp@*) apt-get install -y --no-install-recommends libvips-dev ;; \
-				sharp@*) echo >&2 "sorry: libvips 8.10 in Debian bullseye is not new enough (8.12.2+) for sharp 0.30 😞"; continue ;; \
+   				# Debian Bookworm is capable now 😄
+				 sharp@*) apt install -y --no-install-recommends --no-install-suggests libvips-dev ;; \
+				# sharp@*) echo >&2 "sorry: libvips 8.10 in Debian bullseye is not new enough (8.12.2+) for sharp 0.30 😞"; continue ;; \
 			esac; \
 			\
 			eval "$installCmd --build-from-source"; \
@@ -108,7 +109,7 @@ RUN set -eux; \
 	if [ -n "$aptPurge" ]; then \
 		apt-mark showmanual | xargs apt-mark auto > /dev/null; \
 		[ -z "$savedAptMark" ] || apt-mark manual $savedAptMark; \
-		apt-get purge -y --auto-remove; \
+		apt purge -y --auto-remove; \
 		rm -rf /var/lib/apt/lists/*; \
 	fi; \
 	\

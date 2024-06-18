@@ -2,12 +2,40 @@
 # https://github.com/nodejs/Release (looking for "LTS")
 FROM node:18-alpine3.19
 
-# grab su-exec for easy step-down from root
-RUN apk add --no-cache 'su-exec>=0.2'
-
 RUN apk add --no-cache \
 # add "bash" for "[["
 		bash
+
+# grab gosu for easy step-down from root
+# https://github.com/tianon/gosu/releases
+ENV GOSU_VERSION 1.17
+RUN set -eux; \
+	\
+	apk add --no-cache --virtual .gosu-deps \
+		ca-certificates \
+		dpkg \
+		gnupg \
+	; \
+	\
+	dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')"; \
+	wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch"; \
+	wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch.asc"; \
+	\
+# verify the signature
+	export GNUPGHOME="$(mktemp -d)"; \
+	gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4; \
+	gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu; \
+	gpgconf --kill all; \
+	rm -rf "$GNUPGHOME" /usr/local/bin/gosu.asc; \
+	\
+# clean up fetch dependencies
+	apk del --no-network .gosu-deps; \
+	\
+	chmod +x /usr/local/bin/gosu; \
+# verify that the binary works
+	gosu --version; \
+	gosu nobody true
+RUN set -eux; ln -svf gosu /usr/local/bin/su-exec; su-exec nobody true # backwards compatibility (TODO remove in Ghost 6+)
 
 ENV NODE_ENV production
 
@@ -27,7 +55,7 @@ RUN set -eux; \
 	\
 	apkDel=; \
 	\
-	installCmd='su-exec node ghost install "$GHOST_VERSION" --db mysql --dbhost mysql --no-prompt --no-stack --no-setup --dir "$GHOST_INSTALL"'; \
+	installCmd='gosu node ghost install "$GHOST_VERSION" --db mysql --dbhost mysql --no-prompt --no-stack --no-setup --dir "$GHOST_INSTALL"'; \
 	if ! eval "$installCmd"; then \
 		virtual='.build-deps-ghost'; \
 		apkDel="$apkDel $virtual"; \
@@ -37,11 +65,11 @@ RUN set -eux; \
 	\
 # Tell Ghost to listen on all ips and not prompt for additional configuration
 	cd "$GHOST_INSTALL"; \
-	su-exec node ghost config --no-prompt --ip '::' --port 2368 --url 'http://localhost:2368'; \
-	su-exec node ghost config paths.contentPath "$GHOST_CONTENT"; \
+	gosu node ghost config --no-prompt --ip '::' --port 2368 --url 'http://localhost:2368'; \
+	gosu node ghost config paths.contentPath "$GHOST_CONTENT"; \
 	\
 # make a config.json symlink for NODE_ENV=development (and sanity check that it's correct)
-	su-exec node ln -s config.production.json "$GHOST_INSTALL/config.development.json"; \
+	gosu node ln -s config.production.json "$GHOST_INSTALL/config.development.json"; \
 	readlink -f "$GHOST_INSTALL/config.development.json"; \
 	\
 # need to save initial content for pre-seeding empty volumes
@@ -65,7 +93,7 @@ RUN set -eux; \
 	')"; \
 	if echo "$packages" | grep 'undefined'; then exit 1; fi; \
 	for package in $packages; do \
-		installCmd='su-exec node yarn add "$package" --force'; \
+		installCmd='gosu node yarn add "$package" --force'; \
 		if ! eval "$installCmd"; then \
 # must be some non-amd64 architecture pre-built binaries aren't published for, so let's install some build deps and do-it-all-over-again
 			virtualPackages='g++ make python3'; \
@@ -85,8 +113,8 @@ RUN set -eux; \
 		apk del --no-network $apkDel; \
 	fi; \
 	\
-	su-exec node yarn cache clean; \
-	su-exec node npm cache clean --force; \
+	gosu node yarn cache clean; \
+	gosu node npm cache clean --force; \
 	npm cache clean --force; \
 	rm -rv /tmp/yarn* /tmp/v8*
 

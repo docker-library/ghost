@@ -172,5 +172,8 @@ VOLUME "${GHOST_CONTENT}"
 USER "${USER}"
 EXPOSE 2368
 
+HEALTHCHECK --interval=30s --timeout=3s --start-period=30s --retries=3 \
+	CMD wget --quiet --tries=1 --spider http://localhost:2368 || exit 1
+
 ENTRYPOINT [ "docker-entrypoint.sh" ]
 CMD [ "node", "current/index.js" ]

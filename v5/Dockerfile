@@ -1,24 +1,20 @@
 # syntax=docker/dockerfile:1
 
 # ----------------------------------------------
-# At FirePress we run most things in Docker containers
-# These ARG are required during the Github Actions CI
+# 1a) ENV variables (core for all our projects at FirePress)
 # ----------------------------------------------
 ARG APP_NAME="ghostfire"
 ARG VERSION="5.84.2"
 
 ARG GITHUB_USER="firepress-org"
 ARG DEFAULT_BRANCH="master"
-# remove ORG
 ARG GITHUB_ORG="firepress-org"
 ARG DOCKERHUB_USER="devmtl"
 ARG GITHUB_REGISTRY="registry"
 
 # ----------------------------------------------
-# 1) Start your Dockerfile from here 
-#   https://docs.ghost.org/faq/node-versions/
-#   https://github.com/nodejs/Release (looking for "LTS")
-#   https://github.com/TryGhost/Ghost/blob/v4.1.2/package.json#L38
+# 1b) ENV variables (for this project)
+# Various docs about our Dockerfile - https://github.com/firepress-org/ghostfire/issues/529
 # ----------------------------------------------
 ARG GHOST_CLI_VERSION="1.26.0"
 ARG NODE_VERSION="18-alpine3.19"
@@ -26,7 +22,7 @@ ARG BASE_OS="alpine"
 ARG USER="node"
 
 # ----------------------------------------------
-# 2) LAYER to manage base image versioning. Credentials Tõnis Tiigi https://bit.ly/2RoCmvG
+# 2) LAYER to manage base image versioning
 # ----------------------------------------------
 FROM node:${NODE_VERSION} AS mynode
 
@@ -44,30 +40,32 @@ ENV GHOST_INSTALL="/var/lib/ghost"          \
 	VERSION="${VERSION}"                    \
 	GHOST_CLI_VERSION="${GHOST_CLI_VERSION}"
 
-# credit to https://github.com/opencontainers/image-spec/blob/master/annotations.md
-LABEL org.opencontainers.image.authors="Pascal Andy https://firepress.org/en/contact/"  \
-	org.opencontainers.image.vendors="https://firepress.org/"                         \
-	org.opencontainers.image.created="$(date "+%Y-%m-%d_%HH%Ms%S")"                   \
-	org.opencontainers.image.commit="$(git rev-parse --short HEAD)"                   \
-	org.opencontainers.image.title="Ghost"                                            \
-	org.opencontainers.image.description="Docker image for Ghost ${VERSION}"          \
-	org.opencontainers.image.url="https://hub.docker.com/r/devmtl/ghostfire/tags/"    \
-	org.opencontainers.image.source="https://github.com/firepress-org/ghostfire"      \
+LABEL org.opencontainers.image.authors="Pascal Andy https://firepress.org/en/contact/" \
+	org.opencontainers.image.vendor="https://firepress.org/" \
+	org.opencontainers.image.created="${BUILD_DATE}" \
+	org.opencontainers.image.revision="${VCS_REF}" \
+	org.opencontainers.image.title="Ghost" \
+	org.opencontainers.image.description="Docker image for Ghost ${VERSION}" \
+	org.opencontainers.image.url="https://hub.docker.com/r/devmtl/ghostfire/tags/" \
+	org.opencontainers.image.source="https://github.com/firepress-org/ghostfire" \
 	org.opencontainers.image.licenses="GNUv3 https://github.com/pascalandy/GNU-GENERAL-PUBLIC-LICENSE/blob/master/LICENSE.md" \
-	org.firepress.image.ghost_cli_version="${GHOST_CLI_VERSION}"                      \
-	org.firepress.image.user="${USER}"                                                \
-	org.firepress.image.node_env="${NODE_ENV}"                                        \
-	org.firepress.image.node_version="${NODE_VERSION}"                                \
-	org.firepress.image.base_os="${BASE_OS}"                                          \
-	org.firepress.image.schema_version="1.0"
+	com.firepress.image.ghost_cli_version="${GHOST_CLI_VERSION}" \
+	com.firepress.image.user="${USER}" \
+	com.firepress.image.node_env="${NODE_ENV}" \
+	com.firepress.image.node_version="${NODE_VERSION}" \
+	com.firepress.image.base_os="${BASE_OS}" \
+	com.firepress.image.schema_version="1.0"
 
-# Install gosu for easy step-down from root. https://github.com/tianon/gosu/releases
+# Install bash curl tzdata gosu
 ENV GOSU_VERSION 1.17
 RUN set -eux; \
 	apk add --no-cache --virtual .gosu-deps \
 	ca-certificates \
 	dpkg \
 	gnupg \
+	bash \
+	curl \
+	tzdata \
 	; \
 	dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')"; \
 	wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch"; \
@@ -80,15 +78,11 @@ RUN set -eux; \
 	apk del --no-network .gosu-deps; \
 	chmod +x /usr/local/bin/gosu; \
 	gosu --version; \
-	gosu nobody true
-
-# Add bash and set timezone
-RUN apk add --no-cache bash curl tzdata && \
-	cp /usr/share/zoneinfo/America/New_York /etc/localtime && \
-	echo "America/New_York" > /etc/timezone && \
-	apk del tzdata && \
+	gosu nobody true; \
+	cp /usr/share/zoneinfo/America/New_York /etc/localtime; \
+	echo "America/New_York" > /etc/timezone; \
+	apk del tzdata; \
 	rm -rvf /var/cache/apk/* /tmp/*
-
 
 # ----------------------------------------------
 # 3) LAYER debug
@@ -100,7 +94,6 @@ RUN apk upgrade
 
 # ----------------------------------------------
 # 4) LAYER builder
-#   from the official Ghost image https://bit.ly/2JWOTam
 # ----------------------------------------------
 FROM mynode AS builder
 
@@ -159,8 +152,6 @@ RUN set -eux; \
 
 # ----------------------------------------------
 # 5) LAYER final
-#   HEALTHCHECK CMD wget -q -s http://localhost:2368 || exit 1
-#   HEALTHCHECK attributes are passed during runtime <docker service create with var depending on the client IDs>
 # ----------------------------------------------
 FROM mynode AS final
 
@@ -172,6 +163,7 @@ VOLUME "${GHOST_CONTENT}"
 USER "${USER}"
 EXPOSE 2368
 
+# HEALTHCHECK attributes are passed during runtime <docker service>
 HEALTHCHECK --interval=30s --timeout=3s --start-period=30s --retries=3 \
 	CMD wget --quiet --tries=1 --spider http://localhost:2368 || exit 1
 

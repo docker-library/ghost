@@ -56,16 +56,13 @@ LABEL org.opencontainers.image.authors="Pascal Andy https://firepress.org/en/con
 	com.firepress.image.base_os="${BASE_OS}" \
 	com.firepress.image.schema_version="1.0"
 
-# Install bash curl tzdata gosu
+# Install gosu for easy step-down from root
 ENV GOSU_VERSION 1.17
 RUN set -eux; \
 	apk add --no-cache --virtual .gosu-deps \
 	ca-certificates \
 	dpkg \
 	gnupg \
-	bash \
-	curl \
-	tzdata \
 	; \
 	dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')"; \
 	wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch"; \
@@ -78,10 +75,13 @@ RUN set -eux; \
 	apk del --no-network .gosu-deps; \
 	chmod +x /usr/local/bin/gosu; \
 	gosu --version; \
-	gosu nobody true; \
-	cp /usr/share/zoneinfo/America/New_York /etc/localtime; \
-	echo "America/New_York" > /etc/timezone; \
-	apk del tzdata; \
+	gosu nobody true
+
+# Add bash and set timezone
+RUN apk add --no-cache bash curl tzdata && \
+	cp /usr/share/zoneinfo/America/New_York /etc/localtime && \
+	echo "America/New_York" > /etc/timezone && \
+	apk del tzdata && \
 	rm -rvf /var/cache/apk/* /tmp/*
 
 # ----------------------------------------------

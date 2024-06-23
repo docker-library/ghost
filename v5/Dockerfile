@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1
+
 # ----------------------------------------------
 # At FirePress we run most things in Docker containers
 # These ARG are required during the Github Actions CI

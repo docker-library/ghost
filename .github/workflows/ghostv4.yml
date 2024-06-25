@@ -158,11 +158,11 @@ jobs:
       - uses: docker/setup-buildx-action@v3
         with:
           version: v0.6.0
-      - uses: docker/login-action@v3.1.0
+      - uses: docker/login-action@v3.2.0
         with:
           username: ${{ needs.myvars.outputs.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
-      - uses: docker/login-action@v3.1.0
+      - uses: docker/login-action@v3.2.0
         with:
           registry: ghcr.io
           username: ${{ needs.myvars.outputs.GITHUB_ORG }}
@@ -227,11 +227,11 @@ jobs:
       - uses: docker/setup-buildx-action@v3
         with:
           version: v0.6.0
-      - uses: docker/login-action@v3.1.0
+      - uses: docker/login-action@v3.2.0
         with:
           username: ${{ needs.myvars.outputs.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
-      - uses: docker/login-action@v3.1.0
+      - uses: docker/login-action@v3.2.0
         with:
           registry: ghcr.io
           username: ${{ needs.myvars.outputs.GITHUB_ORG }}
@@ -547,12 +547,12 @@ jobs:
         with:
           timezone: America/Montreal
       - name: Login to DockerHub registry
-        uses: docker/login-action@v3.1.0
+        uses: docker/login-action@v3.2.0
         with:
           username: ${{ needs.myvars.outputs.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
       - name: Login to GitHub registry
-        uses: docker/login-action@v3.1.0
+        uses: docker/login-action@v3.2.0
         with:
           registry: ghcr.io
           username: ${{ needs.myvars.outputs.GITHUB_ORG }}

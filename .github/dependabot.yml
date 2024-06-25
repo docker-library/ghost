@@ -10,14 +10,6 @@ updates:
     labels:
       - ":game_die: dependencies"
       - ":robot: bot"
-    commit-message:
-      prefix: "chore"
-      include: "scope"
-    groups:
-      github-actions:
-        patterns:
-          - "*"
-    open-pull-requests-limit: 10
 
   # Maintain dependencies for Docker
   - package-ecosystem: "docker"
@@ -29,10 +21,8 @@ updates:
     labels:
       - ":game_die: dependencies"
       - ":robot: bot"
-    commit-message:
-      prefix: "chore"
-      include: "scope"
-    open-pull-requests-limit: 5
+    registries:
+      - dockerhub # This links the Docker ecosystem to the dockerhub registry
 
 registries:
   dockerhub:

@@ -1,6 +1,6 @@
 version: 2
 updates:
-  # Maintain dependencies for Actions
+  # Maintain dependencies for GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
@@ -10,6 +10,14 @@ updates:
     labels:
       - ":game_die: dependencies"
       - ":robot: bot"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+    open-pull-requests-limit: 10
 
   # Maintain dependencies for Docker
   - package-ecosystem: "docker"
@@ -21,3 +29,14 @@ updates:
     labels:
       - ":game_die: dependencies"
       - ":robot: bot"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    open-pull-requests-limit: 5
+
+registries:
+  dockerhub:
+    type: docker-registry
+    url: https://registry.hub.docker.com
+    username: ${{ needs.myvars.outputs.DOCKERHUB_USER }}
+    password: ${{ secrets.DOCKERHUB_PASSWORD }}

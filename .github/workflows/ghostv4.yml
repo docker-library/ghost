@@ -169,7 +169,7 @@ jobs:
           password: ${{ secrets.TOKEN_GPR }}
 
       - name: Build and push image (edge)
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: ./${{ env.SUB_DIR }}/Dockerfile
@@ -238,7 +238,7 @@ jobs:
           password: ${{ secrets.TOKEN_GPR }}
 
       - name: Build and push image (stable)
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: ./${{ env.SUB_DIR }}/Dockerfile

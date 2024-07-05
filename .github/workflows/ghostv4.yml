@@ -9,8 +9,6 @@
 name: Ghost V4 alpine
 
 on:
-  schedule:
-    - cron: "0 0 1 * *" # once a month
   pull_request:
     branches: [lts_v4]
   push:

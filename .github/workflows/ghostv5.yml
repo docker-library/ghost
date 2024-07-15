@@ -26,6 +26,11 @@ env:
   # needed to define path within 'uses'
   SUB_DIR: "v5"
 
+permissions:
+  contents: read
+  packages: write # if you're pushing to GitHub Packages
+  pull-requests: write # allows Dependabot to auto-merge its PRs if you've configured it to do so
+
 defaults:
   run:
     shell: "bash -Eeuo pipefail -x {0}"

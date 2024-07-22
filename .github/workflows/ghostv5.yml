@@ -179,7 +179,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ needs.myvars.outputs.GITHUB_ORG }}
-          password: ${{ github.actor == 'dependabot[bot]' && secrets.TOKEN_GPR || secrets.DOCKERHUB_PASSWORD }}
+          password: ${{ github.actor == 'dependabot[bot]' && secrets.TOKEN_GPR || secrets.TOKEN_GPR }}
 
       - name: Build and push image (edge)
         uses: docker/build-push-action@v6
@@ -249,7 +249,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ needs.myvars.outputs.GITHUB_ORG }}
-          password: ${{ github.actor == 'dependabot[bot]' && secrets.TOKEN_GPR || secrets.DOCKERHUB_PASSWORD }}
+          password: ${{ github.actor == 'dependabot[bot]' && secrets.TOKEN_GPR || secrets.TOKEN_GPR }}
 
       - name: Build and push image (stable)
         uses: docker/build-push-action@v6
@@ -536,7 +536,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ needs.myvars.outputs.GITHUB_ORG }}
-          password: ${{ github.actor == 'dependabot[bot]' && secrets.TOKEN_GPR || secrets.DOCKERHUB_PASSWORD }}
+          password: ${{ github.actor == 'dependabot[bot]' && secrets.TOKEN_GPR || secrets.TOKEN_GPR }}
       - name: Checkpoint | docker pull
         run: |
           docker pull ${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_DATE }}

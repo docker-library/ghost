@@ -174,12 +174,12 @@ jobs:
       - uses: docker/login-action@v3.2.0
         with:
           username: ${{ needs.myvars.outputs.DOCKERHUB_USER }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          password: ${{ github.actor == 'dependabot[bot]' && secrets.DEPENDABOT_DOCKERHUB_PASSWORD || secrets.DOCKERHUB_PASSWORD }}
       - uses: docker/login-action@v3.2.0
         with:
           registry: ghcr.io
           username: ${{ needs.myvars.outputs.GITHUB_ORG }}
-          password: ${{ secrets.TOKEN_GPR }}
+          password: ${{ github.actor == 'dependabot[bot]' && secrets.TOKEN_GPR || secrets.DOCKERHUB_PASSWORD }}
 
       - name: Build and push image (edge)
         uses: docker/build-push-action@v6
@@ -244,12 +244,12 @@ jobs:
       - uses: docker/login-action@v3.2.0
         with:
           username: ${{ needs.myvars.outputs.DOCKERHUB_USER }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          password: ${{ github.actor == 'dependabot[bot]' && secrets.DEPENDABOT_DOCKERHUB_PASSWORD || secrets.DOCKERHUB_PASSWORD }}
       - uses: docker/login-action@v3.2.0
         with:
           registry: ghcr.io
           username: ${{ needs.myvars.outputs.GITHUB_ORG }}
-          password: ${{ secrets.TOKEN_GPR }}
+          password: ${{ github.actor == 'dependabot[bot]' && secrets.TOKEN_GPR || secrets.DOCKERHUB_PASSWORD }}
 
       - name: Build and push image (stable)
         uses: docker/build-push-action@v6
@@ -530,13 +530,13 @@ jobs:
         uses: docker/login-action@v3.2.0
         with:
           username: ${{ needs.myvars.outputs.DOCKERHUB_USER }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          password: ${{ github.actor == 'dependabot[bot]' && secrets.DEPENDABOT_DOCKERHUB_PASSWORD || secrets.DOCKERHUB_PASSWORD }}
       - name: Login to GitHub registry
         uses: docker/login-action@v3.2.0
         with:
           registry: ghcr.io
           username: ${{ needs.myvars.outputs.GITHUB_ORG }}
-          password: ${{ secrets.TOKEN_GPR }}
+          password: ${{ github.actor == 'dependabot[bot]' && secrets.TOKEN_GPR || secrets.DOCKERHUB_PASSWORD }}
       - name: Checkpoint | docker pull
         run: |
           docker pull ${{ needs.myvars.outputs.TAG_DKR_VERSION_HASH_DATE }}
@@ -697,7 +697,7 @@ jobs:
         uses: docker/login-action@v3.2.0
         with:
           username: ${{ needs.myvars.outputs.DOCKERHUB_USER }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          password: ${{ github.actor == 'dependabot[bot]' && secrets.DEPENDABOT_DOCKERHUB_PASSWORD || secrets.DOCKERHUB_PASSWORD }}
 
       - name: Add a label for PR opened by dependabot
         run: gh pr edit "$PR_URL" --add-label "dependabot"

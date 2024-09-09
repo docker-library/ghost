@@ -4,7 +4,7 @@
 # 1a) ENV variables (core for all our projects at FirePress)
 # ----------------------------------------------
 ARG APP_NAME="ghostfire"
-ARG VERSION="5.89.6"
+ARG VERSION="5.93.0"
 
 ARG GITHUB_USER="firepress-org"
 ARG DEFAULT_BRANCH="master"

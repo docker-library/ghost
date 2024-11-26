@@ -16,7 +16,7 @@ ARG GITHUB_REGISTRY="registry"
 # 1b) ENV variables (for this project)
 # Various docs about our Dockerfile - https://github.com/firepress-org/ghostfire/issues/529
 # ----------------------------------------------
-ARG GHOST_CLI_VERSION="1.26.0"
+ARG GHOST_CLI_VERSION="1.26.1"
 ARG NODE_VERSION="18-alpine3.19"
 ARG BASE_OS="alpine"
 ARG USER="node"

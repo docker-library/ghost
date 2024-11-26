@@ -77,6 +77,9 @@ RUN set -eux; \
 	gosu --version; \
 	gosu nobody true
 
+# Add the backwards compatibility with the official dockerfile from dockerhub
+RUN set -eux; ln -svf gosu /usr/local/bin/su-exec; su-exec nobody true
+
 # Add bash and set timezone
 RUN apk add --no-cache bash curl tzdata && \
 	cp /usr/share/zoneinfo/America/New_York /etc/localtime && \

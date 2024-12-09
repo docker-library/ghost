@@ -1,6 +1,6 @@
 # https://docs.ghost.org/faq/node-versions/
 # https://github.com/nodejs/Release (looking for "LTS")
-FROM node:18-alpine3.19
+FROM node:18-alpine3.20
 
 RUN apk add --no-cache \
 # add "bash" for "[["

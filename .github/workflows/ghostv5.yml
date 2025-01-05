@@ -323,38 +323,8 @@ jobs:
   # Continuous Deployment / edge OR stable
   # I duplicate this in two jobs to have a better visual representation
   # ----------------------------------------------
-  cd_edge:
-    needs: [build_edge]
-    if: github.ref_type != 'tag'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: zcong1993/setup-timezone@v2.0.0
-        with:
-          timezone: America/Montreal
-
-      - name: cd edge
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.NODE1 }}
-          port: ${{ secrets.SSH_PORT }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_KEY_ACTIONS }}
-          passphrase: ${{ secrets.SSH_KEY_ACTIONS_PASSPHRASE }}
-          script: |
-            ${{ secrets.SSH_CMD__UPDATE_DKR_IMG_EDGE }}
-            hostname
-          #sync: true
-          #host: "${{ secrets.NODE1 }},${{ secrets.NODE2 }},${{ secrets.NODE3 }}"
-          # alt projet: fifsky/ssh-action@master https://github.com/appleboy/ssh-action/issues/80#issuecomment-759473472
-
-      - name: Add a comment (from a PR)
-        run: |
-          echo "## For reference (from a PR)" >> $GITHUB_STEP_SUMMARY
-          echo "Docker image: ${{ needs.myvars.outputs.TAG_DKR_BRANCH_NAME }}" >> $GITHUB_STEP_SUMMARY
-          echo "Please use docker images that were build from a tag. More details: https://github.com/firepress-org/ghostfire/issues/265" >> $GITHUB_STEP_SUMMARY
+  # cd_edge:
+  # see unused_workflow/cd_edge.yml
 
   cd_stable:
     needs: [build_stable]

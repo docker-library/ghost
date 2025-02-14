@@ -98,8 +98,7 @@ RUN set -eux; \
 # must be some non-amd64 architecture pre-built binaries aren't published for, so let's install some build deps and do-it-all-over-again
 			virtualPackages='g++ make python3 py3-setuptools'; \
 			case "$package" in \
-				# TODO sharp@*) virtualPackages="$virtualPackages pkgconf vips-dev"; \
-				sharp@*) echo >&2 "sorry: libvips 8.12.1 in Alpine 3.15 is not new enough (8.12.2+) for sharp 0.30 😞"; continue ;; \
+				sharp@*) virtualPackages="$virtualPackages pkgconf vips-dev"; \
 			esac; \
 			virtual=".build-deps-${package%%@*}"; \
 			apkDel="$apkDel $virtual"; \

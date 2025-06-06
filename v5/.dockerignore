@@ -1,12 +1,76 @@
+# Version control
+.git
+.gitignore
+.gitattributes
+
+# Documentation
+README.md
+CHANGELOG.md
+LICENSE
+*.md
+
+# Docker files
+Dockerfile*
+.dockerignore
+docker-compose*
+.docker
+
+# Node.js
 node_modules
 npm-debug.log
 npm-debug
-Dockerfile
-.git
-.gitignore
-.dockerignore
-docker-compose.yml
-docker-compose.yaml
-.cache
-coverage
+yarn-debug.log*
+yarn-error.log*
+.npm
+.yarn
+.pnpm-debug.log*
+
+# Build artifacts
 dist
+build
+coverage
+.nyc_output
+
+# Cache directories
+.cache
+.parcel-cache
+.next
+.nuxt
+
+
+# IDE and editor files
+.idea
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Test files
+test
+tests
+__tests__
+*.test.js
+*.spec.js
+
+# CI/CD
+.github
+.gitlab-ci.yml
+.travis.yml
+.circleci
+
+# Logs
+logs
+*.log
+
+# Temporary files
+tmp
+temp
+.tmp

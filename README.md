@@ -19,8 +19,7 @@
 # [ghostfire](https://github.com/firepress-org/ghostfire)
 
 <!-- Build Status -->
-[![Build Status](https://github.com/firepress-org/ghostfire/actions/workflows/ghostv5.yml/badge.svg?branch=master)](https://github.com/firepress-org/ghostfire/actions/workflows/ghostv5.yml)
-[![Build Status Edge](https://github.com/firepress-org/ghostfire/actions/workflows/ghostv5.yml/badge.svg?branch=edge_ca2)](https://github.com/firepress-org/ghostfire/actions/workflows/ghostv5.yml)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/firepress-org/ghostfire/ghostv5.yml?branch=master&label=Ghost%20V5%20alpine%20stable)](https://github.com/firepress-org/ghostfire/actions/workflows/ghostv5.yml)
 
 <!-- Docker Metrics -->
 [![Docker Pulls](https://img.shields.io/docker/pulls/devmtl/ghostfire)](https://hub.docker.com/r/devmtl/ghostfire)

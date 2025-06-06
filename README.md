@@ -28,7 +28,7 @@
 
 <!-- Versions -->
 [![Ghost Version](https://img.shields.io/badge/Ghost-v5.120.4-brightgreen)](https://github.com/TryGhost/Ghost)
-[![Node Version](https://img.shields.io/badge/Node.js-20.19.2-green)](https://nodejs.org/)
+[![Node Version](https://img.shields.io/badge/Node.js-20.19.2--alpine3.22-green)](https://nodejs.org/)
 [![Platform](https://img.shields.io/badge/platform-linux%2Famd64%20%7C%20linux%2Farm64%20%7C%20linux%2Farm%2Fv7-lightgrey)](https://hub.docker.com/r/devmtl/ghostfire)
 
 <!-- Repository Health -->

@@ -16,7 +16,7 @@ ARG GITHUB_REGISTRY="registry"
 # 1b) ENV variables (for this project)
 # Various docs about our Dockerfile - https://github.com/firepress-org/ghostfire/issues/529
 # ----------------------------------------------
-ARG GHOST_CLI_VERSION="1.26.1"
+ARG GHOST_CLI_VERSION="1.27.0"
 ARG NODE_VERSION="20.18.1-alpine3.20"
 ARG BASE_OS="alpine"
 ARG USER="node"
@@ -106,11 +106,14 @@ RUN set -eux; \
 	mkdir -p "$GHOST_INSTALL"; \
 	chown node:node "$GHOST_INSTALL"; \
 	apkDel=; \
+	echo "Installing Ghost version: $VERSION"; \
 	installCmd='gosu node ghost install "$VERSION" --db mysql --dbhost mysql --no-prompt --no-stack --no-setup --dir "$GHOST_INSTALL"'; \
 	if ! eval "$installCmd"; then \
+	echo "Initial Ghost installation failed, installing build dependencies..."; \
 	virtual='.build-deps-ghost'; \
 	apkDel="$apkDel $virtual"; \
-	apk add --no-cache --virtual "$virtual" g++ linux-headers make python3; \
+	apk add --no-cache --virtual "$virtual" g++ linux-headers make python3 pkgconfig libc6-compat; \
+	echo "Retrying Ghost installation with build dependencies..."; \
 	eval "$installCmd"; \
 	fi; \
 	cd "$GHOST_INSTALL"; \
@@ -125,22 +128,48 @@ RUN set -eux; \
 	cd "$GHOST_INSTALL/current"; \
 	packages="$(node -p ' \
 	var ghost = require("./package.json"); \
+	var sharpVersion = ""; \
+	try { \
 	var transform = require("./node_modules/@tryghost/image-transform/package.json"); \
+	sharpVersion = transform.optionalDependencies["sharp"] || transform.dependencies["sharp"]; \
+	} catch(e) { \
+	try { \
+	sharpVersion = ghost.optionalDependencies["sharp"] || ghost.dependencies["sharp"]; \
+	} catch(e2) { \
+	sharpVersion = "latest"; \
+	} \
+	} \
+	var sqlite3Version = ghost.optionalDependencies["sqlite3"] || ghost.dependencies["sqlite3"] || "latest"; \
 	[ \
-	"sharp@" + transform.optionalDependencies["sharp"], \
-	"sqlite3@" + ghost.optionalDependencies["sqlite3"], \
+	"sharp@" + sharpVersion, \
+	"sqlite3@" + sqlite3Version, \
 	].join(" ") \
 	')"; \
-	if echo "$packages" | grep 'undefined'; then exit 1; fi; \
+	echo "Detected packages to install: $packages"; \
+	if echo "$packages" | grep 'undefined'; then \
+	echo "Error: undefined package version detected"; \
+	exit 1; \
+	fi; \
 	for package in $packages; do \
+	echo "Installing package: $package"; \
 	installCmd='gosu node yarn add "$package" --force'; \
 	if ! eval "$installCmd"; then \
+	echo "Yarn installation failed, trying with npm: $package"; \
+	npmInstallCmd='gosu node npm install "$package" --save --force'; \
+	if ! eval "$npmInstallCmd"; then \
+	echo "Package installation failed, installing build dependencies for: $package"; \
 	virtualPackages='g++ make python3 pkgconfig vips-dev libc6-compat'; \
 	virtual=".build-deps-${package%%@*}"; \
 	apkDel="$apkDel $virtual"; \
 	apk add --no-cache --virtual "$virtual" $virtualPackages; \
-	eval "$installCmd --build-from-source"; \
+	echo "Retrying yarn installation with build-from-source: $package"; \
+	if ! eval "$installCmd --build-from-source"; then \
+	echo "Retrying npm installation with build-from-source: $package"; \
+	eval "$npmInstallCmd --build-from-source"; \
 	fi; \
+	fi; \
+	fi; \
+	echo "Successfully installed: $package"; \
 	done; \
 	if [ -n "$apkDel" ]; then \
 	apk del --no-network $apkDel; \

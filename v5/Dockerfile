@@ -17,7 +17,7 @@ ARG GITHUB_REGISTRY="registry"
 # Various docs about our Dockerfile - https://github.com/firepress-org/ghostfire/issues/529
 # ----------------------------------------------
 ARG GHOST_CLI_VERSION="1.27.0"
-ARG NODE_VERSION="20.18.1-alpine3.20"
+ARG NODE_VERSION="20.19.2-alpine3.22"
 ARG BASE_OS="alpine"
 ARG USER="node"
 

@@ -234,7 +234,7 @@ jobs:
         uses: docker/scout-action@v1
         with:
           command: compare
-          image: node:20.18.1-alpine3.20
+          image: 20.19.2-alpine3.22
           to: ${{ needs.myvars.outputs.TAG_DKR_BRANCH_NAME }}
           ignore-unchanged: true
           only-severities: critical,high,medium,low

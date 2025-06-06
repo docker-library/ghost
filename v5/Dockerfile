@@ -135,7 +135,7 @@ RUN set -eux; \
 	for package in $packages; do \
 	installCmd='gosu node yarn add "$package" --force'; \
 	if ! eval "$installCmd"; then \
-	virtualPackages='g++ make python3'; \
+	virtualPackages='g++ make python3 pkgconfig vips-dev libc6-compat'; \
 	virtual=".build-deps-${package%%@*}"; \
 	apkDel="$apkDel $virtual"; \
 	apk add --no-cache --virtual "$virtual" $virtualPackages; \

@@ -171,11 +171,11 @@ jobs:
       - uses: docker/setup-buildx-action@v3
         with:
           version: latest
-      - uses: docker/login-action@v3.2.0
+      - uses: docker/login-action@v3.4.0
         with:
           username: ${{ needs.myvars.outputs.DOCKERHUB_USER }}
           password: ${{ github.actor == 'dependabot[bot]' && secrets.DEPENDABOT_DOCKERHUB_PASSWORD || secrets.DOCKERHUB_PASSWORD }}
-      - uses: docker/login-action@v3.2.0
+      - uses: docker/login-action@v3.4.0
         with:
           registry: ghcr.io
           username: ${{ needs.myvars.outputs.GITHUB_ORG }}
@@ -256,11 +256,11 @@ jobs:
       - uses: docker/setup-buildx-action@v3
         with:
           version: latest
-      - uses: docker/login-action@v3.2.0
+      - uses: docker/login-action@v3.4.0
         with:
           username: ${{ needs.myvars.outputs.DOCKERHUB_USER }}
           password: ${{ github.actor == 'dependabot[bot]' && secrets.DEPENDABOT_DOCKERHUB_PASSWORD || secrets.DOCKERHUB_PASSWORD }}
-      - uses: docker/login-action@v3.2.0
+      - uses: docker/login-action@v3.4.0
         with:
           registry: ghcr.io
           username: ${{ needs.myvars.outputs.GITHUB_ORG }}
@@ -515,12 +515,12 @@ jobs:
         with:
           timezone: America/Montreal
       - name: Login to DockerHub registry
-        uses: docker/login-action@v3.2.0
+        uses: docker/login-action@v3.4.0
         with:
           username: ${{ needs.myvars.outputs.DOCKERHUB_USER }}
           password: ${{ github.actor == 'dependabot[bot]' && secrets.DEPENDABOT_DOCKERHUB_PASSWORD || secrets.DOCKERHUB_PASSWORD }}
       - name: Login to GitHub registry
-        uses: docker/login-action@v3.2.0
+        uses: docker/login-action@v3.4.0
         with:
           registry: ghcr.io
           username: ${{ needs.myvars.outputs.GITHUB_ORG }}
@@ -682,7 +682,7 @@ jobs:
 
       - name: Login to DockerHub registry
         if: github.actor != 'dependabot[bot]'
-        uses: docker/login-action@v3.2.0
+        uses: docker/login-action@v3.4.0
         with:
           username: ${{ needs.myvars.outputs.DOCKERHUB_USER }}
           password: ${{ github.actor == 'dependabot[bot]' && secrets.DEPENDABOT_DOCKERHUB_PASSWORD || secrets.DOCKERHUB_PASSWORD }}

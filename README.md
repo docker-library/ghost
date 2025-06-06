@@ -18,6 +18,26 @@
 
 # [ghostfire](https://github.com/firepress-org/ghostfire)
 
+<!-- Build Status -->
+[![Build Status](https://github.com/firepress-org/ghostfire/actions/workflows/ghostv5.yml/badge.svg?branch=master)](https://github.com/firepress-org/ghostfire/actions/workflows/ghostv5.yml)
+[![Build Status Edge](https://github.com/firepress-org/ghostfire/actions/workflows/ghostv5.yml/badge.svg?branch=edge_ca2)](https://github.com/firepress-org/ghostfire/actions/workflows/ghostv5.yml)
+
+<!-- Docker Metrics -->
+[![Docker Pulls](https://img.shields.io/docker/pulls/devmtl/ghostfire)](https://hub.docker.com/r/devmtl/ghostfire)
+[![Docker Image Size](https://img.shields.io/docker/image-size/devmtl/ghostfire/stable)](https://hub.docker.com/r/devmtl/ghostfire)
+[![Docker Image Version](https://img.shields.io/docker/v/devmtl/ghostfire?sort=semver)](https://hub.docker.com/r/devmtl/ghostfire)
+
+<!-- Versions -->
+[![Ghost Version](https://img.shields.io/badge/Ghost-v5.120.4-brightgreen)](https://github.com/TryGhost/Ghost)
+[![Node Version](https://img.shields.io/badge/Node.js-20.19.2-green)](https://nodejs.org/)
+[![Platform](https://img.shields.io/badge/platform-linux%2Famd64%20%7C%20linux%2Farm64%20%7C%20linux%2Farm%2Fv7-lightgrey)](https://hub.docker.com/r/devmtl/ghostfire)
+
+<!-- Repository Health -->
+[![GitHub last commit](https://img.shields.io/github/last-commit/firepress-org/ghostfire)](https://github.com/firepress-org/ghostfire/commits)
+[![GitHub issues](https://img.shields.io/github/issues/firepress-org/ghostfire)](https://github.com/firepress-org/ghostfire/issues)
+[![License](https://img.shields.io/github/license/firepress-org/ghostfire)](https://github.com/firepress-org/ghostfire/blob/master/LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/firepress-org/ghostfire?style=social)](https://github.com/firepress-org/ghostfire)
+
 <br>
 
 ## What is this?
@@ -48,8 +68,6 @@ ghost:5.x-alpine                       ~380MB (official)
 <br>
 
 ## GitHub Actions CI/CD :
-
-[![ci status](https://github.com/firepress-org/ghostfire/actions/workflows/ghostv5.yml/badge.svg?branch=master)](https://github.com/firepress-org/ghostfire/actions/workflows/ghostv5.yml)
 
 - [x] **Multi-architecture builds**: `linux/amd64`, `linux/arm64`, `linux/arm/v7`
 - [x] **Comprehensive security scanning**: Snyk, Dockle, Trivy vulnerability detection
@@ -229,10 +247,29 @@ Ghost configuration is handled via `config.production.json` with these key areas
 - **Content paths**: Mapped to `/var/lib/ghost/content`
 - **URL configuration**: Flexible URL and SSL settings
 
+### Version Information
+
+**Current Stack:**
+- **Ghost**: v5.120.4 (latest stable)
+- **Node.js**: 20.19.2 on Alpine Linux 3.22
+- **Ghost CLI**: v1.27.0
+
 Check versions in running container:
 ```bash
 docker exec <container-id> node --version
 docker exec <container-id> ghost --version
+```
+
+### Migration Notes
+
+**Path consistency across versions:**
+```
+- Ghost 5.x.x: /var/lib/ghost/content ✅ (current)
+- Ghost 4.x.x: /var/lib/ghost/content
+- Ghost 3.x.x: /var/lib/ghost/content
+- Ghost 2.x.x: /var/lib/ghost/content
+- Ghost 1.x.x: /var/lib/ghost/content
+- Ghost 0.11.x: /var/lib/ghost (deprecated)
 ```
 
 

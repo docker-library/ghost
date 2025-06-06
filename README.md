@@ -22,42 +22,45 @@
 
 ## What is this?
 
-**What is Ghost?** — Ghost is an open-source software that lets you create your website with a blog. See the [FAQ section](https://play-with-ghost.com/ghost-themes/faq/#what-is-ghost) for more details. This projects makes it running in Docker image.
+**What is Ghost?** — Ghost is an open-source software that lets you create your website with a blog. See the [FAQ section](https://play-with-ghost.com/ghost-themes/faq/#what-is-ghost) for more details. This project makes it run in a Docker image.
 
 <br>
 
 ## Docker image features :
 
-- [x] multi-stage builds
-- [x] `curl` to support `healthchecks`
-- [x] `config.production.json` template
-- [x] Docker image based on `alpine` (we don't maintain debian)
-- [x] Labels based on the opencontainer standard
+- [x] **Multi-stage builds** with aggressive optimization
+- [x] **Security-focused**: Non-root user execution with `gosu` privilege dropping
+- [x] **Multi-architecture support**: `linux/amd64`, `linux/arm64`, `linux/arm/v7`
+- [x] **Production-ready**: `config.production.json` template with best practices
+- [x] **Alpine Linux base** for minimal attack surface (we don't maintain debian)
+- [x] **Health checks** with `curl` support
+- [x] **Labels** based on the OpenContainer standard
+- [x] **Conditional dependencies**: Smart installation of `sharp` and `sqlite3`
+- [x] **Enterprise-grade**: Optimized for Docker Swarm deployments
 
-We are trimming about 45MB. These are **uncompressed sizes** :
+We achieve significant size optimization through multi-stage builds and aggressive cleanup:
 
 ```
-devmtl/ghostfire:stable                340MB
-ghost:4.16.0-alpine                    384MB
+devmtl/ghostfire:stable                ~320MB (optimized)
+ghost:5.x-alpine                       ~380MB (official)
 ```
 
 <br>
 
-## Github Actions CI/CD :
+## GitHub Actions CI/CD :
 
-[![ci status](https://github.com/firepress-org/ghostfire/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/firepress-org/ghostfire/actions/workflows/ci.yml)
+[![ci status](https://github.com/firepress-org/ghostfire/actions/workflows/ghostv5.yml/badge.svg?branch=master)](https://github.com/firepress-org/ghostfire/actions/workflows/ghostv5.yml)
 
-- [x] Support multi architecture platforms: `linux/amd64`, `linux/arm64`, `linux/arm/v7`
-- [x] Great logic between jobs
-- [x] Shared variables between jobs
-- [x] Builds use cache
-- [x] Continuous Deployment in the cluster for edge and stable
-- [x] Slack notifications when a build is successful
-- [x] Lighthouse audit(localhost and online)
-- [x] Security scanners (Snyk, Dockle, Trivy)
-- [x] Linting using `super-linter`
-- [x] Overall we do our best to apply [best practices](https://firepress.org/en/how-do-we-update-hundreds-of-ghosts-websites-on-docker-swarm/)
-- [x] Extreme visibility during our build in Github Actions (screenshot below)
+- [x] **Multi-architecture builds**: `linux/amd64`, `linux/arm64`, `linux/arm/v7`
+- [x] **Comprehensive security scanning**: Snyk, Dockle, Trivy vulnerability detection
+- [x] **Performance testing**: Lighthouse audits (localhost and online)
+- [x] **Quality assurance**: Linting using `super-linter`
+- [x] **Automated deployment**: Continuous deployment to Docker Swarm clusters
+- [x] **Smart caching**: Build cache optimization for faster CI/CD
+- [x] **Notification system**: Slack notifications for build status
+- [x] **Shared variables**: Efficient job coordination and data sharing
+- [x] **Best practices**: Following [enterprise DevOps standards](https://firepress.org/en/how-do-we-update-hundreds-of-ghosts-websites-on-docker-swarm/)
+- [x] **Extreme visibility**: Comprehensive logging and monitoring during builds
 
 ![CI_2021-10-03_17h42](https://user-images.githubusercontent.com/6694151/135772462-0c39fe73-be9e-4aa3-8103-b1c849c0c41f.jpg)
 
@@ -86,30 +89,50 @@ At this point, this docker image has been pulled more than **11 millions of time
 
 ![docker-hub](https://user-images.githubusercontent.com/6694151/53067692-4c8af700-34a3-11e9-9fcf-9c7ad169a91b.jpg)
 
+## Quick Start
+
 #### Option #1 (basic run)
 
-```
+```bash
 GHOSTFIRE_IMG="devmtl/ghostfire:stable"
 
 docker run -d \
-—name ghostblog \
--p 2368:2368 \
--e url=http://localhost:2368 \
-${GHOSTFIRE_IMG}
+  --name ghostblog \
+  -p 2368:2368 \
+  -e url=http://localhost:2368 \
+  ${GHOSTFIRE_IMG}
 ```
 
-#### Option #2 (with configs and stateful data)
+#### Option #2 (production with persistent data)
 
-```
+```bash
 GHOSTFIRE_IMG="devmtl/ghostfire:stable"
 
 docker run -d \
-—name ghostblog \
--p 2368:2368 \
--e url=http://localhost:2368 \
--v /myuser/localpath/ghost/content:/var/lib/ghost/content \
--v /myuser/localpath/ghost/content/config.production.json:/var/lib/ghost/config.production.json \
-${GHOSTFIRE_IMG}
+  --name ghostblog \
+  -p 2368:2368 \
+  -e url=http://localhost:2368 \
+  -v /myuser/localpath/ghost/content:/var/lib/ghost/content \
+  -v /myuser/localpath/ghost/config.production.json:/var/lib/ghost/config.production.json \
+  ${GHOSTFIRE_IMG}
+```
+
+#### Option #3 (development with health checks)
+
+```bash
+GHOSTFIRE_IMG="devmtl/ghostfire:stable"
+
+docker run -d \
+  --name ghostblog \
+  -p 2368:2368 \
+  -e url=http://localhost:2368 \
+  -e NODE_ENV=development \
+  --health-cmd="curl -f http://localhost:2368/ || exit 1" \
+  --health-interval=30s \
+  --health-timeout=10s \
+  --health-retries=3 \
+  -v $(pwd)/content:/var/lib/ghost/content \
+  ${GHOSTFIRE_IMG}
 ```
 
 To configure the `config.production.json` refer the [ghost docs](https://docs.ghost.org/concepts/config/).
@@ -119,8 +142,8 @@ To configure the `config.production.json` refer the [ghost docs](https://docs.gh
 For the **stable** branch, I recommend using the tag from the **first line**:
 
 ```
-devmtl/ghostfire:stable_4.6.4_fc5b3b6_2021-05-28_11H26s02
-devmtl/ghostfire:stable_4.6.4
+devmtl/ghostfire:stable_5.120.4_<hash>_<date>
+devmtl/ghostfire:stable_5.120.4
 devmtl/ghostfire:stable
 ```
 
@@ -132,9 +155,39 @@ Find the latest tags on **DockerHub** here:
 This is reserved for development and testing.
 
 ```
-devmtl/ghostfire:edge_4.7.0_bd6bac4_2021-06-17_18H43s47
-devmtl/ghostfire:edge_4.7.0
+devmtl/ghostfire:edge_5.120.4_<hash>_<date>
+devmtl/ghostfire:edge_5.120.4
 devmtl/ghostfire:edge
+```
+
+## Architecture & Security
+
+### Multi-Stage Build Process
+
+Our Dockerfile uses a sophisticated 4-stage build process:
+
+1. **`mynode`** - Base Node.js environment with security tools (gosu, timezone setup)
+2. **`debug`** - Package version debugging and validation layer
+3. **`builder`** - Ghost installation and native dependency compilation
+4. **`final`** - Minimal runtime image with only necessary components
+
+### Security Features
+
+- **Non-root execution**: Runs as `node` user for enhanced security
+- **Privilege dropping**: Uses `gosu` for secure step-down from root
+- **File permissions**: Proper ownership and permission management
+- **Minimal attack surface**: Alpine Linux base with aggressive cleanup
+- **Vulnerability scanning**: Integrated security scanning in CI/CD
+
+### Volume Management
+
+Critical paths for data persistence:
+
+```bash
+/var/lib/ghost/content              # All Ghost content, themes, uploads
+/var/lib/ghost/config.production.json  # Runtime configuration
+/var/lib/ghost/content/logs         # Application logs
+/var/lib/ghost/content/data/ghost.db    # SQLite database
 ```
 
 <br>
@@ -159,31 +212,29 @@ I open-sourced [my setup here](https://github.com/firepress-org/ghost-local-dev-
 
 <br>
 
-## Random stuff
+## Configuration & Database
 
-**Breaking change**. If you still run Ghost 0.11.xx (not recommended!), be aware of the container's path difference.
+### Database Support
 
-```
-- Ghost 4.x.x is:  /var/lib/ghost/content
-- Ghost 3.x.x is:  /var/lib/ghost/content
-- Ghost 2.x.x is:  /var/lib/ghost/content
-- Ghost 1.x.x is:  /var/lib/ghost/content
-- Ghost 0.11.x is: /var/lib/ghost
-```
+- **SQLite** (default): Zero-configuration, file-based database at `/var/lib/ghost/content/data/ghost.db`
+- **MySQL**: Full support with connection configuration in `config.production.json`
 
-**SQLite Database**
+### Configuration Management
 
-This Docker image for Ghost uses SQLite. There is nothing special to configure.
+Ghost configuration is handled via `config.production.json` with these key areas:
 
-**What is the Node.js version?**
+- **Database connection**: SQLite default or MySQL configuration
+- **Mail configuration**: SMTP/Mailgun templates provided
+- **Logging**: 7-day retention with 5-day rotation
+- **Content paths**: Mapped to `/var/lib/ghost/content`
+- **URL configuration**: Flexible URL and SSL settings
 
-We follow the latest Node supported version. See this in the Dockerfile.
-
-```
+Check versions in running container:
+```bash
 docker exec <container-id> node --version
+docker exec <container-id> ghost --version
 ```
 
-You can also see this information in the CI logs.
 
 <br>
 

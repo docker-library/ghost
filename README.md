@@ -34,7 +34,7 @@
 <!-- Repository Health -->
 [![GitHub last commit](https://img.shields.io/github/last-commit/firepress-org/ghostfire)](https://github.com/firepress-org/ghostfire/commits)
 [![GitHub issues](https://img.shields.io/github/issues/firepress-org/ghostfire)](https://github.com/firepress-org/ghostfire/issues)
-[![License](https://img.shields.io/github/license/firepress-org/ghostfire)](https://github.com/firepress-org/ghostfire/blob/master/LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/firepress-org/ghostfire/blob/master/LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/firepress-org/ghostfire?style=social)](https://github.com/firepress-org/ghostfire)
 
 <br>

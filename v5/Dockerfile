@@ -136,9 +136,6 @@ RUN set -eux; \
 	installCmd='gosu node yarn add "$package" --force'; \
 	if ! eval "$installCmd"; then \
 	virtualPackages='g++ make python3'; \
-	case "$package" in \
-	sharp@*) echo >&2 "sorry: libvips 8.12.1 in Alpine 3.15 is not new enough (8.12.2+) for sharp 0.30 😞"; continue ;; \
-	esac; \
 	virtual=".build-deps-${package%%@*}"; \
 	apkDel="$apkDel $virtual"; \
 	apk add --no-cache --virtual "$virtual" $virtualPackages; \

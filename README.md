@@ -300,8 +300,8 @@ Check this post for more details: [Contributing to our Github project](https://p
 
 ## License
 
-- This git repo is under the **GNU V3** license. [Find it here](https://github.com/pascalandy/GNU-GENERAL-PUBLIC-LICENSE/blob/master/LICENSE.md).
-- The Ghost’s software is under the **MIT** license. [Find it here](https://ghost.org/license/).
+- This git repo is under the **MIT** license. [Find it here](https://github.com/firepress-org/ghostfire/blob/master/LICENSE).
+- The Ghost's software is under the **MIT** license. [Find it here](https://ghost.org/license/).
 
 <br>
 

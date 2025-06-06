@@ -198,6 +198,9 @@ jobs:
           # The order for <docker push -tag> matters for our CD down the line
           cache-from: type=gha, scope=${{ github.workflow }}
           cache-to: type=gha, scope=${{ github.workflow }}, mode=max
+          build-args: |
+            BUILDKIT_PROGRESS=plain
+          network: host
 
       - name: UAT run edge | Wait for container to run
         timeout-minutes: 2
@@ -286,6 +289,9 @@ jobs:
           # The order for <docker push -tag> matters for our CD down the line
           cache-from: type=gha, scope=${{ github.workflow }}
           cache-to: type=gha, scope=${{ github.workflow }}, mode=max
+          build-args: |
+            BUILDKIT_PROGRESS=plain
+          network: host
 
       - name: UAT run stable | Wait for container to run
         timeout-minutes: 2

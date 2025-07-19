@@ -72,18 +72,22 @@ join() {
 }
 
 for version in "${versions[@]}"; do
+	rcVersion="${version%-rc}"
+
 	for variant in debian alpine; do
 		commit="$(dirCommit "$version/$variant")"
 
 		fullVersion="$(git show "$commit":"$version/$variant/Dockerfile" | awk '$1 == "ENV" && $2 == "GHOST_VERSION" { print $3; exit }')"
 
 		versionAliases=()
-		while [ "$fullVersion" != "$version" -a "${fullVersion%[.-]*}" != "$fullVersion" ]; do
-			versionAliases+=( $fullVersion )
-			fullVersion="${fullVersion%[.-]*}"
-		done
+		if [ "$version" = "$rcVersion" ]; then
+			while [ "$fullVersion" != "$version" -a "${fullVersion%[.-]*}" != "$fullVersion" ]; do
+				versionAliases+=( $fullVersion )
+				fullVersion="${fullVersion%[.-]*}"
+			done
+		fi
 		versionAliases+=(
-			$version
+			$fullVersion
 			${aliases[$version]:-}
 		)
 

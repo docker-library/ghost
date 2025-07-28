@@ -1,21 +1,16 @@
 # https://docs.ghost.org/faq/node-versions/
 # https://github.com/nodejs/Release (looking for "LTS")
-FROM node:22-alpine3.22
-
-RUN apk add --no-cache \
-# add "bash" for "[["
-		bash
+FROM node:22-bookworm-slim
 
 # grab gosu for easy step-down from root
 # https://github.com/tianon/gosu/releases
 ENV GOSU_VERSION 1.17
 RUN set -eux; \
-	\
-	apk add --no-cache --virtual .gosu-deps \
-		ca-certificates \
-		dpkg \
-		gnupg \
-	; \
+# save list of currently installed packages for later so we can clean up
+	savedAptMark="$(apt-mark showmanual)"; \
+	apt-get update; \
+	apt-get install -y --no-install-recommends ca-certificates gnupg wget; \
+	rm -rf /var/lib/apt/lists/*; \
 	\
 	dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')"; \
 	wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch"; \
@@ -29,13 +24,14 @@ RUN set -eux; \
 	rm -rf "$GNUPGHOME" /usr/local/bin/gosu.asc; \
 	\
 # clean up fetch dependencies
-	apk del --no-network .gosu-deps; \
+	apt-mark auto '.*' > /dev/null; \
+	[ -z "$savedAptMark" ] || apt-mark manual $savedAptMark > /dev/null; \
+	apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
 	\
 	chmod +x /usr/local/bin/gosu; \
 # verify that the binary works
 	gosu --version; \
 	gosu nobody true
-RUN set -eux; ln -svf gosu /usr/local/bin/su-exec; su-exec nobody true # backwards compatibility (TODO remove in Ghost 6+)
 
 ENV NODE_ENV production
 
@@ -47,20 +43,21 @@ RUN set -eux; \
 ENV GHOST_INSTALL /var/lib/ghost
 ENV GHOST_CONTENT /var/lib/ghost/content
 
-ENV GHOST_VERSION 6.0.0-rc.0
+ENV GHOST_VERSION 6.0.0
 
 RUN set -eux; \
 	mkdir -p "$GHOST_INSTALL"; \
 	chown node:node "$GHOST_INSTALL"; \
 	\
-	apkDel=; \
+	savedAptMark="$(apt-mark showmanual)"; \
+	aptPurge=; \
 	\
 	installCmd='gosu node ghost install "$GHOST_VERSION" --db mysql --dbhost mysql --no-prompt --no-stack --no-setup --dir "$GHOST_INSTALL"'; \
 	case "$GHOST_VERSION" in *-alpha* | *-beta* | *-rc*) installCmd="$installCmd --channel next" ;; esac; \
 	if ! eval "$installCmd"; then \
-		virtual='.build-deps-ghost'; \
-		apkDel="$apkDel $virtual"; \
-		apk add --no-cache --virtual "$virtual" g++ linux-headers make python3; \
+		aptPurge=1; \
+		apt-get update; \
+		apt-get install -y --no-install-recommends g++ make python3; \
 		eval "$installCmd"; \
 	fi; \
 	\
@@ -97,21 +94,23 @@ RUN set -eux; \
 		installCmd='gosu node yarn add "$package" --force'; \
 		if ! eval "$installCmd"; then \
 # must be some non-amd64 architecture pre-built binaries aren't published for, so let's install some build deps and do-it-all-over-again
-			virtualPackages='g++ make python3 py3-setuptools'; \
+			aptPurge=1; \
+			apt-get update; \
+			apt-get install -y --no-install-recommends g++ make python3; \
 			case "$package" in \
-				# TODO sharp@*) virtualPackages="$virtualPackages pkgconf vips-dev"; \
-				sharp@*) echo >&2 "sorry: libvips 8.12.1 in Alpine 3.15 is not new enough (8.12.2+) for sharp 0.30 😞"; continue ;; \
+				# TODO sharp@*) apt-get install -y --no-install-recommends libvips-dev ;; \
+				sharp@*) echo >&2 "sorry: libvips 8.10 in Debian bullseye is not new enough (8.12.2+) for sharp 0.30 😞"; continue ;; \
 			esac; \
-			virtual=".build-deps-${package%%@*}"; \
-			apkDel="$apkDel $virtual"; \
-			apk add --no-cache --virtual "$virtual" $virtualPackages; \
 			\
 			eval "$installCmd --build-from-source"; \
 		fi; \
 	done; \
 	\
-	if [ -n "$apkDel" ]; then \
-		apk del --no-network $apkDel; \
+	if [ -n "$aptPurge" ]; then \
+		apt-mark showmanual | xargs apt-mark auto > /dev/null; \
+		[ -z "$savedAptMark" ] || apt-mark manual $savedAptMark; \
+		apt-get purge -y --auto-remove; \
+		rm -rf /var/lib/apt/lists/*; \
 	fi; \
 	\
 	gosu node yarn cache clean; \

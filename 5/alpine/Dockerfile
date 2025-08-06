@@ -39,7 +39,7 @@ RUN set -eux; ln -svf gosu /usr/local/bin/su-exec; su-exec nobody true # backwar
 
 ENV NODE_ENV production
 
-ENV GHOST_CLI_VERSION 1.28.2
+ENV GHOST_CLI_VERSION 1.28.3
 RUN set -eux; \
 	npm install -g "ghost-cli@$GHOST_CLI_VERSION"; \
 	npm cache clean --force

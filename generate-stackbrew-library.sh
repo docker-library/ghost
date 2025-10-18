@@ -1,118 +1,43 @@
 #!/usr/bin/env bash
-set -eu
-
-declare -A aliases=(
-	[6]='latest'
-)
-defaultVariant='debian'
+set -Eeuo pipefail
 
 self="$(basename "$BASH_SOURCE")"
 cd "$(dirname "$(readlink -f "$BASH_SOURCE")")"
 
-versions=( */ )
-versions=( "${versions[@]%/}" )
-
-# sort version numbers with highest first
-IFS=$'\n'; versions=( $(echo "${versions[*]}" | sort -rV) ); unset IFS
-
-# get the most recent commit which modified any of "$@"
-fileCommit() {
-	git log -1 --format='format:%H' HEAD -- "$@"
-}
-
-# get the most recent commit which modified "$1/Dockerfile" or any file COPY'd from "$1/Dockerfile"
-dirCommit() {
-	local dir="$1"; shift
-	(
-		cd "$dir"
-		fileCommit \
-			Dockerfile \
-			$(git show HEAD:./Dockerfile | awk '
-				toupper($1) == "COPY" {
-					for (i = 2; i < NF; i++) {
-						print $i
-					}
-				}
-			')
-	)
-}
-
-getArches() {
+getArchesJson() {
 	local repo="$1"; shift
-	local officialImagesBase="${BASHBREW_LIBRARY:-https://github.com/docker-library/official-images/raw/HEAD/library}/"
+	local oiBase="${BASHBREW_LIBRARY:-https://github.com/docker-library/official-images/raw/HEAD/library}/"
 
-	local parentRepoToArchesStr
-	parentRepoToArchesStr="$(
-		find -name 'Dockerfile' -exec awk -v officialImagesBase="$officialImagesBase" '
-				toupper($1) == "FROM" && $2 !~ /^('"$repo"'|scratch|.*\/.*)(:|$)/ {
-					printf "%s%s\n", officialImagesBase, $2
-				}
-			' '{}' + \
-			| sort -u \
-			| xargs -r bashbrew cat --format '["{{ .RepoName }}:{{ .TagName }}"]="{{ join " " .TagEntry.Architectures }}"'
-	)"
-	eval "declare -g -A parentRepoToArches=( $parentRepoToArchesStr )"
+	# grab supported architectures for each parent image, except self-referential
+	jq --raw-output \
+		--arg oiBase "$oiBase" \
+		--arg repo "$repo" '
+			[ $oiBase + .[].variants[].from | select(index($repo + ":") | not) ] | unique[]
+		' versions.json \
+		| xargs -r bashbrew cat --format '{ {{ join ":" .RepoName  .TagName | json }}: {{ json .TagEntry.Architectures }} }' \
+		| jq --compact-output --slurp 'add'
 }
-getArches 'ghost'
+parentArchesJson="$(getArchesJson 'ghost')"
 
+# last commit that changed files related to a build context
+commit="$(git log -1 --format='format:%H' HEAD -- '[^.]*/**')"
+
+# generate the header
+selfCommit="$(git log -1 --format='format:%H' HEAD -- "$self")"
 cat <<-EOH
-# this file is generated via https://github.com/docker-library/ghost/blob/$(fileCommit "$self")/$self
+# this file is generated via https://github.com/docker-library/ghost/blob/$selfCommit/$self
 
 Maintainers: Tianon Gravi <admwiggin@gmail.com> (@tianon),
              Joseph Ferguson <yosifkit@gmail.com> (@yosifkit),
              Austin Burdine <austin@acburdine.me> (@acburdine)
 GitRepo: https://github.com/docker-library/ghost.git
+GitCommit: $commit
 EOH
 
-# prints "$2$1$3$1...$N"
-join() {
-	local sep="$1"; shift
-	local out; printf -v out "${sep//%/%%}%s" "$@"
-	echo "${out#$sep}"
-}
-
-for version in "${versions[@]}"; do
-	rcVersion="${version%-rc}"
-
-	for variant in debian alpine; do
-		commit="$(dirCommit "$version/$variant")"
-
-		fullVersion="$(git show "$commit":"$version/$variant/Dockerfile" | awk '$1 == "ENV" && $2 == "GHOST_VERSION" { print $3; exit }')"
-
-		versionAliases=()
-		if [ "$version" = "$rcVersion" ]; then
-			while [ "$fullVersion" != "$version" -a "${fullVersion%[.-]*}" != "$fullVersion" ]; do
-				versionAliases+=( $fullVersion )
-				fullVersion="${fullVersion%[.-]*}"
-			done
-		fi
-		versionAliases+=(
-			$fullVersion
-			${aliases[$version]:-}
-		)
-
-		if [ "$variant" = "$defaultVariant" ]; then
-			variantAliases=( "${versionAliases[@]}" )
-		else
-			variantAliases=( "${versionAliases[@]/%/-$variant}" )
-			variantAliases=( "${variantAliases[@]//latest-/}" )
-		fi
-
-		variantParent="$(awk 'toupper($1) == "FROM" { print $2 }' "$version/$variant/Dockerfile")"
-		variantArches="${parentRepoToArches[$variantParent]}"
-
-		if [ "$variant" = 'alpine' ]; then
-			# ERROR: unsatisfiable constraints:
-			#   vips-dev (missing):
-			variantArches="$(sed -e 's/ ppc64le / /g' -e 's/ s390x / /g' <<<" $variantArches ")"
-		fi
-
-		echo
-		cat <<-EOE
-			Tags: $(join ', ' "${variantAliases[@]}")
-			Architectures: $(join ', ' $variantArches)
-			GitCommit: $commit
-			Directory: $version/$variant
-		EOE
-	done
-done
+# generate the entries
+exec jq \
+	--raw-output \
+	--argjson parentArches "$parentArchesJson" \
+	--from-file generate-stackbrew-library.jq \
+	versions.json \
+	--args -- "$@"

@@ -1,6 +1,10 @@
-# https://docs.ghost.org/faq/node-versions/
-# https://github.com/nodejs/Release (looking for "LTS")
-FROM node:20-alpine3.22
+#
+# NOTE: THIS DOCKERFILE IS GENERATED VIA "apply-templates.sh"
+#
+# PLEASE DO NOT EDIT IT DIRECTLY.
+#
+
+FROM node:22-alpine3.22
 
 RUN apk add --no-cache \
 # add "bash" for "[["
@@ -47,7 +51,7 @@ RUN set -eux; \
 ENV GHOST_INSTALL /var/lib/ghost
 ENV GHOST_CONTENT /var/lib/ghost/content
 
-ENV GHOST_VERSION 5.130.5
+ENV GHOST_VERSION 6.5.3
 
 RUN set -eux; \
 	mkdir -p "$GHOST_INSTALL"; \
@@ -87,7 +91,6 @@ RUN set -eux; \
 		var ghost = require("./package.json"); \
 		var transform = require("./node_modules/@tryghost/image-transform/package.json"); \
 		[ \
-			"sharp@" + transform.optionalDependencies["sharp"], \
 			"sqlite3@" + ghost.optionalDependencies["sqlite3"], \
 		].join(" ") \
 	')"; \
@@ -97,10 +100,6 @@ RUN set -eux; \
 		if ! eval "$installCmd"; then \
 # must be some non-amd64 architecture pre-built binaries aren't published for, so let's install some build deps and do-it-all-over-again
 			virtualPackages='g++ make python3 py3-setuptools'; \
-			case "$package" in \
-				# TODO sharp@*) virtualPackages="$virtualPackages pkgconf vips-dev"; \
-				sharp@*) echo >&2 "sorry: libvips 8.12.1 in Alpine 3.15 is not new enough (8.12.2+) for sharp 0.30 😞"; continue ;; \
-			esac; \
 			virtual=".build-deps-${package%%@*}"; \
 			apkDel="$apkDel $virtual"; \
 			apk add --no-cache --virtual "$virtual" $virtualPackages; \

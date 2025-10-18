@@ -1,6 +1,10 @@
-# https://docs.ghost.org/faq/node-versions/
-# https://github.com/nodejs/Release (looking for "LTS")
-FROM node:20-alpine3.22
+#
+# NOTE: THIS DOCKERFILE IS GENERATED VIA "apply-templates.sh"
+#
+# PLEASE DO NOT EDIT IT DIRECTLY.
+#
+
+FROM node:22-alpine3.22
 
 RUN apk add --no-cache \
 # add "bash" for "[["
@@ -35,7 +39,6 @@ RUN set -eux; \
 # verify that the binary works
 	gosu --version; \
 	gosu nobody true
-RUN set -eux; ln -svf gosu /usr/local/bin/su-exec; su-exec nobody true # backwards compatibility (TODO remove in Ghost 6+)
 
 ENV NODE_ENV production
 
@@ -47,21 +50,15 @@ RUN set -eux; \
 ENV GHOST_INSTALL /var/lib/ghost
 ENV GHOST_CONTENT /var/lib/ghost/content
 
-ENV GHOST_VERSION 5.130.5
+ENV GHOST_VERSION 6.6.0
 
 RUN set -eux; \
 	mkdir -p "$GHOST_INSTALL"; \
 	chown node:node "$GHOST_INSTALL"; \
 	\
-	apkDel=; \
+	apk add --no-cache --virtual .build-deps-ghost g++ linux-headers make python3 py3-setuptools; \
 	\
-	installCmd='gosu node ghost install "$GHOST_VERSION" --db mysql --dbhost mysql --no-prompt --no-stack --no-setup --dir "$GHOST_INSTALL"'; \
-	if ! eval "$installCmd"; then \
-		virtual='.build-deps-ghost'; \
-		apkDel="$apkDel $virtual"; \
-		apk add --no-cache --virtual "$virtual" g++ linux-headers make python3; \
-		eval "$installCmd"; \
-	fi; \
+	gosu node ghost install "$GHOST_VERSION" --db mysql --dbhost mysql --no-prompt --no-stack --no-setup --dir "$GHOST_INSTALL"; \
 	\
 # Tell Ghost to listen on all ips and not prompt for additional configuration
 	cd "$GHOST_INSTALL"; \
@@ -78,50 +75,21 @@ RUN set -eux; \
 	chown node:node "$GHOST_CONTENT"; \
 	chmod 1777 "$GHOST_CONTENT"; \
 	\
-# force install a few extra packages manually since they're "optional" dependencies
-# (which means that if it fails to install, like on ARM/ppc64le/s390x, the failure will be silently ignored and thus turn into a runtime error instead)
-# see https://github.com/TryGhost/Ghost/pull/7677 for more details
-	cd "$GHOST_INSTALL/current"; \
-# scrape the expected versions directly from Ghost/dependencies
-	packages="$(node -p ' \
-		var ghost = require("./package.json"); \
-		var transform = require("./node_modules/@tryghost/image-transform/package.json"); \
-		[ \
-			"sharp@" + transform.optionalDependencies["sharp"], \
-			"sqlite3@" + ghost.optionalDependencies["sqlite3"], \
-		].join(" ") \
-	')"; \
-	if echo "$packages" | grep 'undefined'; then exit 1; fi; \
-	for package in $packages; do \
-		installCmd='gosu node yarn add "$package" --force'; \
-		if ! eval "$installCmd"; then \
-# must be some non-amd64 architecture pre-built binaries aren't published for, so let's install some build deps and do-it-all-over-again
-			virtualPackages='g++ make python3 py3-setuptools'; \
-			case "$package" in \
-				# TODO sharp@*) virtualPackages="$virtualPackages pkgconf vips-dev"; \
-				sharp@*) echo >&2 "sorry: libvips 8.12.1 in Alpine 3.15 is not new enough (8.12.2+) for sharp 0.30 😞"; continue ;; \
-			esac; \
-			virtual=".build-deps-${package%%@*}"; \
-			apkDel="$apkDel $virtual"; \
-			apk add --no-cache --virtual "$virtual" $virtualPackages; \
-			\
-			eval "$installCmd --build-from-source"; \
-		fi; \
-	done; \
-	\
-	if [ -n "$apkDel" ]; then \
-		apk del --no-network $apkDel; \
-	fi; \
+	apk del --no-network .build-deps-ghost; \
 	\
 	gosu node yarn cache clean; \
 	gosu node npm cache clean --force; \
 	npm cache clean --force; \
-	rm -rv /tmp/yarn* /tmp/v8*
+	rm -rv /tmp/yarn* /tmp/v8*; \
+	\
+	# test that the optional dependencies are installed and loadable
+	cd current; \
+	gosu node node -e 'require("sqlite3"); require("sharp");'
 
 WORKDIR $GHOST_INSTALL
 VOLUME $GHOST_CONTENT
 
-COPY docker-entrypoint.sh /usr/local/bin
+COPY docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT ["docker-entrypoint.sh"]
 
 EXPOSE 2368

@@ -1,21 +1,39 @@
-# https://docs.ghost.org/faq/node-versions/
-# https://github.com/nodejs/Release (looking for "LTS")
-FROM node:22-alpine3.22
+{{
+	def is_alpine:
+		env.variant | startswith("alpine")
+	;
+	def clean_apt:
+		# TODO once bookworm is EOL, remove this and just hard-code "apt-get dist-clean" instead
+		if env.variant | contains("bookworm") then
+			"rm -rf /var/lib/apt/lists/*"
+		else "apt-get dist-clean" end
+-}}
+FROM {{ .variants[env.variant].from }}
 
+{{ if is_alpine then ( -}}
 RUN apk add --no-cache \
 # add "bash" for "[["
 		bash
 
+{{ ) else  "" end -}}
 # grab gosu for easy step-down from root
 # https://github.com/tianon/gosu/releases
 ENV GOSU_VERSION 1.19
 RUN set -eux; \
+{{ if is_alpine then ( -}}
 	\
 	apk add --no-cache --virtual .gosu-deps \
 		ca-certificates \
 		dpkg \
 		gnupg \
 	; \
+{{ ) else ( -}}
+# save list of currently installed packages for later so we can clean up
+	savedAptMark="$(apt-mark showmanual)"; \
+	apt-get update; \
+	apt-get install -y --no-install-recommends ca-certificates gnupg wget; \
+	{{ clean_apt }}; \
+{{ ) end -}}
 	\
 	dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')"; \
 	wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch"; \
@@ -29,17 +47,25 @@ RUN set -eux; \
 	rm -rf "$GNUPGHOME" /usr/local/bin/gosu.asc; \
 	\
 # clean up fetch dependencies
+{{ if is_alpine then ( -}}
 	apk del --no-network .gosu-deps; \
+{{ ) else ( -}}
+	apt-mark auto '.*' > /dev/null; \
+	[ -z "$savedAptMark" ] || apt-mark manual $savedAptMark > /dev/null; \
+	apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
+{{ ) end -}}
 	\
 	chmod +x /usr/local/bin/gosu; \
 # verify that the binary works
 	gosu --version; \
 	gosu nobody true
+{{ if is_alpine then ( -}}
 RUN set -eux; ln -svf gosu /usr/local/bin/su-exec; su-exec nobody true # backwards compatibility (TODO remove in Ghost 6+)
+{{ ) else "" end -}}
 
 ENV NODE_ENV production
 
-ENV GHOST_CLI_VERSION 1.28.3
+ENV GHOST_CLI_VERSION {{ .cli.version }}
 RUN set -eux; \
 	npm install -g "ghost-cli@$GHOST_CLI_VERSION"; \
 	npm cache clean --force
@@ -47,20 +73,33 @@ RUN set -eux; \
 ENV GHOST_INSTALL /var/lib/ghost
 ENV GHOST_CONTENT /var/lib/ghost/content
 
-ENV GHOST_VERSION 6.4.0
+ENV GHOST_VERSION {{ .version }}
 
 RUN set -eux; \
 	mkdir -p "$GHOST_INSTALL"; \
 	chown node:node "$GHOST_INSTALL"; \
 	\
+{{ if is_alpine then ( -}}
 	apkDel=; \
+{{ ) else ( -}}
+	savedAptMark="$(apt-mark showmanual)"; \
+	aptPurge=; \
+{{ ) end -}}
 	\
 	installCmd='gosu node ghost install "$GHOST_VERSION" --db mysql --dbhost mysql --no-prompt --no-stack --no-setup --dir "$GHOST_INSTALL"'; \
+{{ if env.version | endswith("-rc") then ( -}}
 	case "$GHOST_VERSION" in *-alpha* | *-beta* | *-rc*) installCmd="$installCmd --channel next" ;; esac; \
+{{ ) else "" end -}}
 	if ! eval "$installCmd"; then \
+{{ if is_alpine then ( -}}
 		virtual='.build-deps-ghost'; \
 		apkDel="$apkDel $virtual"; \
 		apk add --no-cache --virtual "$virtual" g++ linux-headers make python3; \
+{{ ) else ( -}}
+		aptPurge=1; \
+		apt-get update; \
+		apt-get install -y --no-install-recommends g++ make python3; \
+{{ ) end -}}
 		eval "$installCmd"; \
 	fi; \
 	\
@@ -97,21 +136,34 @@ RUN set -eux; \
 		installCmd='gosu node yarn add "$package" --force'; \
 		if ! eval "$installCmd"; then \
 # must be some non-amd64 architecture pre-built binaries aren't published for, so let's install some build deps and do-it-all-over-again
-			virtualPackages='g++ make python3 py3-setuptools'; \
 			case "$package" in \
-				# TODO sharp@*) virtualPackages="$virtualPackages pkgconf vips-dev"; \
-				sharp@*) echo >&2 "sorry: libvips 8.12.1 in Alpine 3.15 is not new enough (8.12.2+) for sharp 0.30 😞"; continue ;; \
+				sharp@*) echo >&2 "sorry: libvips is not new enough for sharp 😞"; continue ;; \
 			esac; \
+{{ if is_alpine then ( -}}
+			virtualPackages='g++ make python3 py3-setuptools'; \
 			virtual=".build-deps-${package%%@*}"; \
 			apkDel="$apkDel $virtual"; \
 			apk add --no-cache --virtual "$virtual" $virtualPackages; \
+{{ ) else ( -}}
+			aptPurge=1; \
+			apt-get update; \
+			apt-get install -y --no-install-recommends g++ make python3; \
+{{ ) end -}}
 			\
 			eval "$installCmd --build-from-source"; \
 		fi; \
 	done; \
 	\
+{{ if is_alpine then ( -}}
 	if [ -n "$apkDel" ]; then \
 		apk del --no-network $apkDel; \
+{{ ) else ( -}}
+	if [ -n "$aptPurge" ]; then \
+		apt-mark showmanual | xargs apt-mark auto > /dev/null; \
+		[ -z "$savedAptMark" ] || apt-mark manual $savedAptMark; \
+		apt-get purge -y --auto-remove; \
+		rm -rf /var/lib/apt/lists/*; \
+{{ ) end -}}
 	fi; \
 	\
 	gosu node yarn cache clean; \

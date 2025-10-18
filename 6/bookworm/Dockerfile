@@ -1,5 +1,9 @@
-# https://docs.ghost.org/faq/node-versions/
-# https://github.com/nodejs/Release (looking for "LTS")
+#
+# NOTE: THIS DOCKERFILE IS GENERATED VIA "apply-templates.sh"
+#
+# PLEASE DO NOT EDIT IT DIRECTLY.
+#
+
 FROM node:22-bookworm-slim
 
 # grab gosu for easy step-down from root
@@ -53,7 +57,6 @@ RUN set -eux; \
 	aptPurge=; \
 	\
 	installCmd='gosu node ghost install "$GHOST_VERSION" --db mysql --dbhost mysql --no-prompt --no-stack --no-setup --dir "$GHOST_INSTALL"'; \
-	case "$GHOST_VERSION" in *-alpha* | *-beta* | *-rc*) installCmd="$installCmd --channel next" ;; esac; \
 	if ! eval "$installCmd"; then \
 		aptPurge=1; \
 		apt-get update; \
@@ -94,13 +97,12 @@ RUN set -eux; \
 		installCmd='gosu node yarn add "$package" --force'; \
 		if ! eval "$installCmd"; then \
 # must be some non-amd64 architecture pre-built binaries aren't published for, so let's install some build deps and do-it-all-over-again
+			case "$package" in \
+				sharp@*) echo >&2 "sorry: libvips is not new enough for sharp 😞"; continue ;; \
+			esac; \
 			aptPurge=1; \
 			apt-get update; \
 			apt-get install -y --no-install-recommends g++ make python3; \
-			case "$package" in \
-				# TODO sharp@*) apt-get install -y --no-install-recommends libvips-dev ;; \
-				sharp@*) echo >&2 "sorry: libvips 8.10 in Debian bullseye is not new enough (8.12.2+) for sharp 0.30 😞"; continue ;; \
-			esac; \
 			\
 			eval "$installCmd --build-from-source"; \
 		fi; \

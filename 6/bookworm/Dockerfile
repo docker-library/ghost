@@ -1,6 +1,10 @@
-# https://docs.ghost.org/faq/node-versions/
-# https://github.com/nodejs/Release (looking for "LTS")
-FROM node:20-bookworm-slim
+#
+# NOTE: THIS DOCKERFILE IS GENERATED VIA "apply-templates.sh"
+#
+# PLEASE DO NOT EDIT IT DIRECTLY.
+#
+
+FROM node:22-bookworm-slim
 
 # grab gosu for easy step-down from root
 # https://github.com/tianon/gosu/releases
@@ -43,7 +47,7 @@ RUN set -eux; \
 ENV GHOST_INSTALL /var/lib/ghost
 ENV GHOST_CONTENT /var/lib/ghost/content
 
-ENV GHOST_VERSION 5.130.5
+ENV GHOST_VERSION 6.5.3
 
 RUN set -eux; \
 	mkdir -p "$GHOST_INSTALL"; \
@@ -84,7 +88,6 @@ RUN set -eux; \
 		var ghost = require("./package.json"); \
 		var transform = require("./node_modules/@tryghost/image-transform/package.json"); \
 		[ \
-			"sharp@" + transform.optionalDependencies["sharp"], \
 			"sqlite3@" + ghost.optionalDependencies["sqlite3"], \
 		].join(" ") \
 	')"; \
@@ -96,10 +99,6 @@ RUN set -eux; \
 			aptPurge=1; \
 			apt-get update; \
 			apt-get install -y --no-install-recommends g++ make python3; \
-			case "$package" in \
-				# TODO sharp@*) apt-get install -y --no-install-recommends libvips-dev ;; \
-				sharp@*) echo >&2 "sorry: libvips 8.10 in Debian bullseye is not new enough (8.12.2+) for sharp 0.30 😞"; continue ;; \
-			esac; \
 			\
 			eval "$installCmd --build-from-source"; \
 		fi; \

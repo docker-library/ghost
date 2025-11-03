@@ -13,9 +13,21 @@ FROM {{ .variants[env.variant].from }}
 {{ if is_alpine then ( -}}
 RUN apk add --no-cache \
 # add "bash" for "[["
-		bash
+		bash \
+# install fontconfig for sharp
+# https://github.com/lovell/sharp/blob/v0.34.2/docs/src/content/docs/install.md#fonts
+		fontconfig
+{{ ) else ( -}}
+RUN set -eux; \
+	apt-get update; \
+	apt-get install -y --no-install-recommends \
+# install fontconfig for sharp
+# https://github.com/lovell/sharp/blob/v0.34.2/docs/src/content/docs/install.md#fonts
+		fontconfig \
+	; \
+	{{ clean_apt }}
+{{ ) end -}}
 
-{{ ) else  "" end -}}
 # grab gosu for easy step-down from root
 # https://github.com/tianon/gosu/releases
 ENV GOSU_VERSION 1.19

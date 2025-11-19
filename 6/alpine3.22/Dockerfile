@@ -8,7 +8,10 @@ FROM node:22-alpine3.22
 
 RUN apk add --no-cache \
 # add "bash" for "[["
-		bash
+		bash \
+# install fontconfig for sharp
+# https://github.com/lovell/sharp/blob/v0.34.2/docs/src/content/docs/install.md#fonts
+		fontconfig
 
 # grab gosu for easy step-down from root
 # https://github.com/tianon/gosu/releases

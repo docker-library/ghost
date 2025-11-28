@@ -6,6 +6,15 @@
 
 FROM node:20-bookworm-slim
 
+RUN set -eux; \
+	apt-get update; \
+	apt-get install -y --no-install-recommends \
+# install fontconfig for sharp
+# https://github.com/lovell/sharp/blob/v0.34.2/docs/src/content/docs/install.md#fonts
+		fontconfig \
+	; \
+	rm -rf /var/lib/apt/lists/*
+
 # grab gosu for easy step-down from root
 # https://github.com/tianon/gosu/releases
 ENV GOSU_VERSION 1.19

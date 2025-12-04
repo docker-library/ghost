@@ -65,7 +65,7 @@ for version in "${versions[@]}"; do
 					# each of these should be a single distro version unless something *really* exceptional happens
 					# if there is more than one, they should be in descending order
 					linux: [ "bookworm" ],
-					linuxmusl: [ "alpine3.22" ],
+					linuxmusl: [ "alpine3.23" ],
 				}[.key][]
 				| .value = {
 					arches: (
@@ -98,7 +98,7 @@ for version in "${versions[@]}"; do
 				$doc
 				| with_entries(
 					# add image FROM for Dockerfile template and parent arch lookup in generate-stackbrew-library.sh
-					# e.g. "node:22-alpine3.22" or "node:22-trixie-slim"
+					# e.g. "node:22-alpine3.23" or "node:22-trixie-slim"
 					.value.from = "node:\($nodeVersion)-\(.key)\(
 						if .key | startswith("alpine") then "" else "-slim" end
 					)"

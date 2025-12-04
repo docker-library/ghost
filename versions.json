@@ -17,12 +17,12 @@
         ],
         "from": "node:22-bookworm-slim"
       },
-      "alpine3.22": {
+      "alpine3.23": {
         "arches": [
           "amd64",
           "arm64v8"
         ],
-        "from": "node:22-alpine3.22"
+        "from": "node:22-alpine3.23"
       }
     }
   },
@@ -44,12 +44,12 @@
         ],
         "from": "node:20-bookworm-slim"
       },
-      "alpine3.22": {
+      "alpine3.23": {
         "arches": [
           "amd64",
           "arm64v8"
         ],
-        "from": "node:20-alpine3.22"
+        "from": "node:20-alpine3.23"
       }
     }
   }

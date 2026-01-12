@@ -29,7 +29,7 @@
   "5": {
     "version": "5.130.6",
     "cli": {
-      "version": "1.28.3"
+      "version": "1.28.4"
     },
     "node": {
       "version": "20"

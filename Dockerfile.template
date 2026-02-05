@@ -59,9 +59,6 @@ RUN set -eux; \
 # verify that the binary works
 	gosu --version; \
 	gosu nobody true
-{{ if is_alpine and (.version | IN("6.5.3", "5.130.5")) then ( -}}
-RUN set -eux; ln -svf gosu /usr/local/bin/su-exec; su-exec nobody true # backwards compatibility
-{{ ) else "" end -}}
 
 ENV NODE_ENV production
 

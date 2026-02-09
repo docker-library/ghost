@@ -25,32 +25,5 @@
         "from": "node:22-alpine3.23"
       }
     }
-  },
-  "5": {
-    "version": "5.130.6",
-    "cli": {
-      "version": "1.28.4"
-    },
-    "node": {
-      "version": "20"
-    },
-    "variants": {
-      "bookworm": {
-        "arches": [
-          "amd64",
-          "arm32v7",
-          "arm64v8",
-          "s390x"
-        ],
-        "from": "node:20-bookworm-slim"
-      },
-      "alpine3.23": {
-        "arches": [
-          "amd64",
-          "arm64v8"
-        ],
-        "from": "node:20-alpine3.23"
-      }
-    }
   }
 }

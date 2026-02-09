@@ -87,7 +87,6 @@ for version in "${versions[@]}"; do
 		{
 			# https://docs.ghost.org/faq/node-versions
 			# https://github.com/nodejs/Release (looking for "LTS")
-			"5": "20",
 			"6": "22",
 		}[env.version] as $nodeVersion
 		| .[env.version] = {

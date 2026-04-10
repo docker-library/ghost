@@ -49,16 +49,17 @@ for version in "${versions[@]}"; do
 
 	# get a list of architectures supported by the sharp module's prebuilt libraries
 	# we cannot build it on other arches since the dep, libvips, is usually too old in Debian and Alpine
-	doc="$(curl -fsSL "https://raw.githubusercontent.com/TryGhost/Ghost/refs/tags/v$fullVersion/yarn.lock" \
+	doc="$(curl -fsSL "https://raw.githubusercontent.com/TryGhost/Ghost/refs/tags/v$fullVersion/pnpm-lock.yaml" \
 		| jq --compact-output --raw-input --null-input '
 			reduce (
 				inputs
-				| capture("^ *\"@img/sharp-(?<dist>linux[a-z]*)-(?<arch>[a-z0-9]+)\" \"[0-9.]+\"$")
+				| capture("^ *'"'"'@img/sharp-(?<dist>linux[a-z]*)-(?<arch>[a-z0-9]+)@[0-9.]+'"'"':")
 			) as $item ({
 				# this controls the variant ordering
 				linux: [], # non-Alpine first
 				linuxmusl: [], # Alpine second
 			}; .[$item.dist] += [ $item.arch ])
+			| map_values(unique)
 			| with_entries(
 				select(.value | length > 0)
 				| .key = {

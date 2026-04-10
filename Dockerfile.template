@@ -62,6 +62,8 @@ RUN set -eux; \
 
 ENV NODE_ENV production
 
+RUN corepack enable
+
 ENV GHOST_CLI_VERSION {{ .cli.version }}
 RUN set -eux; \
 	npm install -g "ghost-cli@$GHOST_CLI_VERSION"; \
@@ -110,10 +112,10 @@ RUN set -eux; \
 	{{ clean_apt }}; \
 {{ ) end -}}
 	\
-	gosu node yarn cache clean; \
+	gosu node pnpm store prune; \
 	gosu node npm cache clean --force; \
 	npm cache clean --force; \
-	rm -rv /tmp/yarn* /tmp/v8*; \
+	rm -rv /tmp/v8*; \
 	\
 	# test that the optional dependencies are installed and loadable
 	cd current; \

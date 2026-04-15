@@ -62,10 +62,9 @@ RUN set -eux; \
 
 ENV NODE_ENV production
 
-RUN corepack enable
-
 ENV GHOST_CLI_VERSION {{ .cli.version }}
 RUN set -eux; \
+	corepack enable; \
 	npm install -g "ghost-cli@$GHOST_CLI_VERSION"; \
 	npm cache clean --force
 

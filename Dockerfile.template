@@ -114,7 +114,6 @@ RUN set -eux; \
 	gosu node pnpm store prune; \
 	gosu node npm cache clean --force; \
 	npm cache clean --force; \
-	rm -rv /tmp/v8*; \
 	\
 	# test that the optional dependencies are installed and loadable
 	cd current; \

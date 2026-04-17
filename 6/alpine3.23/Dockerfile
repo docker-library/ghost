@@ -44,13 +44,14 @@ ENV NODE_ENV production
 
 ENV GHOST_CLI_VERSION 1.29.1
 RUN set -eux; \
+	corepack enable; \
 	npm install -g "ghost-cli@$GHOST_CLI_VERSION"; \
 	npm cache clean --force
 
 ENV GHOST_INSTALL /var/lib/ghost
 ENV GHOST_CONTENT /var/lib/ghost/content
 
-ENV GHOST_VERSION 6.28.0
+ENV GHOST_VERSION 6.30.0
 
 RUN set -eux; \
 	mkdir -p "$GHOST_INSTALL"; \
@@ -77,10 +78,9 @@ RUN set -eux; \
 	\
 	apk del --no-network .build-deps-ghost; \
 	\
-	gosu node yarn cache clean; \
+	gosu node pnpm store prune; \
 	gosu node npm cache clean --force; \
 	npm cache clean --force; \
-	rm -rv /tmp/yarn* /tmp/v8*; \
 	\
 	# test that the optional dependencies are installed and loadable
 	cd current; \
